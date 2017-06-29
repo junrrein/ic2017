@@ -22,32 +22,62 @@ Esto fue probado en GNU/Linux solamente. Tal vez sea fácil de adaptar a Windows
 
 ## Uso
 
-1. Hacer una copia de este repositorio
+1. Hacer una copia de este repositorio, cambiando el nombre de la carpeta
 
-        ```bash
-        TODO
-        ```
+    ```bash
+    git clone https://github.com/junrrein/ic-template.git guia1
+    rm -rf guia1/.git/
+    ```
 
-2. Compilar OpenBLAS
+2. Compilar OpenBLAS para OpenMP
 
-        ```bash
-        tar xf OpenBLAS.tar.xz
-        cd OpenBLAS
-        make USE_OPENMP=1 -j4
-        ln --symbolic libopenblas.so libopenblas_openmp.so
-        ```
+    ```bash
+    cd guia1/
+    tar xf OpenBLAS.tar.xz
+    cd OpenBLAS
+    make USE_OPENMP=1 -j4
+    ln --symbolic libopenblas.so libopenblas_openmp.so
+    ```
 
 3. Compilar el proyecto
 
-        ```bash
-        mkdir build
-        cd build
-        cmake -DCMAKE_BUILD_TYPE=Debug ..
-        make -j4
-        ```
+    ```bash
+    cd guia1/
+    mkdir build
+    cd build
+    cmake -DCMAKE_BUILD_TYPE=Debug ..
+    make -j4
+    ```
 
-**Nota**: En lugar de hacer el paso de compilación manualmente, se recomienda utilizar un IDE con integración con CMake como [QtCreator](https://wiki.qt.io/Qt_Creator), casi siempre disponible en los repositorios de cualquier distribución. Utilizar un IDE también va a facilitar el proceso de depuración.
+    **Nota**: En lugar de hacer el paso de compilación manualmente, se recomienda utilizar un IDE con integración con CMake como [QtCreator](https://wiki.qt.io/Qt_Creator), disponible en los repositorios de casi cualquier distribución. Utilizar un IDE también va a facilitar el proceso de depuración.
+
+4. Agregar un nuevo ejercicio
+
+    ```bash
+    cd guia1/
+    touch ejercicio2.cpp
+    ```
+
+    Y luego agregar al final de CMakeLists.txt la línea
+
+    ```cmake
+    add_executable (ejercicio2 "ejercicio2.cpp")
+    ```
 
 ## Velocidad
+
+TODO
+
+## Utilidades
+
+* Ayudante de Depuración de Armadillo para QtCreator
+
+    TODO
+
+* Estilo para clang-format
+
+    TODO
+
+## Ejemplos
 
 TODO
