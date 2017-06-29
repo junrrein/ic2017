@@ -11,6 +11,14 @@ También se incluyen algunos programas de ejemplo que muestran cómo usar estos 
 
 Esto fue probado en GNU/Linux solamente. Tal vez sea fácil de adaptar a Windows 10 usando [WSL](https://msdn.microsoft.com/en-us/commandline/wsl/about).
 
+## Tabla de Contenidos
+
+* [Dependencias](#dependencias)
+* [Uso](#uso)
+* [Velocidad](#velocidad)
+* [Utilidades](#utilidades)
+* [Ejemplos](#ejemplos)
+      
 ## Dependencias
 
 * Un compilador con soporte para C++14 (GCC >= 5.1).
