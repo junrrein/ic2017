@@ -2,9 +2,9 @@
 
 Esto es una plantilla que provee lo necesario para hacer los ejercicios de Inteligencia Computacional usando C++ junto con:
 
-* [Armadillo](http://arma.sourceforge.net/) para álgebra lineal.
-* [Gnuplot](http://www.gnuplot.info/) para graficar datos.
-    * [gnuplot-iostream](https://github.com/dstahlke/gnuplot-iostream) para utilizar Gnuplot desde C++.
+* [Armadillo](http://arma.sourceforge.net/) para álgebra lineal,
+* [Gnuplot](http://www.gnuplot.info/) para graficar datos,
+    * [gnuplot-iostream](https://github.com/dstahlke/gnuplot-iostream) para utilizar Gnuplot desde C++,
 * [OpenMP](http://bisqwit.iki.fi/story/howto/openmp/) para paralelismo.
 
 También se incluyen algunos programas de ejemplo que muestran cómo usar estos componentes.
@@ -22,7 +22,7 @@ Esto fue probado en GNU/Linux solamente. Tal vez sea fácil de adaptar a Windows
 
 ## Uso
 
-1. Hacer una copia de este respositorio
+1. Hacer una copia de este repositorio
 
         ```bash
         TODO
