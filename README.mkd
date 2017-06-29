@@ -14,11 +14,12 @@ Esto fue probado en GNU/Linux solamente. Tal vez sea fácil de adaptar a Windows
 ## Tabla de Contenidos
 
 * [Dependencias](#dependencias)
-* [Uso](#uso)
+* [Configuración inicial](#configuración-inicial)
+* [Agregar un nuevo ejercicio](#agregar-un-nuevo-ejercicio)
 * [Velocidad](#velocidad)
 * [Utilidades](#utilidades)
 * [Ejemplos](#ejemplos)
-      
+
 ## Dependencias
 
 * Un compilador con soporte para C++14 (GCC >= 5.1).
@@ -28,7 +29,7 @@ Esto fue probado en GNU/Linux solamente. Tal vez sea fácil de adaptar a Windows
 * Boost
 * CMake
 
-## Uso
+## Configuración inicial
 
 1. Hacer una copia de este repositorio, cambiando el nombre de la carpeta
 
@@ -54,22 +55,31 @@ Esto fue probado en GNU/Linux solamente. Tal vez sea fácil de adaptar a Windows
     mkdir build
     cd build
     cmake -DCMAKE_BUILD_TYPE=Debug ..
-    make -j4
+    make
     ```
 
     **Nota**: En lugar de hacer el paso de compilación manualmente, se recomienda utilizar un IDE con integración con CMake como [QtCreator](https://wiki.qt.io/Qt_Creator), disponible en los repositorios de casi cualquier distribución. Utilizar un IDE también va a facilitar el proceso de depuración.
 
-4. Agregar un nuevo ejercicio
+## Agregar un nuevo ejercicio
+
+1. Crear un nuevo archivo
 
     ```bash
     cd guia1/
     touch ejercicio2.cpp
     ```
 
-    Y luego agregar al final de CMakeLists.txt la línea
+2. Agregar al final de CMakeLists.txt la línea
 
     ```cmake
     add_executable (ejercicio2 "ejercicio2.cpp")
+    ```
+
+3. Si no se está usando un IDE, regenerar el sistema de construcción
+
+    ```bash
+    cd build
+    cmake -DCMAKE_BUILD_TYPE=Debug ..
     ```
 
 ## Velocidad
