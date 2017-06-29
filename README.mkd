@@ -1,0 +1,23 @@
+# Plantilla para usar C++ en Inteligencia Computacional
+
+Esto es una plantilla que provee lo necesario para hacer los ejercicios de Inteligencia Computacional usando C++ con:
+
+* [Armadillo](http://arma.sourceforge.net/) para álgebra lineal
+* [Gnuplot](http://www.gnuplot.info/) para graficar datos
+* [OpenMP](http://bisqwit.iki.fi/story/howto/openmp/) para paralelismo
+
+También se incluyen algunos programas de ejemplo que muestran cómo usar estos componentes.
+
+Esto fue probado en GNU/Linux solamente. Tal vez sea fácil de adaptar a Windows 10 usando [WSL](https://msdn.microsoft.com/en-us/commandline/wsl/about).
+
+## Dependencias
+
+* Un compilador con soporte para C++14 (GCC >= 5.1).
+* OpenMP
+* Armadillo
+* OpenBLAS compilado para OpenMP
+    * OpenSUSE y Fedora proveen paquetes en sus repositorios.
+    * Para compilarlo en Ubuntu, ver la sección correspondiente.
+* Gnuplot
+* Boost
+
