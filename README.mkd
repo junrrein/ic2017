@@ -69,7 +69,7 @@ Esto fue probado en GNU/Linux solamente. Tal vez sea fácil de adaptar a Windows
     touch ejercicio2.cpp
     ```
 
-2. Agregar al final de CMakeLists.txt la línea
+2. Agregar al final de `CMakeLists.txt` la línea
 
     ```cmake
     add_executable (ejercicio2 "ejercicio2.cpp")
