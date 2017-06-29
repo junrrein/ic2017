@@ -15,7 +15,7 @@ int main()
        << "set ylabel 'Magnitud'\n"
        << "set xrange [0 : 2*pi]\n"
        << "set grid\n"
-       << "set nokey\n"
+       << "set nokey\n" // Oculta la leyenda
        << "plot " << gp.file1d(points) << "with lines" << endl;
 
     getchar();
