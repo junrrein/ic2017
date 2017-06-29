@@ -1,10 +1,11 @@
 # Plantilla para usar C++ en Inteligencia Computacional
 
-Esto es una plantilla que provee lo necesario para hacer los ejercicios de Inteligencia Computacional usando C++ con:
+Esto es una plantilla que provee lo necesario para hacer los ejercicios de Inteligencia Computacional usando C++ junto con:
 
-* [Armadillo](http://arma.sourceforge.net/) para álgebra lineal
-* [Gnuplot](http://www.gnuplot.info/) para graficar datos
-* [OpenMP](http://bisqwit.iki.fi/story/howto/openmp/) para paralelismo
+* [Armadillo](http://arma.sourceforge.net/) para álgebra lineal.
+* [Gnuplot](http://www.gnuplot.info/) para graficar datos.
+    * [gnuplot-iostream](https://github.com/dstahlke/gnuplot-iostream) para utilizar Gnuplot desde C++.
+* [OpenMP](http://bisqwit.iki.fi/story/howto/openmp/) para paralelismo.
 
 También se incluyen algunos programas de ejemplo que muestran cómo usar estos componentes.
 
@@ -15,9 +16,38 @@ Esto fue probado en GNU/Linux solamente. Tal vez sea fácil de adaptar a Windows
 * Un compilador con soporte para C++14 (GCC >= 5.1).
 * OpenMP
 * Armadillo
-* OpenBLAS compilado para OpenMP
-    * OpenSUSE y Fedora proveen paquetes en sus repositorios.
-    * Para compilarlo en Ubuntu, ver la sección correspondiente.
 * Gnuplot
 * Boost
+* CMake
 
+## Uso
+
+1. Hacer una copia de este respositorio
+
+        ```bash
+        TODO
+        ```
+
+2. Compilar OpenBLAS
+
+        ```bash
+        tar xf OpenBLAS.tar.xz
+        cd OpenBLAS
+        make USE_OPENMP=1 -j4
+        ln --symbolic libopenblas.so libopenblas_openmp.so
+        ```
+
+3. Compilar el proyecto
+
+        ```bash
+        mkdir build
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        make -j4
+        ```
+
+**Nota**: En lugar de hacer el paso de compilación manualmente, se recomienda utilizar un IDE con integración con CMake como [QtCreator](https://wiki.qt.io/Qt_Creator), casi siempre disponible en los repositorios de cualquier distribución. Utilizar un IDE también va a facilitar el proceso de depuración.
+
+## Velocidad
+
+TODO
