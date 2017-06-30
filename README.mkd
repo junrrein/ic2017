@@ -31,11 +31,12 @@ Esto fue probado en GNU/Linux solamente. Tal vez sea fácil de adaptar a Windows
 
 ## Configuración inicial
 
-1. Hacer una copia de este repositorio, cambiando el nombre de la carpeta
+1. Hacer una copia de este repositorio
 
     ```bash
     git clone https://github.com/junrrein/ic-template.git guia1
-    rm -rf guia1/.git/
+    cd guia1/
+    rm -rf .git/ LICENSE
     ```
 
 2. Compilar OpenBLAS para OpenMP
