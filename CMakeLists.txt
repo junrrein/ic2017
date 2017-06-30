@@ -12,6 +12,6 @@ set (CMAKE_CXX_FLAGS "-std=c++14 -Wall -Wextra -pedantic \
     -I${CMAKE_SOURCE_DIR}/OpenBLAS -L${CMAKE_SOURCE_DIR}/OpenBLAS -lopenblas_openmp \
     -lboost_system -lboost_iostreams -lboost_filesystem")
 
-add_executable (ejemplo-simple "ejemplo-simple.cpp")
-add_executable (ejemplo-sin-omp "ejemplo-sin-omp.cpp")
-add_executable (ejemplo-con-omp "ejemplo-con-omp.cpp")
+add_executable (ejemplo-simple "ejemplos/ejemplo-simple.cpp")
+add_executable (ejemplo-sin-omp "ejemplos/ejemplo-sin-omp.cpp")
+add_executable (ejemplo-con-omp "ejemplos/ejemplo-con-omp.cpp")

@@ -1,5 +1,4 @@
 #include <armadillo>
-#include "gnuplot-iostream.h"
 
 using namespace arma;
 
