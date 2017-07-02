@@ -1,6 +1,9 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.3)
+
 project(ic-template)
 
+set (CMAKE_CXX_STANDARD 14)
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package (Armadillo REQUIRED)
 find_package (OpenMP REQUIRED)
 find_package (Gnuplot REQUIRED)
