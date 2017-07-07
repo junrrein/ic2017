@@ -16,5 +16,4 @@ set (CMAKE_CXX_FLAGS "-std=c++14 -Wall -Wextra -pedantic \
     -lboost_system -lboost_iostreams -lboost_filesystem")
 
 add_executable (graficos "ejemplos/graficos.cpp")
-add_executable (ejemplo-sin-omp "ejemplos/ejemplo-sin-omp.cpp")
-add_executable (ejemplo-con-omp "ejemplos/ejemplo-con-omp.cpp")
+add_executable (omp "ejemplos/omp.cpp")
