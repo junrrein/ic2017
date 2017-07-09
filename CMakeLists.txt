@@ -16,11 +16,8 @@ include_directories (SYSTEM
 	${gpio_INCLUDE_DIRS}
 )
 
-set (CMAKE_CXX_FLAGS "-std=c++14 -Wall -Wextra -pedantic \
-    -march=native -fopenmp")
+# Banderas de compilación para los ejercicios y ejemplos
+set (CMAKE_CXX_FLAGS "-std=c++14 -Wall -Wextra -pedantic -march=native -fopenmp")
 
-add_executable (graficos "ejemplos/graficos.cpp")
-target_link_libraries (graficos PUBLIC ${openblas_LIBS} Boost::filesystem Boost::iostreams)
-
-add_executable (omp "ejemplos/omp.cpp")
-target_link_libraries (omp ${openblas_LIBS})
+# Ejercicios y ejemplos
+add_subdirectory (ejemplos)
