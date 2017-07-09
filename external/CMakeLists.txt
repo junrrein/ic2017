@@ -22,14 +22,12 @@ ExternalProject_Add (openblas
     INSTALL_COMMAND ""
 )
 
-include_directories (SYSTEM "${CMAKE_SOURCE_DIR}/external/openblas")
-set (openblas_LIBS "${CMAKE_SOURCE_DIR}/external/openblas/libopenblas.so")
+set (openblas_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external/openblas" PARENT_SCOPE)
+set (openblas_LIBS "${CMAKE_SOURCE_DIR}/external/openblas/libopenblas.so" PARENT_SCOPE)
 
 ###########################
 #	Armadillo
 ###########################
-
-add_definitions (-DARMA_DONT_USE_WRAPPER)
 
 ExternalProject_Add (armadillo
     EXCLUDE_FROM_ALL 1
@@ -46,7 +44,15 @@ ExternalProject_Add (armadillo
     INSTALL_COMMAND ""
 )
 
-include_directories (SYSTEM "${CMAKE_SOURCE_DIR}/external/armadillo/include")
+add_definitions (-DARMA_DONT_USE_WRAPPER)
+set (arma_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external/armadillo/include" PARENT_SCOPE)
+
+###########################
+#	Boost
+###########################
+
+set (BOOST_URL https://github.com/boostorg/boost/archive/boost-1.64.0.tar.gz)
+add_subdirectory (boost-cmake)
 
 ###########################
 #	gnuplot-iostream
@@ -67,6 +73,12 @@ ExternalProject_Add (gnuplot-iostream
     INSTALL_COMMAND ""
 )
 
-include_directories (SYSTEM "${CMAKE_SOURCE_DIR}/external/gnuplot-iostream")
+set (gpio_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external/gnuplot-iostream" PARENT_SCOPE)
 
+#################################################################
+#################################################################
+#################################################################
+
+# Objetivo de CMake para construir todas estas cosas de una
+add_custom_target (external DEPENDS openblas armadillo gnuplot-iostream)
 
