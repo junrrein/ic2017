@@ -1,3 +1,5 @@
-OpenBLAS/
 build/
+external/armadillo
+external/gnuplot-iostream
+external/openblas
 CMakeLists.txt.user
