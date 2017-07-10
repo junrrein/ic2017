@@ -33,3 +33,6 @@ set (IC_LIBS ${openblas_LIBS} Boost::filesystem Boost::iostreams)
 # Ejemplos
 add_subdirectory (ejemplos)
 
+# Ejercicios
+add_subdirectory (guia1)
+
