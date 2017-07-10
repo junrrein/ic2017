@@ -11,19 +11,21 @@ ExternalProject_Add (openblas
 
     URL http://github.com/xianyi/OpenBLAS/archive/v0.2.19.tar.gz
 
-    PREFIX openblas
-
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
-    SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/openblas"
+    SOURCE_DIR "${CMAKE_BINARY_DIR}/external/openblas"
     CONFIGURE_COMMAND ""
     BUILD_COMMAND make USE_OPENMP=1
     BUILD_IN_SOURCE 1
+    USES_TERMINAL_BUILD 0
     INSTALL_COMMAND ""
 )
 
-set (openblas_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external/openblas" PARENT_SCOPE)
-set (openblas_LIBS "${CMAKE_SOURCE_DIR}/external/openblas/libopenblas.so" PARENT_SCOPE)
+set (openblas_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/external/openblas" PARENT_SCOPE)
+set (openblas_LIBS
+	"${CMAKE_BINARY_DIR}/external/openblas/${CMAKE_SHARED_LIBRARY_PREFIX}openblas${CMAKE_SHARED_LIBRARY_SUFFIX}"
+	PARENT_SCOPE
+)
 
 ###########################
 #	Armadillo
@@ -34,9 +36,7 @@ ExternalProject_Add (armadillo
 
     URL http://sourceforge.net/projects/arma/files/armadillo-7.950.1.tar.xz
 
-    PREFIX armadillo
-
-	SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/armadillo"
+	SOURCE_DIR "${CMAKE_BINARY_DIR}/external/armadillo"
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
     # Don't build the wrapper library; we won't use it.
@@ -44,14 +44,13 @@ ExternalProject_Add (armadillo
     INSTALL_COMMAND ""
 )
 
-add_definitions (-DARMA_DONT_USE_WRAPPER)
-set (arma_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external/armadillo/include" PARENT_SCOPE)
+set (arma_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/external/armadillo/include" PARENT_SCOPE)
 
 ###########################
 #	Boost
 ###########################
 
-set (BOOST_URL https://github.com/boostorg/boost/archive/boost-1.64.0.tar.gz)
+set (BOOST_DOWNLOAD_TO_BINARY_DIR ON)
 add_subdirectory (boost-cmake)
 
 ###########################
@@ -63,9 +62,7 @@ ExternalProject_Add (gnuplot-iostream
 
     URL https://github.com/dstahlke/gnuplot-iostream/archive/master.zip
 
-    PREFIX gnuplot-iostream
-
-	SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/gnuplot-iostream"
+	SOURCE_DIR "${CMAKE_BINARY_DIR}/external/gnuplot-iostream"
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
     CONFIGURE_COMMAND ""
@@ -73,7 +70,7 @@ ExternalProject_Add (gnuplot-iostream
     INSTALL_COMMAND ""
 )
 
-set (gpio_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external/gnuplot-iostream" PARENT_SCOPE)
+set (gpio_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/external/gnuplot-iostream" PARENT_SCOPE)
 
 #################################################################
 #################################################################
