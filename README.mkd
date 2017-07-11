@@ -2,14 +2,10 @@
 
 Esto es una plantilla que provee lo necesario para hacer los ejercicios de Inteligencia Computacional usando C++ junto con:
 
-* [Armadillo](http://arma.sourceforge.net/) para álgebra lineal,
-* [Gnuplot](http://www.gnuplot.info/) para graficar datos,
-    * [gnuplot-iostream](https://github.com/dstahlke/gnuplot-iostream) para utilizar Gnuplot desde C++,
-* [OpenMP](http://bisqwit.iki.fi/story/howto/openmp/) para paralelismo.
+* [Armadillo](http://arma.sourceforge.net/) para álgebra lineal, y
+* [Gnuplot](http://www.gnuplot.info/) (mediante [gnuplot-iostream](https://github.com/dstahlke/gnuplot-iostream)) para graficar datos.
 
 También se incluyen algunos programas de ejemplo que muestran cómo usar estos componentes.
-
-Esto fue probado en GNU/Linux solamente. Tal vez sea fácil de adaptar a Windows 10 usando [WSL](https://msdn.microsoft.com/en-us/commandline/wsl/about).
 
 ## Tabla de Contenidos
 
@@ -20,67 +16,107 @@ Esto fue probado en GNU/Linux solamente. Tal vez sea fácil de adaptar a Windows
 * [Utilidades](#utilidades)
 * [Ejemplos](#ejemplos)
 
+## Motivación
+
+En la materia lo común es usar Matlab/Octave para hacer los ejercicios. Esto no es por casualidad. Estos entornos proveen, por defecto, facilidades para el álgebra de matrices y para realizar gráficos, que simplifican en gran medida la resolución de los problemas que se encuentran durante el estudio. El problema es que el rendimiento suele no ser el mejor, y en esta materia es importante ya que algunos de los algoritmos estudiados demoran mucho tiempo en ejecutarse (20-30 minutos en estos entornos).
+
+Usar C++ es una solución obvia para mejorar el rendimiento, pero resulta menos obvio encontrar un buen reemplazo para las facilidades que provee Matlab/Octave. Esta plantilla trata de proveer estas facilidades para que el cambio entre entornos tenga la menor fricción posible.
+
+Armadillo es una biblioteca de álgebra lineal con una API deliberadamente similar a Matlab. Incluso provee una [tabla de conversión](http://arma.sourceforge.net/docs.html#syntax) que muestra operaciones de Matlab y sus equivalentes en Armadillo.
+
+Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir, que permiten ser redimensionados, hacer zoom, etc.). La sintaxis tiene diferencias pero, dentro de todo, es un reemplazo aceptable y los gráficos tienen una buena calidad de imagen. Es muy usado, provee amplia documentación y además está lleno de [ejemplos](http://gnuplot.sourceforge.net/demo_svg_5.0/).
+
 ## Dependencias
 
-* Un compilador con soporte para C++14 (GCC >= 5.1).
-* OpenMP
-* Armadillo
+* Un compilador con soporte para C++14 y OpenMP (GCC ≥ 5.1, MSVC ≥ 19.1 (VS 2017)).
+* CMake (incluido en VS 2017 y QtCreator).
 * Gnuplot
-* Boost
-* CMake
 
 ## Configuración inicial
+
+### Automáticamente
+
+TODO
+
+### Manualmente
 
 1. Hacer una copia de este repositorio
 
     ```bash
-    git clone https://github.com/junrrein/ic-template.git guia1
-    cd guia1/
+    git clone --recursive https://github.com/junrrein/ic-template.git practica
+    cd practica/
     rm -rf .git/ LICENSE
     ```
 
-2. Compilar OpenBLAS para OpenMP
+2. Configurar el proyecto
 
     ```bash
-    cd guia1/
-    tar xf OpenBLAS.tar.xz
-    cd OpenBLAS
-    make USE_OPENMP=1 -j4
-    ln --symbolic libopenblas.so libopenblas_openmp.so
-    ```
-
-3. Compilar el proyecto
-
-    ```bash
-    cd guia1/
+    cd practica/
     mkdir build
     cd build
-    cmake -DCMAKE_BUILD_TYPE=Debug ..
-    make
+    cmake -DCMAKE_BUILD_TYPE=RelWithDebugInfo ..
     ```
 
-    **Nota**: En lugar de hacer el paso de compilación manualmente, se recomienda utilizar un IDE con integración con CMake como [QtCreator](https://wiki.qt.io/Qt_Creator), disponible en los repositorios de casi cualquier distribución. Utilizar un IDE también va a facilitar el proceso de depuración.
+3. Descargar y compilar dependencias externas
 
-## Agregar un nuevo ejercicio
+    ```bash
+    cd practica/build
+    make external
+    ```
+## Tareas comunes
+
+### Compilar y ejecutar ejercicios
+
+```bash
+cd practica/build
+make
+./guia1/guia1-ejercicio1
+```
+
+### Agregar un nuevo ejercicio
 
 1. Crear un nuevo archivo
 
     ```bash
-    cd guia1/
-    touch ejercicio2.cpp
+    touch guia1/ejercicio2.cpp
     ```
 
-2. Agregar al final de `CMakeLists.txt` la línea
+2. Agregar al final de `guia1/CMakeLists.txt` lo siguiente
 
     ```cmake
-    add_executable (ejercicio2 "ejercicio2.cpp")
+    add_executable (${PREFIJO}-ejercicio2 ejercicio2.cpp)
+    target_link_libraries (${PREFIJO}-ejercicio2 ${IC_LIBS})
     ```
 
-3. Si no se está usando un IDE, regenerar el sistema de construcción
+3. Regenerar el sistema de construcción
 
     ```bash
     cd build
-    cmake -DCMAKE_BUILD_TYPE=Debug ..
+    cmake -DCMAKE_BUILD_TYPE=RelWithDebugInfo ..
+    ```
+
+### Agregar una nueva guía práctica
+
+1. Copiar el directorio `guia1`
+
+    ```bash
+    cp --recursive guia1 guia2
+    ```
+
+2. En `guia2/CMakeLists.txt`, cambiar el prefijo de los ejercicios
+
+    `set (PREFIJO guia1)` -> `set (PREFIJO guia2)`
+
+3. En el `CMakeLists.txt` del directorio raíz, agregar la línea
+
+    ```cmake
+    add_subdirectory (guia2)
+    ```
+4. Si no se está usando un IDE, regenerar el sistema de construcción
+
+    ```bash
+    cd build
+    cmake -DCMAKE_BUILD_TYPE=RelWithDebugInfo ..
     ```
 
 ## Velocidad
@@ -100,3 +136,9 @@ TODO
 ## Ejemplos
 
 TODO
+
+## Problemas (que no tiene Matlab)
+
+* No se puede interactuar con las ventanas ploteadas cuando se usa `multiplot` (el equivalente a `subplot`).
+
+* No es posible hacer gráficos en el medio de una sesión de depuración.
