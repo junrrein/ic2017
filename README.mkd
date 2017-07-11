@@ -53,7 +53,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 * Linux
     * Qt Creator
 
-        Se recomienda usar la última versión ya sea [descargando el instalador de su página web](https://www.qt.io/download-open-source/) o compilando el programa desde su código fuente. Al día que esto fue escrito la última versión es 4.3.1.
+        Se recomienda usar la última versión ya sea [descargando el instalador](https://www.qt.io/download-open-source/) o compilando el programa desde su código fuente. Al día que esto fue escrito la última versión es 4.3.1.
 
     * Otras dependencias
 
