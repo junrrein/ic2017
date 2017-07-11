@@ -2,4 +2,5 @@ build/
 external/armadillo
 external/gnuplot-iostream
 external/openblas
+utilidades/__pycache__/
 CMakeLists.txt.user
