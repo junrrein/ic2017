@@ -176,7 +176,7 @@ make
 
 2. En `guia2/CMakeLists.txt`, cambiar el prefijo de los ejercicios
 
-    `set (PREFIJO guia1)` -> `set (PREFIJO guia2)`
+    `set (PREFIJO guia1)` ⇒ `set (PREFIJO guia2)`
 
 3. En el `CMakeLists.txt` del directorio raíz, agregar la línea
 
