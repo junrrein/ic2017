@@ -20,12 +20,7 @@ include_directories (SYSTEM
 	${arma_INCLUDE_DIRS}
 	${gpio_INCLUDE_DIRS}
 )
-
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -pedantic -march=native")
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14 /W4")
-endif()
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -pedantic -march=native")
 
 # Bibliotecas a usar en los ejercicios y ejemplos
 set (IC_LIBS ${openblas_LIBS} Boost::filesystem Boost::iostreams)
