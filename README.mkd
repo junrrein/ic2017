@@ -9,14 +9,23 @@ También se incluyen algunos programas de ejemplo que muestran cómo usar estos 
 
 Probado en Windows 10 y Fedora 26 usando Qt Creator 4.3.1.
 
-## Tabla de Contenidos TODO ACTUALIZAR
+## Tabla de Contenidos
 
-* [Dependencias](#dependencias)
-* [Configuración inicial](#configuración-inicial)
-* [Agregar un nuevo ejercicio](#agregar-un-nuevo-ejercicio)
-* [Velocidad](#velocidad)
-* [Utilidades](#utilidades)
-* [Ejemplos](#ejemplos)
+  * [Tabla de Contenidos](#tabla-de-contenidos)
+  * [Motivación](#motivación)
+  * [Dependencias](#dependencias)
+  * [Dependencias externas (descargadas por la plantilla)](#dependencias-externas-descargadas-por-la-plantilla)
+  * [Instalar dependencias](#instalar-dependencias)
+  * [Configuración inicial](#configuración-inicial)
+     * [De forma gráfica](#de-forma-gráfica)
+     * [En línea de comandos (Linux)](#en-línea-de-comandos-linux)
+  * [Tareas comunes](#tareas-comunes)
+     * [Compilar y ejecutar ejercicios](#compilar-y-ejecutar-ejercicios)
+     * [Agregar un nuevo ejercicio](#agregar-un-nuevo-ejercicio)
+     * [Agregar una nueva guía práctica](#agregar-una-nueva-guía-práctica)
+  * [Velocidad](#velocidad)
+  * [Ejemplos](#ejemplos)
+  * [Problemas (que no tiene Matlab)](#problemas-que-no-tiene-matlab)
 
 ## Motivación
 
