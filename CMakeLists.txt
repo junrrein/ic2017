@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.3)
 project(ic-template)
 
 # Requisitos para usar la plantilla
-set (CMAKE_CXX_STANDARD 14)
+set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package (OpenMP REQUIRED)
 find_package (Gnuplot REQUIRED)
@@ -20,7 +20,7 @@ include_directories (SYSTEM
 	${arma_INCLUDE_DIRS}
 	${gpio_INCLUDE_DIRS}
 )
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -pedantic -march=native")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -pedantic -march=native")
 
 # Bibliotecas a usar en los ejercicios y ejemplos
 set (IC_LIBS ${openblas_LIBS} Boost::filesystem Boost::iostreams)

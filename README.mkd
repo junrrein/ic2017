@@ -38,10 +38,10 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 ## Dependencias
 
-* Un compilador con soporte para C++14 y OpenMP (GCC ≥ 5.1)
-* Qt Creator 4.3.1 (opcional en Linux).
-* CMake
+* GCC ≥ 4.8.1
+* Qt Creator ≥ 4.3 (opcional en Linux)
 * Git
+* CMake
 * Gnuplot
 
 ## Dependencias externas (descargadas por la plantilla)
@@ -56,12 +56,18 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 * Windows
     * [Qt Creator](https://www.qt.io/download-open-source/)
     * [Git](https://git-scm.com/download/)
+    * [CMake](https://cmake.org/download/#latest)
+
+        * Durante la instalación, en el paso `Install options`, seleccionar alguna de las dos opciones que agregan CMake al `PATH`.
+
     * [GnuPlot](https://sourceforge.net/projects/gnuplot/files/gnuplot/5.0.6/)
+
+        * Durante la instalación, en el paso `Select Additional Tasks`, seleccionar la opción `Add application directory to your PATH environment variable`.
 
 * Linux
     * Qt Creator
 
-        Se recomienda usar la última versión ya sea [descargando el instalador](https://www.qt.io/download-open-source/) o compilando el programa desde su código fuente. Al día que esto fue escrito la última versión es 4.3.1.
+        Se recomienda Qt Creator ≥ 4.3. Si su distribución no lo provee, obténgalo  [utilizando el instalador](https://www.qt.io/download-open-source/) o compilando el programa desde su código fuente.
 
     * Otras dependencias
 
@@ -69,13 +75,13 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
     
             ```bash
             sudo dnf groupinstall 'Herramientas y Librerías de Desarrollo en C'
-            sudo dnf install cmake git-core gnuplot
+            sudo dnf install git-core cmake gnuplot
             ```
     
         * Ubuntu
     
             ```bash
-            sudo apt install build-essential cmake git-core gnuplot
+            sudo apt install build-essential git-core cmake gnuplot
             ```
 
 ## Configuración inicial
