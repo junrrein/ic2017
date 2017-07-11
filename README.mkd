@@ -7,6 +7,8 @@ Esto es una plantilla que provee lo necesario para hacer los ejercicios de Intel
 
 También se incluyen algunos programas de ejemplo que muestran cómo usar estos componentes.
 
+Probado en Windows 10 y Fedora 26 usando Qt Creator 4.3.1.
+
 ## Tabla de Contenidos
 
 * [Dependencias](#dependencias)
@@ -28,47 +30,118 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 ## Dependencias
 
-* Un compilador con soporte para C++14 y OpenMP (GCC ≥ 5.1, MSVC ≥ 19.1 (VS 2017)).
-* CMake (incluido en VS 2017 y QtCreator).
+* Un compilador con soporte para C++14 y OpenMP (GCC ≥ 5.1)
+* Qt Creator 4.3.1 (opcional en Linux).
+* CMake
+* Git
 * Gnuplot
+
+## Dependencias externas (descargadas por la plantilla
+
+* Boost
+* Armadillo
+* OpenBLAS
+* gnuplot-iostream
+
+## Instalar dependencias
+
+* Windows
+    * [Qt Creator](https://www.qt.io/download-open-source/)
+    * [Git](https://git-scm.com/download/)
+    * [GnuPlot](https://sourceforge.net/projects/gnuplot/files/gnuplot/5.0.6/)
+
+* Linux
+    * Qt Creator
+
+        Se recomienda usar la última versión ya sea [descargando el instalador de su página web](https://www.qt.io/download-open-source/) o compilando el programa desde su código fuente. Al día que esto fue escrito la última versión es 4.3.1.
+
+    * Otras dependencias
+
+        * Fedora
+    
+            ```bash
+            sudo dnf groupinstall 'Herramientas y Librerías de Desarrollo en C'
+            sudo dnf install cmake git-core gnuplot
+            ```
+    
+        * Ubuntu
+    
+            ```bash
+            sudo apt install build-essential cmake git-core gnuplot
+            ```
 
 ## Configuración inicial
 
-### Automáticamente
+### De forma gráfica
 
-TODO
+1. Abrir Qt Creator. Ir a `New Project` → `Import Project` → `Git Clone`. Hacer click en `Choose...`
 
-### Manualmente
+2. Completar los campos:
+
+    * `Repository`: *https://github.com/junrrein/ic-template.git*
+    * `Path`: Directorio padre de la plantilla
+    * `Directory`: Nombre del directorio donde irá la plantilla
+
+    Seleccionar también la opción `Recursive`
+
+3. Hacer click en `Next`. Ahora la plantilla será descargada. Hacer click en `Finish` cuando finalice.
+
+    **(Windows)** Qt Creator pedirá la ruta al ejecutable de Git. TODO
+
+4. Aparecerá la pantalla de configuración del proyecto. En el kit `Desktop` hacer click en `Details`. De las opciones que aparecen dejar seleccionadas `Debug` y `Release`. Hacer click en `Configure Project`.
+
+    El proyecto será configurado, y una de las dependencias externas (Boost) será descargada.
+
+5. En el árbol de proyectos, desplegar `ic-template`, luego desplegar la carpeta `external`. Hacer click derecho en el objetivo `external` (los objetivos están simbolizados con un martillo 🔨) y seleccionar la opción `Build "external"`.
+https://www.qt.io/download-open-source/
+
+    Este paso descargará el resto de las dependencias externas, y una de ellas (OpenBLAS) será compilada. Esto tardará un buen rato. Aprovechá y prepará el mate. Puede verse el progreso en la parte inferior derecha de la ventana.
+
+6. Cargar el ayudante de depuración de Armadillo. Para ello ir al menú `Tools` → `Options...`. Luego ir a la sección `Debugger`, pestaña `GDB`. En `Extra Debuggin Helpers` hacer click en `Browse...`. Seleccionar el archivo `utilidades/armadilloDebugHelpers.py`.
+
+7. En el panel inferior izquierdo, seleccionar el objetivo `guia1-ejercicio1`, configuración `Debug`.
+
+    En el panel izquierdo, ir a `Projects`. En la sección izquierda de la pantalla, ir a `Build & Run` → `Desktop` → `Run`. En el panel derecho, en la sección `Run`, seleccionar la opción `Run in terminal`.
+
+8. En el panel izquierdo, ir a `Edit`. En el árbol de proyectos, desplejar la carpeta `guia1`, luego desplegar el objetivo `guia1-ejercicio1`, y abrir `ejercicio1.cpp`.
+
+9. Para compilar el ejercicio, usar el ícono 🔨 en el panel izquierdo o la combinación de teclas `Ctrl + B`. Para compilar y ejecutar el ejercicio, usar el ícono ▶️ en el panel izquierdo o `Ctrl + R`.
+
+### En línea de comandos (Linux)
 
 1. Hacer una copia de este repositorio
 
     ```bash
     git clone --recursive https://github.com/junrrein/ic-template.git practica
-    cd practica/
-    rm -rf .git/ LICENSE
     ```
 
 2. Configurar el proyecto
 
     ```bash
     cd practica/
-    mkdir build
-    cd build
-    cmake -DCMAKE_BUILD_TYPE=RelWithDebugInfo ..
+    mkdir build-debug
+    cd build-debug
+    cmake -DCMAKE_BUILD_TYPE=Debug ..
     ```
 
 3. Descargar y compilar dependencias externas
 
     ```bash
-    cd practica/build
     make external
     ```
+
+4. Compilar ejercicios
+
+    ```bash
+    make
+    ```
+
 ## Tareas comunes
 
 ### Compilar y ejecutar ejercicios
 
 ```bash
-cd practica/build
+cd practica/build-debug
 make
 ./guia1/guia1-ejercicio1
 ```
@@ -84,15 +157,14 @@ make
 2. Agregar al final de `guia1/CMakeLists.txt` lo siguiente
 
     ```cmake
-    add_executable (${PREFIJO}-ejercicio2 ejercicio2.cpp)
-    target_link_libraries (${PREFIJO}-ejercicio2 ${IC_LIBS})
+    agregar_ejecutable (ejercicio2)
     ```
 
-3. Regenerar el sistema de construcción
+3. Si no se está usando Qt Creator, regenerar el sistema de construcción
 
     ```bash
-    cd build
-    cmake -DCMAKE_BUILD_TYPE=RelWithDebugInfo ..
+    cd build-debug
+    cmake -DCMAKE_BUILD_TYPE=Debug ..
     ```
 
 ### Agregar una nueva guía práctica
@@ -112,30 +184,40 @@ make
     ```cmake
     add_subdirectory (guia2)
     ```
-4. Si no se está usando un IDE, regenerar el sistema de construcción
+
+4. Si no se está usando Qt Creator, regenerar el sistema de construcción
 
     ```bash
-    cd build
-    cmake -DCMAKE_BUILD_TYPE=RelWithDebugInfo ..
+    cd build-debug
+    cmake -DCMAKE_BUILD_TYPE=Debug ..
     ```
 
 ## Velocidad
 
-TODO
+Para ejercicios que requieren de mucho poder de procesamiento, se recomienda compilar el proyecto utilizando todas las optimizaciones del compilador. Para esto, hacer:
 
-## Utilidades
+* Usando QtCreator: En el panel inferior izquierdo, elegir la configuración `Release`. Ahora va a ser necesario construir el objetivo `external` nuevamente, como se hizo en la configuración inicial, para luego compilar los ejercicios.
 
-* Ayudante de Depuración de Armadillo para QtCreator
+* Desde línea de comandos:
 
-    TODO
+    ```bash
+    cd practica/
+    mkdir build-release
+    cd build-release/
+    cmake -DCMAKE_BUILD_TYPE=Release ..
+    make external
+    make
+    ```
 
-* Estilo para clang-format
-
-    TODO
+**Nota** No es posible depurar un programa que usa estas opciones de compilación. Por lo tanto el flujo de trabajo recomendado es: desarrollar el ejercicio en modo `Debug` hasta que se tiene la seguridad de que funciona correctamente, y luego cambiar al modo `Release`.
 
 ## Ejemplos
 
-TODO
+Se proveen un par de ejemplos en la carpeta `ejemplos/`, los cuales pueden compilarse haciendo `make ejemplos` desde el directorio de construcción (`build/`). Los ejecutables se encontrarán en el directorio `build/ejemplos/`.
+
+`graficos` muestra cómo hacer algunos tipos de gráficos simples, como `plot`, `stem` y `subplot`.
+
+`omp` muestra un ejemplo de uso de [OpenMP](http://bisqwit.iki.fi/story/howto/openmp/) para acelerar cálculos mediante el uso de paralelismo.
 
 ## Problemas (que no tiene Matlab)
 
