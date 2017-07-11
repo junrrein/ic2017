@@ -9,7 +9,7 @@ También se incluyen algunos programas de ejemplo que muestran cómo usar estos 
 
 Probado en Windows 10 y Fedora 26 usando Qt Creator 4.3.1.
 
-## Tabla de Contenidos
+## Tabla de Contenidos TODO ACTUALIZAR
 
 * [Dependencias](#dependencias)
 * [Configuración inicial](#configuración-inicial)
@@ -36,7 +36,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 * Git
 * Gnuplot
 
-## Dependencias externas (descargadas por la plantilla
+## Dependencias externas (descargadas por la plantilla)
 
 * Boost
 * Armadillo
@@ -93,11 +93,10 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
     El proyecto será configurado, y una de las dependencias externas (Boost) será descargada.
 
 5. En el árbol de proyectos, desplegar `ic-template`, luego desplegar la carpeta `external`. Hacer click derecho en el objetivo `external` (los objetivos están simbolizados con un martillo 🔨) y seleccionar la opción `Build "external"`.
-https://www.qt.io/download-open-source/
 
     Este paso descargará el resto de las dependencias externas, y una de ellas (OpenBLAS) será compilada. Esto tardará un buen rato. Aprovechá y prepará el mate. Puede verse el progreso en la parte inferior derecha de la ventana.
 
-6. Cargar el ayudante de depuración de Armadillo. Para ello ir al menú `Tools` → `Options...`. Luego ir a la sección `Debugger`, pestaña `GDB`. En `Extra Debuggin Helpers` hacer click en `Browse...`. Seleccionar el archivo `utilidades/armadilloDebugHelpers.py`.
+6. Cargar el ayudante de depuración de Armadillo. Para ello ir al menú `Tools` → `Options...`. Luego ir a la sección `Debugger`, pestaña `GDB`. En `Extra Debugging Helpers` hacer click en `Browse...`. Seleccionar el archivo `utilidades/armadilloDebugHelpers.py`.
 
 7. En el panel inferior izquierdo, seleccionar el objetivo `guia1-ejercicio1`, configuración `Debug`.
 
