@@ -30,6 +30,13 @@ endif()
 # Bibliotecas a usar en los ejercicios y ejemplos
 set (IC_LIBS ${openblas_LIBS} Boost::filesystem Boost::iostreams)
 
+# Función para agregar un nuevo ejercicio
+function (agregar_ejercicio nombre)
+    add_executable (${PREFIJO}-${nombre} ${nombre}.cpp)
+    target_link_libraries (${PREFIJO}-${nombre} ${IC_LIBS})
+    set_target_properties(${PREFIJO}-${nombre} PROPERTIES OUTPUT_NAME ${nombre})
+endfunction (agregar_ejercicio)
+
 # Ejemplos
 add_subdirectory (ejemplos)
 
