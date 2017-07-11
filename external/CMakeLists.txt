@@ -39,7 +39,7 @@ ExternalProject_Add (armadillo
 	SOURCE_DIR "${CMAKE_BINARY_DIR}/external/armadillo"
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
-    # Don't build the wrapper library; we won't use it.
+    # No construir la biblioteca wrapper; no la vamos a usar.
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
 )
