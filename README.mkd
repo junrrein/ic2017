@@ -64,6 +64,23 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
         * Durante la instalación, en el paso `Select Additional Tasks`, seleccionar la opción `Add application directory to your PATH environment variable`.
 
+    * [MSYS2](http://www.msys2.org/)
+
+        1. Realizar la instalación y actualización de acuerdo a las instrucciones de la página.  
+        **Importante:** Instalar MSYS2 a la ubicación por defecto.
+        2. Abrir la consola de MSYS2 (`MSYS2 MSYS`)
+        3. Instalar `make` y `perl`.
+
+            ```bash
+            pacman -S make perl
+            ```
+
+        4. Copiar el compilador instalado por Qt Creator.
+
+            ```bash
+            cp --recursive /c/Qt/Tools/mingw*32*/* /mingw32
+            ```
+
 * Linux
     * Qt Creator
 
@@ -108,7 +125,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 5. En el árbol de proyectos, desplegar `ic-template`, luego desplegar la carpeta `external`. Hacer click derecho en el objetivo `external` (los objetivos están simbolizados con un martillo 🔨) y seleccionar la opción `Build "external"`.
 
-    Este paso descargará el resto de las dependencias externas, y una de ellas (OpenBLAS) será compilada. Esto tardará un buen rato. Aprovechá y prepará el mate. Puede verse el progreso en la parte inferior derecha de la ventana.
+    Este paso descargará el resto de las dependencias externas, y una de ellas (OpenBLAS) será compilada. Esto tardará un buen rato. Puede verse el progreso en la parte inferior de la ventana, en la sección `4 Compile Output`. En Windows, este paso compilará OpenBLAS en una nueva ventana llamada `MinGW x32`.
 
 6. Cargar el ayudante de depuración de Armadillo. Para ello ir al menú `Tools` → `Options...`. Luego ir a la sección `Debugger`, pestaña `GDB`. En `Extra Debugging Helpers` hacer click en `Browse...`. Seleccionar el archivo `utilidades/armadilloDebugHelpers.py`.
 
