@@ -6,6 +6,12 @@ include (ExternalProject)
 #	OpenBLAS
 ###########################
 
+if (WIN32)
+    set (openblas_BUILD_COMMAND ${MSYS_PATH}/msys2_shell.cmd -here -mingw32 -c "make USE_OPENMP=1")
+else ()
+    set (openblas_BUILD_COMMAND make USE_OPENMP=1)
+endif ()
+
 ExternalProject_Add (openblas
     EXCLUDE_FROM_ALL 1
 
@@ -15,9 +21,8 @@ ExternalProject_Add (openblas
     PATCH_COMMAND ""
     SOURCE_DIR "${CMAKE_BINARY_DIR}/external/openblas"
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND make USE_OPENMP=1
+    BUILD_COMMAND ${openblas_BUILD_COMMAND}
     BUILD_IN_SOURCE 1
-    USES_TERMINAL_BUILD 0
     INSTALL_COMMAND ""
 )
 

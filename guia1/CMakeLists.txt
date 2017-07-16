@@ -1,3 +1,3 @@
-set (PREFIJO guia1)
+agregar_guia ()
 
 agregar_ejercicio (ejercicio1)
