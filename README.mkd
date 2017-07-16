@@ -117,8 +117,6 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 3. Hacer click en `Next`. Ahora la plantilla será descargada. Hacer click en `Finish` cuando finalice.
 
-    **(Windows)** Qt Creator pedirá la ruta al ejecutable de Git. TODO
-
 4. Aparecerá la pantalla de configuración del proyecto. En el kit `Desktop` hacer click en `Details`. De las opciones que aparecen dejar seleccionadas `Debug` y `Release`. Hacer click en `Configure Project`.
 
     El proyecto será configurado, y una de las dependencias externas (Boost) será descargada.
