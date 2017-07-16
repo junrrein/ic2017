@@ -73,6 +73,12 @@ function (agregar_fuentes nombre_ejercicio string_archivos)
     target_sources (${PREFIJO}-${nombre_ejercicio} PUBLIC ${lista_archivos})
 endfunction ()
 
+# Función para agregar fuentes a un ejercicio existente
+function (agregar_datos nombre_ejercicio string_archivos)
+    separate_arguments (lista_archivos UNIX_COMMAND ${string_archivos})
+    file (COPY ${lista_archivos} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+endfunction ()
+
 # Ejemplos
 add_subdirectory (ejemplos)
 

@@ -11,20 +11,22 @@ Probado en Windows 10 y Fedora 26 usando Qt Creator 4.3.1.
 
 ## Tabla de Contenidos
 
-  * [Motivación](#motivación)
-  * [Dependencias](#dependencias)
-  * [Dependencias externas (descargadas por la plantilla)](#dependencias-externas-descargadas-por-la-plantilla)
-  * [Instalar dependencias](#instalar-dependencias)
-  * [Configuración inicial](#configuración-inicial)
-     * [De forma gráfica](#de-forma-gráfica)
-     * [En línea de comandos (Linux)](#en-línea-de-comandos-linux)
-  * [Tareas comunes](#tareas-comunes)
-     * [Compilar y ejecutar ejercicios](#compilar-y-ejecutar-ejercicios)
-     * [Agregar un nuevo ejercicio](#agregar-un-nuevo-ejercicio)
-     * [Agregar una nueva guía práctica](#agregar-una-nueva-guía-práctica)
-  * [Velocidad](#velocidad)
-  * [Ejemplos](#ejemplos)
-  * [Problemas (que no tiene Matlab)](#problemas-que-no-tiene-matlab)
+* [Motivación](#motivación)
+* [Dependencias](#dependencias)
+* [Dependencias externas (descargadas por la plantilla)](#dependencias-externas-descargadas-por-la-plantilla)
+* [Instalar dependencias](#instalar-dependencias)
+* [Configuración inicial](#configuración-inicial)
+    * [De forma gráfica](#de-forma-gráfica)
+    * [En línea de comandos (Linux)](#en-línea-de-comandos-linux)
+* [Tareas comunes](#tareas-comunes)
+    * [Compilar y ejecutar ejercicios](#compilar-y-ejecutar-ejercicios)
+    * [Agregar un nuevo ejercicio](#agregar-un-nuevo-ejercicio)
+    * [Agregar fuentes a un ejercicio](#agregar-fuentes-a-un-ejercicio)
+    * [Agregar archivos de datos a un ejercicio](#agregar-archivos-de-datos-a-un-ejercicio)
+    * [Agregar una nueva guía práctica](#agregar-una-nueva-guía-práctica)
+* [Velocidad](#velocidad)
+* [Ejemplos](#ejemplos)
+* [Problemas (que no tiene Matlab)](#problemas-que-no-tiene-matlab)
 
 ## Motivación
 
@@ -205,6 +207,23 @@ make
 
     ```cmake
     agregar_fuentes (ejercicio2 "fuente1.cpp fuente2.cpp")
+    ```
+
+    **Nota:** No es necesario agregar los encabezados (por ejemplo `fuente1.hpp`).
+
+2. Si no se está usando Qt Creator, regenerar el sistema de construcción.
+
+    ```bash
+    cd build-debug
+    cmake -DCMAKE_BUILD_TYPE=Debug ..
+    ```
+
+### Agregar archivos de datos a un ejercicio
+
+1. Agregar al final de `guia1/CMakeLists.txt` lo siguiente:
+
+    ```cmake
+    agregar_datos (ejercicio2 "indiceMerval2012.txt casa.jpg")
     ```
 
 2. Si no se está usando Qt Creator, regenerar el sistema de construcción.
