@@ -36,7 +36,7 @@ En la materia lo común es usar Matlab/Octave para hacer los ejercicios. Esto no
 
 Usar C++ es una solución obvia para mejorar el rendimiento, pero resulta menos obvio encontrar un buen reemplazo para las facilidades que provee Matlab/Octave. Esta plantilla trata de proveer estas facilidades para que el cambio entre entornos tenga la menor fricción posible.
 
-Armadillo es una biblioteca de álgebra lineal con una API deliberadamente similar a Matlab. Incluso provee una [tabla de conversión](http://arma.sourceforge.net/docs.html#syntax) que muestra operaciones de Matlab y sus equivalentes en Armadillo.
+Armadillo es una biblioteca de álgebra lineal con una API deliberadamente similar a Matlab. Provee una [tabla de conversión](http://arma.sourceforge.net/docs.html#syntax) que muestra operaciones de Matlab y sus equivalentes en Armadillo.
 
 Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir, que permiten ser redimensionados, hacer zoom, etc.). La sintaxis tiene diferencias pero, dentro de todo, es un reemplazo aceptable y los gráficos tienen una buena calidad de imagen. Es muy usado, provee amplia documentación y además está lleno de [ejemplos](http://gnuplot.sourceforge.net/demo_svg_5.0/).
 
