@@ -137,7 +137,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 9. En el panel izquierdo, ir a `Edit`. En el árbol de proyectos, desplejar la carpeta `guia1`, luego desplegar el objetivo `guia1-ejercicio1`, y abrir `ejercicio1.cpp`.
 
-10. Para compilar el ejercicio, usar el ícono 🔨 en el panel izquierdo o la combinación de teclas `Ctrl + B`. Para compilar y ejecutar el ejercicio, usar el ícono ▶️ en el panel izquierdo o `Ctrl + R`.
+10. Para compilar los ejercicios y ejemplos, usar el ícono 🔨 en el panel izquierdo o la combinación de teclas `Ctrl + B`. Para ejecutar el ejercicio seleccionado en el paso 7, usar el ícono ▶️ en el panel izquierdo o `Ctrl + R`.
 
 ### En línea de comandos (Linux)
 
@@ -162,7 +162,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
     make external
     ```
 
-4. Compilar ejercicios
+4. Compilar ejercicios y ejemplos
 
     ```bash
     make
@@ -207,17 +207,13 @@ make
     cp --recursive guia1 guia2
     ```
 
-2. En `guia2/CMakeLists.txt`, cambiar el prefijo de los ejercicios
-
-    `set (PREFIJO guia1)` ⇒ `set (PREFIJO guia2)`
-
-3. En el `CMakeLists.txt` del directorio raíz, agregar la línea
+2. En el `CMakeLists.txt` del directorio raíz, agregar la línea
 
     ```cmake
     add_subdirectory (guia2)
     ```
 
-4. Si no se está usando Qt Creator, regenerar el sistema de construcción
+3. Si no se está usando Qt Creator, regenerar el sistema de construcción
 
     ```bash
     cd build-debug
@@ -241,7 +237,7 @@ Para ejercicios que requieren de mucho poder de procesamiento, se recomienda com
     make
     ```
 
-**Nota** No es posible depurar un programa que usa estas opciones de compilación. Por lo tanto el flujo de trabajo recomendado es: desarrollar el ejercicio en modo `Debug` hasta que se tiene la seguridad de que funciona correctamente, y luego cambiar al modo `Release`.
+**Nota** No es posible depurar un programa que usa estas opciones de compilación. Por lo tanto el flujo de trabajo recomendado es: desarrollar el ejercicio en modo `Debug` hasta que se tiene la confianza de que funciona correctamente, y luego cambiar al modo `Release`.
 
 ## Ejemplos
 
