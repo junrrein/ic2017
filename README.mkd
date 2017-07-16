@@ -251,4 +251,6 @@ Se proveen un par de ejemplos en la carpeta `ejemplos/`, los cuales pueden compi
 
 * No se puede interactuar con las ventanas ploteadas cuando se usa `multiplot` (el equivalente a `subplot`).
 
+    Esto incluye redimensionar las ventanas, por lo que en este tipo de gráficos es necesario especificar el tamaño de ventana de antemano a Gnuplot mediante el comando `set terminal qt size ancho,alto`
+
 * No es posible hacer gráficos en el medio de una sesión de depuración.
