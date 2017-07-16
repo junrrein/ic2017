@@ -92,13 +92,13 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
     
             ```bash
             sudo dnf groupinstall 'Herramientas y Librerías de Desarrollo en C'
-            sudo dnf install git-core cmake gnuplot
+            sudo dnf install gcc-gfortran git-core cmake gnuplot
             ```
     
         * Ubuntu
     
             ```bash
-            sudo apt install build-essential git-core cmake gnuplot
+            sudo apt install build-essential gfortran git-core cmake gnuplot
             ```
 
 ## Configuración inicial
