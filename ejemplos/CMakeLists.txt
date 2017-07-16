@@ -2,3 +2,5 @@ agregar_guia ()
 
 agregar_ejercicio (graficos)
 agregar_ejercicio (omp)
+agregar_ejercicio (variosArchivos)
+agregar_fuentes (variosArchivos "funcion1.cpp funcion2.cpp")

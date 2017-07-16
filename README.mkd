@@ -180,19 +180,34 @@ make
 
 ### Agregar un nuevo ejercicio
 
-1. Crear un nuevo archivo
+1. Crear un nuevo archivo.
 
     ```bash
     touch guia1/ejercicio2.cpp
     ```
 
-2. Agregar al final de `guia1/CMakeLists.txt` lo siguiente
+2. Agregar al final de `guia1/CMakeLists.txt` lo siguiente:
 
     ```cmake
     agregar_ejecutable (ejercicio2)
     ```
 
-3. Si no se está usando Qt Creator, regenerar el sistema de construcción
+3. Si no se está usando Qt Creator, regenerar el sistema de construcción.
+
+    ```bash
+    cd build-debug
+    cmake -DCMAKE_BUILD_TYPE=Debug ..
+    ```
+
+### Agregar fuentes a un ejercicio
+
+1. Agregar al final de `guia1/CMakeLists.txt` lo siguiente:
+
+    ```cmake
+    agregar_fuentes (ejercicio2 "fuente1.cpp fuente2.cpp")
+    ```
+
+2. Si no se está usando Qt Creator, regenerar el sistema de construcción.
 
     ```bash
     cd build-debug
@@ -201,19 +216,19 @@ make
 
 ### Agregar una nueva guía práctica
 
-1. Copiar el directorio `guia1`
+1. Copiar el directorio `guia1`.
 
     ```bash
     cp --recursive guia1 guia2
     ```
 
-2. En el `CMakeLists.txt` del directorio raíz, agregar la línea
+2. En el `CMakeLists.txt` del directorio raíz, agregar la línea:
 
     ```cmake
     add_subdirectory (guia2)
     ```
 
-3. Si no se está usando Qt Creator, regenerar el sistema de construcción
+3. Si no se está usando Qt Creator, regenerar el sistema de construcción.
 
     ```bash
     cd build-debug
@@ -246,6 +261,8 @@ Se proveen un par de ejemplos en la carpeta `ejemplos/`, los cuales pueden compi
 `graficos` muestra cómo hacer algunos tipos de gráficos simples, como `plot`, `stem` y `subplot`.
 
 `omp` muestra un ejemplo de uso de [OpenMP](http://bisqwit.iki.fi/story/howto/openmp/) para acelerar cálculos mediante el uso de paralelismo.
+
+`variosArchivos` muestra cómo declarar un ejercicio que utiliza varias fuentes y también archivos auxiliares de datos. En este caso es de interés ver lo usado en `ejemplos/CMakeLists.txt` para usar esto, en particular las funciones `agregar_fuentes` y `agregar_datos`.
 
 ## Problemas (que no tiene Matlab)
 

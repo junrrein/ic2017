@@ -59,12 +59,19 @@ function (agregar_guia)
 endfunction ()
 
 # Función para agregar un nuevo ejercicio
-function (agregar_ejercicio nombre)
+function (agregar_ejercicio nombre_ejercicio)
     get_filename_component(PREFIJO ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-    add_executable (${PREFIJO}-${nombre} ${nombre}.cpp)
-    target_link_libraries (${PREFIJO}-${nombre} ${IC_LIBS})
-    set_target_properties(${PREFIJO}-${nombre} PROPERTIES OUTPUT_NAME ${nombre})
+    add_executable (${PREFIJO}-${nombre_ejercicio} ${nombre_ejercicio}.cpp)
+    target_link_libraries (${PREFIJO}-${nombre_ejercicio} ${IC_LIBS})
+    set_target_properties(${PREFIJO}-${nombre_ejercicio} PROPERTIES OUTPUT_NAME ${nombre_ejercicio})
 endfunction (agregar_ejercicio)
+
+# Función para agregar fuentes a un ejercicio existente
+function (agregar_fuentes nombre_ejercicio string_archivos)
+    get_filename_component (PREFIJO ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+    separate_arguments (lista_archivos UNIX_COMMAND ${string_archivos})
+    target_sources (${PREFIJO}-${nombre_ejercicio} PUBLIC ${lista_archivos})
+endfunction ()
 
 # Ejemplos
 add_subdirectory (ejemplos)
