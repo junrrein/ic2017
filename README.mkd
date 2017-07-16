@@ -11,7 +11,6 @@ Probado en Windows 10 y Fedora 26 usando Qt Creator 4.3.1.
 
 ## Tabla de Contenidos
 
-* [Tabla de Contenidos](#tabla-de-contenidos)
 * [Motivación](#motivación)
 * [Dependencias](#dependencias)
 * [Dependencias externas (descargadas por la plantilla)](#dependencias-externas-descargadas-por-la-plantilla)
