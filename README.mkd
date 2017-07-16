@@ -67,7 +67,9 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 * [GnuPlot](https://sourceforge.net/projects/gnuplot/files/gnuplot/5.0.6/)
 
-    * Durante la instalación, en el paso `Select Additional Tasks`, seleccionar la opción `Add application directory to your PATH environment variable`.
+    * Durante la instalación, en el paso `Select Additional Tasks`, seleccionar lo siguiente:
+        * En la sección `Select gnuplot's default terminal`, elegir `qt`.
+        * `Add application directory to your PATH environment variable`.
 
 * [MSYS2](http://www.msys2.org/)
 
