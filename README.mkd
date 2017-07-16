@@ -55,53 +55,55 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 ## Instalar dependencias
 
-* Windows
-    * [Qt Creator](https://www.qt.io/download-open-source/)
-    * [Git](https://git-scm.com/download/)
-    * [CMake](https://cmake.org/download/#latest)
+### Windows
 
-        * Durante la instalación, en el paso `Install options`, seleccionar alguna de las dos opciones que agregan CMake al `PATH`.
+* [Qt Creator](https://www.qt.io/download-open-source/)
+* [Git](https://git-scm.com/download/)
+* [CMake](https://cmake.org/download/#latest)
 
-    * [GnuPlot](https://sourceforge.net/projects/gnuplot/files/gnuplot/5.0.6/)
+    * Durante la instalación, en el paso `Install options`, seleccionar alguna de las dos opciones que agregan CMake al `PATH`.
 
-        * Durante la instalación, en el paso `Select Additional Tasks`, seleccionar la opción `Add application directory to your PATH environment variable`.
+* [GnuPlot](https://sourceforge.net/projects/gnuplot/files/gnuplot/5.0.6/)
 
-    * [MSYS2](http://www.msys2.org/)
+    * Durante la instalación, en el paso `Select Additional Tasks`, seleccionar la opción `Add application directory to your PATH environment variable`.
 
-        1. Realizar la instalación y actualización de acuerdo a las instrucciones de la página.  
-        **Importante:** Instalar MSYS2 a la ubicación por defecto.
-        2. Abrir la consola de MSYS2 (`MSYS2 MSYS`)
-        3. Instalar `make` y `perl`.
+* [MSYS2](http://www.msys2.org/)
 
-            ```bash
-            pacman -S make perl
-            ```
+    1. Realizar la instalación y actualización de acuerdo a las instrucciones de la página.  
+    **Importante:** Instalar MSYS2 a la ubicación por defecto.
+    2. Abrir la consola de MSYS2 (`MSYS2 MSYS`)
+    3. Instalar `make` y `perl`.
 
-        4. Copiar el compilador instalado por Qt Creator.
+        ```bash
+        pacman -S make perl
+        ```
 
-            ```bash
-            cp --recursive /c/Qt/Tools/mingw*32*/* /mingw32
-            ```
+    4. Copiar el compilador instalado por Qt Creator.
 
-* Linux
-    * Qt Creator
+        ```bash
+        cp --recursive /c/Qt/Tools/mingw*32*/* /mingw32
+        ```
 
-        Se recomienda Qt Creator ≥ 4.3. Si su distribución no lo provee, obténgalo  [utilizando el instalador](https://www.qt.io/download-open-source/) o [compilando el programa desde el código fuente](https://wiki.qt.io/Building_Qt_Creator_from_Git).
+### Linux
 
-    * Otras dependencias
+* Qt Creator
 
-        * Fedora
-    
-            ```bash
-            sudo dnf groupinstall 'Herramientas y Librerías de Desarrollo en C'
-            sudo dnf install gcc-gfortran git-core cmake gnuplot
-            ```
-    
-        * Ubuntu
-    
-            ```bash
-            sudo apt install build-essential gfortran git-core cmake gnuplot
-            ```
+    Se recomienda Qt Creator ≥ 4.3. Si su distribución no lo provee, obténgalo  [utilizando el instalador](https://www.qt.io/download-open-source/) o [compilando el programa desde el código fuente](https://wiki.qt.io/Building_Qt_Creator_from_Git).
+
+* Otras dependencias
+
+    * Fedora
+
+        ```bash
+        sudo dnf groupinstall 'Herramientas y Librerías de Desarrollo en C'
+        sudo dnf install gcc-gfortran git-core cmake gnuplot
+        ```
+
+    * Ubuntu
+
+        ```bash
+        sudo apt install build-essential gfortran git-core cmake gnuplot
+        ```
 
 ## Configuración inicial
 
