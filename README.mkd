@@ -133,11 +133,11 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 7. En el panel inferior izquierdo, seleccionar el objetivo `guia1-ejercicio1`, configuración `Debug`.
 
-    En el panel izquierdo, ir a `Projects`. En la sección izquierda de la pantalla, ir a `Build & Run` → `Desktop` → `Run`. En el panel derecho, en la sección `Run`, seleccionar la opción `Run in terminal`.
+8. En el panel izquierdo, ir a `Projects`. En la sección izquierda de la pantalla, ir a `Build & Run` → `Desktop` → `Run`. En el panel derecho, en la sección `Run`, seleccionar la opción `Run in terminal`.
 
-8. En el panel izquierdo, ir a `Edit`. En el árbol de proyectos, desplejar la carpeta `guia1`, luego desplegar el objetivo `guia1-ejercicio1`, y abrir `ejercicio1.cpp`.
+9. En el panel izquierdo, ir a `Edit`. En el árbol de proyectos, desplejar la carpeta `guia1`, luego desplegar el objetivo `guia1-ejercicio1`, y abrir `ejercicio1.cpp`.
 
-9. Para compilar el ejercicio, usar el ícono 🔨 en el panel izquierdo o la combinación de teclas `Ctrl + B`. Para compilar y ejecutar el ejercicio, usar el ícono ▶️ en el panel izquierdo o `Ctrl + R`.
+10. Para compilar el ejercicio, usar el ícono 🔨 en el panel izquierdo o la combinación de teclas `Ctrl + B`. Para compilar y ejecutar el ejercicio, usar el ícono ▶️ en el panel izquierdo o `Ctrl + R`.
 
 ### En línea de comandos (Linux)
 
