@@ -19,16 +19,16 @@ ExternalProject_Add (openblas
 
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
-    SOURCE_DIR "${CMAKE_BINARY_DIR}/external/openblas"
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/openblas"
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ${openblas_BUILD_COMMAND}
     BUILD_IN_SOURCE 1
     INSTALL_COMMAND ""
 )
 
-set (openblas_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/external/openblas" PARENT_SCOPE)
+set (openblas_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/openblas" PARENT_SCOPE)
 set (openblas_LIBS
-	"${CMAKE_BINARY_DIR}/external/openblas/${CMAKE_SHARED_LIBRARY_PREFIX}openblas${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/openblas/${CMAKE_SHARED_LIBRARY_PREFIX}openblas${CMAKE_SHARED_LIBRARY_SUFFIX}"
 	PARENT_SCOPE
 )
 
@@ -41,7 +41,7 @@ ExternalProject_Add (armadillo
 
     URL http://sourceforge.net/projects/arma/files/armadillo-7.950.1.tar.xz
 
-	SOURCE_DIR "${CMAKE_BINARY_DIR}/external/armadillo"
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/armadillo"
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
     # No construir la biblioteca wrapper; no la vamos a usar.
@@ -49,7 +49,7 @@ ExternalProject_Add (armadillo
     INSTALL_COMMAND ""
 )
 
-set (arma_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/external/armadillo/include" PARENT_SCOPE)
+set (arma_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/armadillo/include" PARENT_SCOPE)
 
 ###########################
 #	Boost
@@ -67,7 +67,7 @@ ExternalProject_Add (gnuplot-iostream
 
     URL https://github.com/dstahlke/gnuplot-iostream/archive/master.zip
 
-	SOURCE_DIR "${CMAKE_BINARY_DIR}/external/gnuplot-iostream"
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/gnuplot-iostream"
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
     CONFIGURE_COMMAND ""
@@ -75,7 +75,7 @@ ExternalProject_Add (gnuplot-iostream
     INSTALL_COMMAND ""
 )
 
-set (gpio_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/external/gnuplot-iostream" PARENT_SCOPE)
+set (gpio_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/gnuplot-iostream" PARENT_SCOPE)
 
 #################################################################
 #################################################################
