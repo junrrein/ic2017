@@ -44,19 +44,8 @@ if (WIN32)
     set (WinPThread_LIB ${MSYS_LIBRARY_PATH}/libwinpthread-1.dll)
     set (QuadMath_LIB ${MSYS_LIBRARY_PATH}/libquadmath-0.dll)
     # OpenBLAS se copia separadamente
-    set (COPIAR_LIBS ${GCC_LIB} ${gomp_LIB} ${Fortran_LIB} ${WinPThread_LIB} ${QuadMath_LIB})
+    set (COPIAR_LIBS ${openblas_LIBS} ${GCC_LIB} ${gomp_LIB} ${Fortran_LIB} ${WinPThread_LIB} ${QuadMath_LIB})
 endif ()
-
-# Función para agregar una nueva guía
-function (agregar_guia)
-    if (WIN32)
-        file (COPY ${COPIAR_LIBS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-        if (EXISTS ${openblas_LIBS})
-            # Se copia en una operación separada porque no existe inicialmente
-            file (COPY ${openblas_LIBS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-        endif ()
-    endif ()
-endfunction ()
 
 # Función para agregar un nuevo ejercicio
 function (agregar_ejercicio nombre_ejercicio)
@@ -64,6 +53,13 @@ function (agregar_ejercicio nombre_ejercicio)
     add_executable (${PREFIJO}-${nombre_ejercicio} ${nombre_ejercicio}.cpp)
     target_link_libraries (${PREFIJO}-${nombre_ejercicio} ${IC_LIBS})
     set_target_properties(${PREFIJO}-${nombre_ejercicio} PROPERTIES OUTPUT_NAME ${nombre_ejercicio})
+
+    if (WIN32)
+        add_custom_command (TARGET ${PREFIJO}-${nombre_ejercicio}
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${COPIAR_LIBS} ${CMAKE_CURRENT_BINARY_DIR}
+        )
+    endif ()
 endfunction (agregar_ejercicio)
 
 # Función para agregar fuentes a un ejercicio existente
