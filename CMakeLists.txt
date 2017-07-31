@@ -38,11 +38,11 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -pedantic -mar
 # Bibliotecas a usar en los ejercicios y ejemplos
 set (IC_LIBS ${openblas_LIBS} Boost::filesystem Boost::iostreams)
 if (WIN32)
-    set (GCC_LIB ${MSYS_LIBRARY_PATH}/libgcc_s_dw2-1.dll)
-    set (gomp_LIB ${MSYS_LIBRARY_PATH}/libgomp-1.dll)
-    set (Fortran_LIB ${MSYS_LIBRARY_PATH}/libgfortran-3.dll)
-    set (WinPThread_LIB ${MSYS_LIBRARY_PATH}/libwinpthread-1.dll)
-    set (QuadMath_LIB ${MSYS_LIBRARY_PATH}/libquadmath-0.dll)
+    file (GLOB GCC_LIB ${MSYS_LIBRARY_PATH}/libgcc*.dll)
+    file (GLOB gomp_LIB ${MSYS_LIBRARY_PATH}/libgomp*.dll)
+    file (GLOB Fortran_LIB ${MSYS_LIBRARY_PATH}/libgfortran*.dll)
+    file (GLOB WinPThread_LIB ${MSYS_LIBRARY_PATH}/libwinpthread*.dll)
+    file (GLOB QuadMath_LIB ${MSYS_LIBRARY_PATH}/libquadmath*.dll)
     # OpenBLAS se copia separadamente
     set (COPIAR_LIBS ${openblas_LIBS} ${GCC_LIB} ${gomp_LIB} ${Fortran_LIB} ${WinPThread_LIB} ${QuadMath_LIB})
 endif ()
@@ -55,7 +55,8 @@ function (agregar_ejercicio nombre_ejercicio)
     set_target_properties(${PREFIJO}-${nombre_ejercicio} PROPERTIES OUTPUT_NAME ${nombre_ejercicio})
 
     if (WIN32)
-        add_custom_command (TARGET ${PREFIJO}-${nombre_ejercicio}
+        add_custom_command (
+            TARGET ${PREFIJO}-${nombre_ejercicio}
             POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${COPIAR_LIBS} ${CMAKE_CURRENT_BINARY_DIR}
         )
