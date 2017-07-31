@@ -277,7 +277,7 @@ Para ejercicios que requieren de mucho poder de procesamiento, se recomienda com
     make
     ```
 
-**Nota** No es posible depurar un programa que usa estas opciones de compilación. Por lo tanto el flujo de trabajo recomendado es: desarrollar el ejercicio en modo `Debug` hasta que se tiene la confianza de que funciona correctamente, y luego cambiar al modo `Release`.
+**Nota:** No es posible depurar un programa que usa estas opciones de compilación. El flujo de trabajo recomendado es desarrollar el ejercicio en modo `Debug` hasta que se tiene la confianza de que funciona correctamente, y luego cambiar al modo `Release`.
 
 ## Ejemplos
 
