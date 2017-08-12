@@ -1,4 +1,4 @@
-build/
+build*/
 external/armadillo
 external/gnuplot-iostream
 external/openblas
