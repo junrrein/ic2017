@@ -45,7 +45,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 * GCC ≥ 4.8.1
 * Qt Creator ≥ 4.3 (opcional en Linux)
 * Git
-* CMake
+* CMake (≥ 3.7 si se usa Qt Creator)
 * Gnuplot
 
 ## Dependencias externas (descargadas por la plantilla)
@@ -107,6 +107,14 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
         ```bash
         sudo apt install build-essential gfortran git-core cmake gnuplot
+        ```
+
+        **Nota:** Para versiones de Ubuntu anteriores a 17.04, y si se desea usar Qt Creator, es necesario [agregar un PPA](https://launchpad.net/~ppsspp/+archive/ubuntu/cmake) para tener una versión más reciente de CMake:
+
+        ```bash
+        sudo add-apt-repository ppa:ppsspp/cmake
+        sudo apt update
+        sudo apt upgrade
         ```
 
 ## Configuración inicial
