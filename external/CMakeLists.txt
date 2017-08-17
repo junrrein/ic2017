@@ -7,6 +7,8 @@ include (ExternalProject)
 ###########################
 
 if (WIN32)
+    # TODO: Usar -no-start
+    # https://github.com/Alexpux/MSYS2-packages/blob/master/filesystem/msys2_shell.cmd#L164
     set (openblas_BUILD_COMMAND ${MSYS_PATH}/msys2_shell.cmd -here -mingw32 -c "make USE_OPENMP=1")
 else ()
     set (openblas_BUILD_COMMAND make USE_OPENMP=1)
