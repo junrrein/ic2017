@@ -299,6 +299,10 @@ Se proveen un par de ejemplos en la carpeta `ejemplos/`, los cuales pueden compi
 
 ## Problemas (que no tiene Matlab)
 
+* La terminal integrada de Qt Creator no permite ingresar datos, solo mostrarlos.
+
+    Cuando es necesario ingresar datos a un programa interactivamente en Qt Creator por terminal, es necesario ejecutar el programa en una terminal del sistema. Para esto, referirse al paso 8 en [Configuración inicial](#de-forma-gráfica).
+
 * No se puede interactuar con las ventanas ploteadas cuando se usa `multiplot` (el equivalente a `subplot`).
 
     Esto incluye redimensionar las ventanas, por lo que en este tipo de gráficos es necesario especificar el tamaño de ventana de antemano a Gnuplot mediante el comando `set terminal qt size ancho,alto`
