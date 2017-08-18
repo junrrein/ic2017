@@ -80,14 +80,8 @@ pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
     mat patronesExt = join_horiz(ones(patronesEnt.n_rows) * (-1), patronesEnt);
 
     // Separar patrones en los casos verdaderos y falsos
-    mat verdaderos;
-    mat falsos;
-    for (unsigned int i = 0; i < salidaDeseadaEnt.n_elem; ++i) {
-        if (salidaDeseadaEnt(i) == 1)
-            verdaderos.insert_rows(verdaderos.n_rows, patronesEnt.row(i));
-        else
-            falsos.insert_rows(falsos.n_rows, patronesEnt.row(i));
-    }
+    mat verdaderos = patronesEnt.rows(find(salidaDeseadaEnt == 1));
+    mat falsos = patronesEnt.rows(find(salidaDeseadaEnt == -1));
 
     // Ciclo de las epocas
     for (int epoca = 1; epoca <= nEpocas; ++epoca) {
