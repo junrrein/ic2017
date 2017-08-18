@@ -7,8 +7,10 @@
 using namespace std;
 using namespace arma;
 
-pair<vec, double> entrenarPerceptron(const mat& patrones,
-                                     const vec& salidaDeseada,
+pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
+                                     const mat& patronesPrueba,
+                                     const vec& salidaDeseadaEnt,
+                                     const vec& salidaDeseadaPrueba,
                                      int nEpocas,
                                      double tasaAprendizaje,
                                      double tolerancia);
@@ -19,17 +21,24 @@ int main()
 
     mat datos;
     datos.load("OR_trn.csv");
-    mat patronesOR = datos.head_cols(2);
-    vec salidaDeseadaOR = datos.tail_cols(1);
-
-    // Inicializar pesos con valores random
+    mat patronesEntOR = datos.head_cols(2);
+    vec salidaDeseadaEntOR = datos.tail_cols(1);
+    datos.load("OR_tst.csv");
+    mat patronesPruebaOR = datos.head_cols(2);
+    vec salidaDeseadaPruebaOR = datos.tail_cols(1);
 
     // OR
     // Entrenar la red graficando resultados intermedios (la recta)
     vec pesos;
     double tasaError;
-    tie(pesos, tasaError) = entrenarPerceptron(patronesOR, salidaDeseadaOR, 100, 0.1, 90);
-    // Prueba
+    tie(pesos, tasaError) = entrenarPerceptron(patronesEntOR,
+                                               patronesPruebaOR,
+                                               salidaDeseadaEntOR,
+                                               salidaDeseadaPruebaOR,
+                                               100,
+                                               0.9,
+                                               90);
+    cout << "tasa de error del OR : " << tasaError << endl;
 
     // XOR
     // Entrenar la red graficando resultados intermedios (la recta)
@@ -41,8 +50,6 @@ int main()
     //    gp << "plot " << gp.file1d(patrones) << "with points" << endl;
 
     //    getchar();
-
-    cout << "Terminó" << endl;
 
     return 0;
 }
@@ -57,27 +64,29 @@ int sign(double numero)
 }
 }
 
-pair<vec, double> entrenarPerceptron(const mat& patrones,
-                                     const vec& salidaDeseada,
+pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
+                                     const mat& patronesPrueba,
+                                     const vec& salidaDeseadaEnt,
+                                     const vec& salidaDeseadaPrueba,
                                      int nEpocas,
                                      double tasaAprendizaje,
                                      double tolerancia)
 {
     // Inicializar pesos y tasa de error
-    vec pesos = randu<vec>(patrones.n_cols + 1) - 0.5;
+    vec pesos = randu<vec>(patronesEnt.n_cols + 1) - 0.5;
     double tasaError = 0;
 
     // Extender la matriz de patrones con la entrada correspondiente al umbral
-    mat patronesExt = join_horiz(ones(patrones.n_rows) * (-1), patrones);
+    mat patronesExt = join_horiz(ones(patronesEnt.n_rows) * (-1), patronesEnt);
 
     // Separar patrones en los casos verdaderos y falsos
     mat verdaderos;
     mat falsos;
-    for (unsigned int i = 0; i < salidaDeseada.n_elem; ++i) {
-        if (salidaDeseada(i) == 1)
-            verdaderos.insert_rows(verdaderos.n_rows, patrones.row(i));
+    for (unsigned int i = 0; i < salidaDeseadaEnt.n_elem; ++i) {
+        if (salidaDeseadaEnt(i) == 1)
+            verdaderos.insert_rows(verdaderos.n_rows, patronesEnt.row(i));
         else
-            falsos.insert_rows(falsos.n_rows, patrones.row(i));
+            falsos.insert_rows(falsos.n_rows, patronesEnt.row(i));
     }
 
     // Ciclo de las epocas
@@ -87,12 +96,12 @@ pair<vec, double> entrenarPerceptron(const mat& patrones,
         // Ciclo para una época
         Gnuplot gp;
 
-        for (unsigned int i = 0; i < patrones.n_rows; ++i) {
+        for (unsigned int i = 0; i < patronesEnt.n_rows; ++i) {
             double z = dot(patronesExt.row(i), pesos);
             int y = ic::sign(z);
 
             // Actualizar pesos
-            pesos += tasaAprendizaje * (salidaDeseada(i) - y) * patronesExt.row(i).t();
+            pesos += tasaAprendizaje * (salidaDeseadaEnt(i) - y) * patronesExt.row(i).t();
 
             // Graficar recta
             double pendiente = -pesos(1) / pesos(2);
@@ -113,15 +122,18 @@ pair<vec, double> entrenarPerceptron(const mat& patrones,
         // Fin ciclo (época)
 
         int errores = 0;
-        for (unsigned int i = 0; i < patrones.n_rows; ++i) {
+        // Extender la matriz de patrones con la entrada correspondiente al umbral
+        patronesExt = join_horiz(ones(patronesPrueba.n_rows) * (-1), patronesPrueba);
+
+        for (unsigned int i = 0; i < patronesPrueba.n_rows; ++i) {
             double z = dot(patronesExt.row(i), pesos);
             int y = ic::sign(z);
 
-            if (y != salidaDeseada(i))
+            if (y != salidaDeseadaPrueba(i))
                 ++errores;
         }
 
-        double tasaError = errores / patrones.n_rows * 100;
+        double tasaError = errores / patronesPrueba.n_rows * 100;
         if (tasaError < tolerancia)
             break;
     }
