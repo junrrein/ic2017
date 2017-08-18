@@ -104,7 +104,10 @@ pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
                                {2, 2 * pendiente + ordenadaOrigen}};
 
             if (caracter != caracterSalteo) {
-                gp << "set grid\n"
+                gp << "set title 'OR' font ',13'\n"
+                   << "set xlabel 'x_1'\n"
+                   << "set ylabel 'x_2'\n"
+                   << "set grid\n"
                    << "unset key\n"
                    << "plot " << gp.file1d(verdaderos) << "with points, "
                    << gp.file1d(falsos) << "with points, "
