@@ -130,7 +130,7 @@ pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
                 ++errores;
         }
 
-        double tasaError = errores / patronesPrueba.n_rows * 100;
+        tasaError = errores / patronesPrueba.n_rows * 100;
         if (tasaError < tolerancia)
             break;
     }
