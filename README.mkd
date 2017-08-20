@@ -153,7 +153,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 9. En el panel izquierdo, ir a `Edit`. En el árbol de proyectos, desplejar la carpeta `guia1`, luego desplegar el objetivo `guia1-ejercicio1`, y abrir `ejercicio1.cpp`.
 
-10. Para compilar los ejercicios y ejemplos, usar el ícono 🔨 en el panel izquierdo o la combinación de teclas `Ctrl + B`. Para ejecutar el ejercicio seleccionado en el paso 7, usar el ícono ▶️ en el panel izquierdo o `Ctrl + R`.
+10. Para compilar los ejercicios, usar el ícono 🔨 en el panel izquierdo o la combinación de teclas `Ctrl + B`. Para ejecutar el ejercicio seleccionado en el paso 7, usar el ícono ▶️ en el panel izquierdo o `Ctrl + R`.
 
 ### En línea de comandos (Linux)
 
@@ -178,7 +178,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
     make external
     ```
 
-4. Compilar ejercicios y ejemplos
+4. Compilar ejercicios
 
     ```bash
     make
