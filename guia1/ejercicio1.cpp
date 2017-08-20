@@ -136,5 +136,5 @@ pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
     }
     // Fin ciclo (epocas)
 
-    return make_pair(pesos, tasaError);
+    return {pesos, tasaError};
 }
