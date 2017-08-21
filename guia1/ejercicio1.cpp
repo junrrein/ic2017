@@ -13,7 +13,8 @@ pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
                                      const vec& salidaDeseadaPrueba,
                                      int nEpocas,
                                      double tasaAprendizaje,
-                                     double tolerancia);
+                                     double tolerancia,
+                                     string tituloGrafica);
 
 int main()
 {
@@ -37,19 +38,29 @@ int main()
                                                salidaDeseadaPruebaOR,
                                                100,
                                                0.9,
-                                               90);
+                                               90,
+                                               "OR");
     cout << "tasa de error del OR : " << tasaError << endl;
 
     // XOR
     // Entrenar la red graficando resultados intermedios (la recta)
     // Prueba
+    datos.load("XOR_trn.csv");
+    mat patronesEntXOR = datos.head_cols(2);
+    vec salidaDeseadaEntXOR = datos.tail_cols(1);
+    datos.load("XOR_tst.csv");
+    mat patronesPruebaXOR = datos.head_cols(2);
+    vec salidaDeseadaPruebaXOR = datos.tail_cols(1);
 
-    //    mat patrones = ORTraining.head_cols(2);
-
-    //    Gnuplot gp;
-    //    gp << "plot " << gp.file1d(patrones) << "with points" << endl;
-
-    //    getchar();
+    tie(pesos, tasaError) = entrenarPerceptron(patronesEntXOR,
+                                               patronesPruebaXOR,
+                                               salidaDeseadaEntXOR,
+                                               salidaDeseadaPruebaXOR,
+                                               100,
+                                               0.1,
+                                               90,
+                                               "XOR");
+    cout << "tasa de error del XOR : " << tasaError << endl;
 
     return 0;
 }
@@ -70,7 +81,8 @@ pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
                                      const vec& salidaDeseadaPrueba,
                                      int nEpocas,
                                      double tasaAprendizaje,
-                                     double tolerancia)
+                                     double tolerancia,
+                                     string tituloGrafica)
 {
     // Inicializar pesos y tasa de error
     vec pesos = randu<vec>(patronesEnt.n_cols + 1) - 0.5;
@@ -104,7 +116,7 @@ pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
                                {2, 2 * pendiente + ordenadaOrigen}};
 
             if (caracter != caracterSalteo) {
-                gp << "set title 'OR' font ',13'\n"
+                gp << "set title '" << tituloGrafica << "' font ',13'\n"
                    << "set xlabel 'x_1'\n"
                    << "set ylabel 'x_2'\n"
                    << "set grid\n"
@@ -130,7 +142,7 @@ pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
                 ++errores;
         }
 
-        tasaError = errores / patronesPrueba.n_rows * 100;
+        tasaError = static_cast<double>(errores) / patronesPrueba.n_rows * 100;
         if (tasaError < tolerancia)
             break;
     }
