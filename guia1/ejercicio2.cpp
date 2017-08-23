@@ -10,7 +10,7 @@ pair<vec, double> entrenarPerceptron(const mat& datos,
                                      double porcentajeEnt,
                                      int nEpocas,
                                      double tasaAprendizaje,
-                                     double tolerancia);
+                                     double toleranciaError);
 double errorPrueba(const vec& pesos,
                    const mat& patrones,
                    const vec& salidaDeseada);
@@ -32,7 +32,7 @@ int main()
 
     for (const Particion& particion : particiones) {
         vec pesos;
-        tie(pesos, std::ignore) = entrenarPerceptron(particion.first, 80, 50, 0.1, 95);
+        tie(pesos, std::ignore) = entrenarPerceptron(particion.first, 80, 100, 0.1, 5);
 
         const double tasaError = errorPrueba(pesos,
                                              particion.second.head_cols(3),
@@ -131,7 +131,7 @@ pair<vec, double> entrenarPerceptron(const mat& datos,
                                      double porcentajeEnt,
                                      int nEpocas,
                                      double tasaAprendizaje,
-                                     double tolerancia)
+                                     double toleranciaError)
 {
     const Particion p = particionar(datos, 1, porcentajeEnt).front();
 
@@ -159,7 +159,7 @@ pair<vec, double> entrenarPerceptron(const mat& datos,
                                                 tasaAprendizaje,
                                                 pesos);
 
-        if (tasaError < tolerancia)
+        if (tasaError < toleranciaError)
             break;
 
         // cortar si la tasa de error esta aumentando
