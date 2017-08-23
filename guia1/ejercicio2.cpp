@@ -21,28 +21,57 @@ vector<Particion> particionar(mat datos, int nParticiones, double porcentajeEnt)
 int main()
 {
     arma_rng::set_seed_random();
-
     mat datos;
-    datos.load("spheres1d10.csv");
-    const vector<Particion> particiones = particionar(datos, 5, 80);
 
-    vec errores;
-    errores.set_size(particiones.size());
-    int i = 0;
+    // Primera parte del ejercicio (spheres1d)
+    {
+        datos.load("spheres1d10.csv");
+        const vector<Particion> particiones = particionar(datos, 5, 80);
 
-    for (const Particion& particion : particiones) {
-        vec pesos;
-        tie(pesos, std::ignore) = entrenarPerceptron(particion.first, 80, 100, 0.1, 5);
+        vec errores;
+        errores.set_size(particiones.size());
+        int i = 0;
 
-        const double tasaError = errorPrueba(pesos,
-                                             particion.second.head_cols(3),
-                                             particion.second.tail_cols(1));
-        errores[i++] = tasaError;
+        for (const Particion& particion : particiones) {
+            vec pesos;
+            tie(pesos, std::ignore) = entrenarPerceptron(particion.first, 80, 100, 0.1, 5);
+
+            const double tasaError = errorPrueba(pesos,
+                                                 particion.second.head_cols(3),
+                                                 particion.second.tail_cols(1));
+            errores[i++] = tasaError;
+        }
+
+        cout << "La validación cruzada del perceptron en spheres1d10 da como error:\n"
+             << "Media: " << mean(errores) << '\n'
+             << "Varianza: " << var(errores) << endl;
     }
 
-    cout << "La validación cruzada del perceptron en spheres1d10 da como error:\n"
-         << "Media: " << mean(errores) << '\n'
-         << "Varianza: " << var(errores) << endl;
+    // Segunda parte del ejercicio (spheres2d)
+    vector<string> archivos = {"spheres2d10.csv", "spheres2d50.csv", "spheres2d70.csv"};
+
+    for (string archivo : archivos) {
+        datos.load(archivo);
+        const vector<Particion> particiones = particionar(datos, 10, 80);
+
+        vec errores;
+        errores.set_size(particiones.size());
+        int i = 0;
+
+        for (const Particion& particion : particiones) {
+            vec pesos;
+            tie(pesos, std::ignore) = entrenarPerceptron(particion.first, 80, 100, 0.1, 1);
+
+            const double tasaError = errorPrueba(pesos,
+                                                 particion.second.head_cols(3),
+                                                 particion.second.tail_cols(1));
+            errores[i++] = tasaError;
+        }
+
+        cout << "La validación cruzada del perceptron en " << archivo << " da como error:\n"
+             << "Media: " << mean(errores) << '\n'
+             << "Varianza: " << var(errores) << endl;
+    }
 
     return 0;
 }
