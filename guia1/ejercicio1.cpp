@@ -106,7 +106,8 @@ pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
             double z = dot(patronesExt.row(i), pesos);
             int y = ic::sign(z);
 
-            // Actualizar pesos
+            // Actualizar pesos tener en cuenta el orden en que colocamos la salida por la direccion del
+            // gradiente.
             pesos += tasaAprendizaje * (salidaDeseadaEnt(i) - y) * patronesExt.row(i).t();
 
             // Graficar recta

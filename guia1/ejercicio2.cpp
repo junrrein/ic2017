@@ -1,5 +1,16 @@
-// http://arma.sourceforge.net/docs.html#example_prog
-
+// el perceptron simple se comporta, en promedio, peor para los datos del archivo
+// spheres2d10 que para los datos de los archivos siguientes.
+// Esto va en contra de nuestra intuicion porque esperamos que el clasificador se
+// comporte mejor en datos con menor dispersion (mayor separacion entre las clases).
+// Esto sucede porque al tener las clases mas separadas, el clasificador tiene mucho mas
+// margen para ubicar la recta que las separa. En consecuencia, esta recta podria quedar ubicada
+// demasiado cerca de alguna/s de las clases. Esto ocasiona que en la etapa de prueba pueda
+// haber patrones de esta clase limitrofe que quedan justo del otro lado de la recta.
+// En conclusion pueden resultar malos clasificadores bajo estas condiciones. Esto podria mejorarse
+// con otras tecnicas como SVM.
+// En los otros dos casos esto no sucede porque al estar mas disperso los datos, el clasificador tiene
+// menos margen para ubicar la recta. Esto hace que sea mas probable que la recta encontrada haga una
+// mejor separacion entre las clases.
 #include <iostream>
 #include <armadillo>
 
@@ -14,8 +25,8 @@ pair<vec, double> entrenarPerceptron(const mat& datos,
 double errorPrueba(const vec& pesos,
                    const mat& patrones,
                    const vec& salidaDeseada);
-using Particion = pair<mat, mat>;
 
+using Particion = pair<mat, mat>;
 vector<Particion> particionar(mat datos, int nParticiones, double porcentajeEnt);
 
 int main()
@@ -34,7 +45,7 @@ int main()
 
         for (const Particion& particion : particiones) {
             vec pesos;
-            tie(pesos, std::ignore) = entrenarPerceptron(particion.first, 80, 100, 0.1, 5);
+            tie(pesos, ignore) = entrenarPerceptron(particion.first, 80, 1000, 0.05, 5);
 
             const double tasaError = errorPrueba(pesos,
                                                  particion.second.head_cols(3),
@@ -60,7 +71,7 @@ int main()
 
         for (const Particion& particion : particiones) {
             vec pesos;
-            tie(pesos, std::ignore) = entrenarPerceptron(particion.first, 80, 100, 0.1, 1);
+            tie(pesos, ignore) = entrenarPerceptron(particion.first, 80, 1000, 0.1, 3);
 
             const double tasaError = errorPrueba(pesos,
                                                  particion.second.head_cols(3),
@@ -76,6 +87,7 @@ int main()
     return 0;
 }
 
+// Lo siguiente es validación cruzada clásica
 vector<Particion> particionar(mat datos, int nParticiones, double porcentajeEnt)
 {
     vector<Particion> particiones;
@@ -173,35 +185,44 @@ pair<vec, double> entrenarPerceptron(const mat& datos,
 
     // Inicializar pesos y tasa de error
     vec pesos = randu<vec>(patronesEntExt.n_cols) - 0.5;
-    double tasaError = 0;
-    bool isDescending = true;
+    vec mejoresPesos = pesos;
+    vec ultimosErrores = {};
+    double tasaErrorActual = 0;
+    double mejorTasaError = 100;
 
     // Ciclo de las epocas
     for (int epoca = 1; epoca <= nEpocas; ++epoca) {
         // Ciclo para una época
-        double tasaErrorAnterior = tasaError;
 
-        tie(pesos, tasaError) = epocaPerceptron(patronesEntExt,
-                                                patronesValExt,
-                                                salidaDeseadaEnt,
-                                                salidaDeseadaVal,
-                                                tasaAprendizaje,
-                                                pesos);
+        tie(pesos, tasaErrorActual) = epocaPerceptron(patronesEntExt,
+                                                      patronesValExt,
+                                                      salidaDeseadaEnt,
+                                                      salidaDeseadaVal,
+                                                      tasaAprendizaje,
+                                                      pesos);
 
-        if (tasaError < toleranciaError)
+        if (tasaErrorActual < toleranciaError)
             break;
 
-        // cortar si la tasa de error esta aumentando
-        if (tasaError <= tasaErrorAnterior)
-            isDescending = true;
+        // Guardar el error actual en el vector de ultimosErrores
+        if (ultimosErrores.n_elem < 5)
+            ultimosErrores.insert_rows(ultimosErrores.n_elem, tasaErrorActual);
         else {
-            if (isDescending)
-                isDescending = false; // la tasa de error empezo a aumentar
-            else
-                break; // la tasa de error venia en aumento
+            ultimosErrores = shift(ultimosErrores, -1);
+            ultimosErrores(4) = tasaErrorActual;
+        }
+
+        // Verificar que los errores no vengan en aumento
+        if (all(ultimosErrores > mejorTasaError))
+            break;
+
+        // Actualizar mejorError y mejoresPesos
+        if (tasaErrorActual < mejorTasaError) {
+            mejorTasaError = tasaErrorActual;
+            mejoresPesos = pesos;
         }
     }
     // Fin ciclo (epocas)
 
-    return {pesos, tasaError};
+    return {mejoresPesos, mejorTasaError};
 }
