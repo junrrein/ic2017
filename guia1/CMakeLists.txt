@@ -5,3 +5,4 @@ agregar_datos ("icgtp1datos/spheres1d10.csv
     icgtp1datos/spheres2d10.csv
     icgtp1datos/spheres2d50.csv
     icgtp1datos/spheres2d70.csv")
+agregar_ejercicio (xor_multicapa)
