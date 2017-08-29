@@ -57,9 +57,10 @@ pair<vec, double> epocaMulticapa(const mat& patronesExt,
         ySalidas.push_back(patronesExt.row(n));
 
         for (int i = 1; i <= nCapas; ++i) {
-            vec v = pesos[i - 1] * ySalidas[i - 1];
-            ySalidas[i] = ic::sigmoid(v, 1); // TODO: ver qué valor le pasamos como parámetro
-                                             // a la sigmoidea
+            vec v = pesos[i - 1] * ySalidas[i - 1]; // FIXME: Esto va a explotar luego de la
+                                                    // primer capa, porque no le estamos metiendo el sesgo
+            ySalidas[i] = ic::sigmoid(v, 1);        // TODO: ver qué valor le pasamos como parámetro
+                                                    // a la sigmoidea
         }
     }
 
