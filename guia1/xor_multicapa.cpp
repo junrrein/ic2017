@@ -31,12 +31,7 @@ int main()
 namespace ic {
 vec sigmoid(const vec& v, double b)
 {
-    vec result(v.n_elem);
-
-    for (unsigned int i = 0; i < v.n_elem; ++i)
-        result(i) = 2 / (1 + exp(-b * v(i))) - 1;
-
-    return result;
+    return 2 / (1 + exp(-b * v)) - 1;
 }
 }
 
