@@ -95,6 +95,7 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
             nuevosPesos[i] += tasaAprendizaje
                               * delta[i]
                               * join_horiz(vec{-1}, ySalidas[i - 1].t());
+            // FIXME: Esto va a explotar al actualizar los pesos de la primer capa
         }
     }
 
