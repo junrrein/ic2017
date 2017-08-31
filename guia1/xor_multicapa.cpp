@@ -15,9 +15,9 @@ pair<vector<mat>, double> entrenarMulticapa(const EstructuraCapasRed& estructura
                                             int nEpocas,
                                             double tasaAprendizaje,
                                             double toleranciaError);
-double errorPrueba(const vec& pesos,
+double errorPrueba(const vector<mat>& pesos,
                    const mat& patrones,
-                   const vec& salidaDeseada);
+                   const mat& salidaDeseada);
 
 int main()
 {
@@ -30,7 +30,14 @@ int main()
     const EstructuraCapasRed estructura = {2, 1};
     tie(pesos, tasaError) = entrenarMulticapa(estructura, datos, 200, 0.4, 1);
 
-    cout << "Tasa de error del Multicapa [2 1] para el XOR: " << tasaError << endl;
+    cout << "Tasa de error del Multicapa [2 1] para el XOR (entrenamiento): " << tasaError << endl;
+
+    datos.load("XOR_tst.csv");
+    const mat patrones = datos.head_cols(2);
+    const mat salidaDeseada = datos.tail_cols(1);
+    tasaError = errorPrueba(pesos, patrones, salidaDeseada);
+
+    cout << "Tasa de error del Multicapa [2 1] para el XOR (prueba): " << tasaError << endl;
 
     return 0;
 }
@@ -155,9 +162,9 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
     return {nuevosPesos, tasaError};
 } // fin funcion Epoca
 
-double errorPrueba(const vec& pesos,
+double errorPrueba(const vector<mat>& pesos,
                    const mat& patrones,
-                   const vec& salidaDeseada)
+                   const mat& salidaDeseada)
 {
     int errores = 0;
 
@@ -171,7 +178,8 @@ double errorPrueba(const vec& pesos,
         }
 
         // Calculo de las salidas para las demas capas
-        const int nCapas = pesos.size(); // Una matriz de pesos por cada capa
+        // El número de capas es igual al número de matrices de pesos (una por capa)
+        const int nCapas = pesos.size();
         for (int i = 1; i < nCapas; ++i) {
             const vec v = pesos[i] * join_vert(vec{-1}, ySalidas[i - 1]); // agrega entrada correspondiente al sesgo
             ySalidas.push_back(ic::sigmoid(v, 1));                        // TODO: ver qué valor le pasamos como parámetro
@@ -184,7 +192,7 @@ double errorPrueba(const vec& pesos,
             ++errores;
     }
 
-    const double tasaError = static_cast<double>(errores) / patrones.n_rows * 100;
+    double tasaError = static_cast<double>(errores) / patrones.n_rows * 100;
 
     return tasaError;
 }
