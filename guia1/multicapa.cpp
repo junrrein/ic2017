@@ -185,7 +185,8 @@ pair<vector<mat>, double> entrenarMulticapa(const EstructuraCapasRed& estructura
     vector<mat> pesos;
 
     // La primer matriz matriz de pesos tiene tantas filas como neuronas en la primer capa
-    // y tantas columnas como entradas.
+    // y tantas columnas como componentes tiene la entrada, más la entrada correspondiente
+    // al sesgo.
     pesos.push_back(randu<mat>(estructura(0), nEntradas + 1) - 0.5);
     for (int i = 1; i < nCapas; ++i) {
         // Las siguientes matrices de pesos tienen tantas filas como neuronas en dicha capa
