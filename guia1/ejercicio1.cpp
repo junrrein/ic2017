@@ -38,7 +38,7 @@ int main()
                                                salidaDeseadaPruebaOR,
                                                100,
                                                0.9,
-                                               90,
+                                               5,
                                                "OR");
     cout << "tasa de error del OR : " << tasaError << endl;
 
@@ -58,7 +58,7 @@ int main()
                                                salidaDeseadaPruebaXOR,
                                                100,
                                                0.1,
-                                               90,
+                                               5,
                                                "XOR");
     cout << "tasa de error del XOR : " << tasaError << endl;
 
@@ -89,19 +89,21 @@ pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
     double tasaError = 0;
 
     // Extender la matriz de patrones con la entrada correspondiente al umbral
-    mat patronesExt = join_horiz(ones(patronesEnt.n_rows) * (-1), patronesEnt);
+    const mat patronesExt = join_horiz(ones(patronesEnt.n_rows) * (-1), patronesEnt);
 
     // Separar patrones en los casos verdaderos y falsos
-    mat verdaderos = patronesEnt.rows(find(salidaDeseadaEnt == 1));
-    mat falsos = patronesEnt.rows(find(salidaDeseadaEnt == -1));
+    const mat verdaderos = patronesEnt.rows(find(salidaDeseadaEnt == 1));
+    const mat falsos = patronesEnt.rows(find(salidaDeseadaEnt == -1));
+
+    // Caracter usado para dejar de graficar
+    const char caracterSalteo = 's';
+    char caracter = ' ';
+    // Objeto para graficar
+    Gnuplot gp;
 
     // Ciclo de las epocas
     for (int epoca = 1; epoca <= nEpocas; ++epoca) {
-        const char caracterSalteo = 's';
-        char caracter = ' ';
         // Ciclo para una época
-        Gnuplot gp;
-
         for (unsigned int i = 0; i < patronesEnt.n_rows; ++i) {
             double z = dot(patronesExt.row(i), pesos);
             int y = ic::sign(z);
@@ -133,10 +135,10 @@ pair<vec, double> entrenarPerceptron(const mat& patronesEnt,
 
         int errores = 0;
         // Extender la matriz de patrones con la entrada correspondiente al umbral
-        patronesExt = join_horiz(ones(patronesPrueba.n_rows) * (-1), patronesPrueba);
+        const mat patronesPruebaExt = join_horiz(ones(patronesPrueba.n_rows) * (-1), patronesPrueba);
 
         for (unsigned int i = 0; i < patronesPrueba.n_rows; ++i) {
-            double z = dot(patronesExt.row(i), pesos);
+            double z = dot(patronesPruebaExt.row(i), pesos);
             int y = ic::sign(z);
 
             if (y != salidaDeseadaPrueba(i))
