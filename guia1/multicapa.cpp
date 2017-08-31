@@ -214,9 +214,8 @@ pair<vector<mat>, double> entrenarMulticapa(const EstructuraCapasRed& estructura
     return {pesos, tasaError};
 }
 
-struct parametrosMulticapa {
-    string archivoDatos;
-    EstructuraCapasRed estructura;
+struct ParametrosMulticapa {
+    EstructuraCapasRed estructuraRed;
     int nEpocas;
     double tasaAprendizaje;
     double parametroSigmoidea;
@@ -228,24 +227,51 @@ istream& operator>>(istream& is, ic::EstructuraCapasRed& estructura)
 {
     // Formato estructura:
     // [2 3 1]
-    char ch;
-    if (!(is >> ch) || ch != '['){
+    {
+    char ch = ' ';
+    is >> ch;
+    if (ch != '['){
         is.clear(ios::failbit);
         return is;
     }
-
-    // FIXME: Primero chequear si estamos por leer un número (con el primer caracter)
-    //        y después leerlo posta.
-    for (int numero; is >> numero;) {
-        if (numero < 1) {
-            is.clear(ios::failbit);
-            return is;
-        }
-
-        estructura.insert_rows(estructura.n_elem, vec{static_cast<double>(numero)});
     }
 
-    if (!(is >> ch) || ch != ']')
+    // Primero chequear si estamos por leer un número (con el primer caracter)
+    // y después leerlo posta.
+    for (char ch; is >> ch;) {
+        if (isdigit(ch)) {
+            is.unget();
+            int numero;
+            is >> numero;
+            estructura.insert_rows(estructura.n_elem, vec{static_cast<double>(numero)});
+        }
+        else if (ch == ']')
+            break;
+        else
+            is.clear(ios::failbit);
+    }
+
+    if (estructura.empty())
+        is.clear(ios::failbit);
+
+    return is;
+}
+
+istream& operator>>(istream& is, ic::ParametrosMulticapa& parametros)
+{
+    // Formato:
+    // [3 2 1] 200 0.1 1 5
+    is >> parametros.estructuraRed
+       >> parametros.nEpocas
+       >> parametros.tasaAprendizaje
+       >> parametros.parametroSigmoidea
+       >> parametros.toleranciaError;
+
+    // Control básico de parámetros
+    if (parametros.nEpocas <= 0
+        || parametros.tasaAprendizaje <= 0
+        || parametros.parametroSigmoidea <= 0
+        || parametros.toleranciaError <= 0 || parametros.toleranciaError >= 100)
         is.clear(ios::failbit);
 
     return is;
