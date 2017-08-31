@@ -136,9 +136,8 @@ pair<vec, double> entrenarPerceptron(const mat& patrones,
         }
         // Fin ciclo (época)
 
-        // Parte de prueba - Cálculo de la tasa de error
+        // Parte de validación - Cálculo de la tasa de error para ver si dejamos de entrenar
         int errores = 0;
-        // Extender la matriz de patrones con la entrada correspondiente al umbral
 
         for (unsigned int i = 0; i < patronesExt.n_rows; ++i) {
             double z = dot(patronesExt.row(i), pesos);

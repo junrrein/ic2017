@@ -93,7 +93,7 @@ vector<Particion> particionar(mat datos, int nParticiones, double porcentajeEnt)
     const int nPatronesEnt = datos.n_rows * porcentajeEnt / 100;
 
     for (int i = 0; i < nParticiones; ++i) {
-        datos = shuffle(datos);
+        datos = shuffle(datos); // Mezcla las filas de los datos
         particiones.push_back({datos.head_rows(nPatronesEnt),
                                datos.tail_rows(datos.n_rows - nPatronesEnt)});
     }
