@@ -214,5 +214,39 @@ pair<vector<mat>, double> entrenarMulticapa(const EstructuraCapasRed& estructura
     return {pesos, tasaError};
 }
 
+struct parametrosMulticapa {
+    string archivoDatos;
+    EstructuraCapasRed estructura;
+    int nEpocas;
+    double tasaAprendizaje;
+    double parametroSigmoidea;
+    double toleranciaError;
+};
+}
 
+istream& operator>>(istream& is, ic::EstructuraCapasRed& estructura)
+{
+    // Formato estructura:
+    // [2 3 1]
+    char ch;
+    if (!(is >> ch) || ch != '['){
+        is.clear(ios::failbit);
+        return is;
+    }
+
+    // FIXME: Primero chequear si estamos por leer un número (con el primer caracter)
+    //        y después leerlo posta.
+    for (int numero; is >> numero;) {
+        if (numero < 1) {
+            is.clear(ios::failbit);
+            return is;
+        }
+
+        estructura.insert_rows(estructura.n_elem, vec{static_cast<double>(numero)});
+    }
+
+    if (!(is >> ch) || ch != ']')
+        is.clear(ios::failbit);
+
+    return is;
 }

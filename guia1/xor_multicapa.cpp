@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include "multicapa.cpp"
 
 using namespace std;
@@ -9,6 +10,11 @@ int main()
     arma_rng::set_seed_random();
     mat datos;
     datos.load("XOR_trn.csv");
+
+    istringstream ist{"[3 2 1]"};
+    ic::EstructuraCapasRed e;
+    ist >> e;
+    cout << "Estrucutra: " << e << "\n\n";
 
     vector<mat> pesos;
     double tasaError;
