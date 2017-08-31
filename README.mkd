@@ -223,7 +223,7 @@ make
     agregar_fuentes (ejercicio2 "fuente1.cpp fuente2.cpp")
     ```
 
-    **Nota:** No es necesario agregar los encabezados (por ejemplo `fuente1.hpp`).
+    **Nota:** No agregar de esta manera encabezados u otras fuentes incluidas en un ejercicio mediante la directiva `#include`.
 
 2. Si no se está usando Qt Creator, regenerar el sistema de construcción.
 
@@ -237,8 +237,11 @@ make
 1. Agregar al final de `guia1/CMakeLists.txt` lo siguiente:
 
     ```cmake
-    agregar_datos ("indiceMerval2012.txt casa.jpg")
+    agregar_datos ("indiceMerval2012.txt")
+    agregar_datos ("casa.jpg")
     ```
+
+    **Nota:** Agregar un solo archivo de datos por llamada a la función.
 
 2. Si no se está usando Qt Creator, regenerar el sistema de construcción.
 

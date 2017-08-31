@@ -70,9 +70,14 @@ function (agregar_fuentes nombre_ejercicio string_archivos)
 endfunction ()
 
 # Función para agregar archivos de datos usados por algún ejercicio
-function (agregar_datos string_archivos)
-    separate_arguments (lista_archivos UNIX_COMMAND ${string_archivos})
-    file (COPY ${lista_archivos} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+function (agregar_datos archivo)
+    get_filename_component (PREFIJO ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+        get_filename_component (NOMBRE ${CMAKE_CURRENT_SOURCE_DIR}/${archivo} NAME)
+        add_custom_target (${PREFIJO}-${NOMBRE} ALL
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_CURRENT_SOURCE_DIR}/${archivo}
+                    ${CMAKE_CURRENT_BINARY_DIR}
+        )
 endfunction ()
 
 # Ejemplos
