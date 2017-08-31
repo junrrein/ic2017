@@ -25,6 +25,13 @@ int main()
     mat datos;
     datos.load("XOR_trn.csv");
 
+    vector<mat> pesos;
+    double tasaError;
+    const EstructuraCapasRed estructura = {2, 1};
+    tie(pesos, tasaError) = entrenarMulticapa(estructura, datos, 200, 0.4, 1);
+
+    cout << "Tasa de error del Multicapa [2 1] para el XOR: " << tasaError << endl;
+
     return 0;
 }
 
@@ -36,13 +43,21 @@ vec sigmoid(const vec& v, double b)
 
 vec pendorcho(const vec& v)
 {
-    vec result = v;
+    if (v.n_elem == 1)
+        // Si la red tiene una sola salida, aplicar la función signo
+        return v(0) >= 0 ? vec{1} : vec{-1};
+    else {
+        vec result = v;
+        // Si la red tiene varias salidas, asignarle +1 a "la que ganó"
+        // y -1 a las demás.
+        const double maximo = max(result);
 
-    result.transform([](double val) {
-        return val >= 0 ? 1 : -1;
-    });
+        result.transform([maximo](double val) {
+            return val == maximo ? 1 : -1;
+        });
 
-    return result;
+        return result;
+    }
 }
 }
 
@@ -63,40 +78,51 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
 
         // Calculo de la salida para la primer capa
         {
-            const vec v = pesos[0] * join_horiz(vec{-1}, patrones.row(n)); // agrega entrada correspondiente al sesgo
+            const vec v = nuevosPesos[0] * join_horiz(vec{-1}, patrones.row(n)).t(); // agrega entrada correspondiente al sesgo
             ySalidas.push_back(ic::sigmoid(v, 1));
         }
 
         // Calculo de las salidas para las demas capas
         for (int i = 1; i < nCapas; ++i) {
-            const vec v = pesos[i] * join_vert(vec{-1}, ySalidas[i - 1]); // agrega entrada correspondiente al sesgo
-            ySalidas.push_back(ic::sigmoid(v, 1));                        // TODO: ver qué valor le pasamos como parámetro
-                                                                          // a la sigmoidea
+            const vec v = nuevosPesos[i] * join_vert(vec{-1}, ySalidas[i - 1]); // agrega entrada correspondiente al sesgo
+            ySalidas.push_back(ic::sigmoid(v, 1));                              // TODO: ver qué valor le pasamos como parámetro
+                                                                                // a la sigmoidea
         }
 
         // Calculo del error
         // Se quita tambien la componente correspondiente al sesgo
-        const vec error = salidaDeseada - ySalidas.back();
+        const vec error = salidaDeseada.row(n).t() - ySalidas.back();
 
         // Calculo retropropagacion
         // Calculo de gradiente error local instantaneo
         vector<vec> delta;
         delta.resize(ySalidas.size());
         // Delta de ultima capa
-        delta[delta.size() - 1] = (0.5 * error % (1 + ySalidas.back()) % (1 - ySalidas.back()));
+        delta[delta.size() - 1] = error
+                                  % (1 + ySalidas.back())
+                                  % (1 - ySalidas.back());
 
         // Deltas de las capas anteriores
         for (int i = ySalidas.size() - 2; i >= 0; --i) {
-            delta[i] = (pesos[i + 1].t() * delta[i + 1]) * 0.5 % (1 + ySalidas[i]) % (1 - ySalidas[i]);
+            // No participan los pesos correspondientes al sesgo en el cálculo de los deltas
+            const mat pesosAux = nuevosPesos[i + 1].tail_cols(nuevosPesos[i + 1].n_cols - 1);
+            delta[i] = (pesosAux.t() * delta[i + 1])
+                       % (1 + ySalidas[i])
+                       % (1 - ySalidas[i]);
         }
 
-        // Actualizacion de pesos
-        for (int i = nuevosPesos.size() - 1; i >= 0; --i) {
-            nuevosPesos[i] += tasaAprendizaje
-                              * delta[i]
-                              * join_horiz(vec{-1}, ySalidas[i - 1].t());
-            // FIXME: Esto va a explotar al actualizar los pesos de la primer capa
+        // Actualizacion de pesos de todas las capas menos la primera
+        for (int i = nuevosPesos.size() - 1; i >= 1; --i) {
+            const mat deltaW = tasaAprendizaje
+                               * delta[i]
+                               * join_horiz(vec{-1}, ySalidas[i - 1].t());
+            nuevosPesos[i] += deltaW;
         }
+        // Actualización de pesos de la primer capa
+        const mat deltaW = tasaAprendizaje
+                           * delta[0]
+                           * join_horiz(vec{-1}, patrones.row(n));
+        nuevosPesos[0] += deltaW;
     }
 
     // Calculo de Tasa de error
@@ -107,7 +133,7 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
 
         // Calculo de la salida para la primer capa
         {
-            const vec v = nuevosPesos[0] * join_horiz(vec{-1}, patrones.row(n)); // agrega entrada correspondiente al sesgo
+            const vec v = nuevosPesos[0] * join_horiz(vec{-1}, patrones.row(n)).t(); // agrega entrada correspondiente al sesgo
             ySalidas.push_back(ic::sigmoid(v, 1));
         }
 
@@ -133,20 +159,32 @@ double errorPrueba(const vec& pesos,
                    const mat& patrones,
                    const vec& salidaDeseada)
 {
-    // Se extiende la matriz de patrones con la entrada correspondiente al umbral
-    const mat patronesExt = join_horiz(ones(patrones.n_rows) * (-1), patrones);
-
     int errores = 0;
 
-    for (unsigned int i = 0; i < patronesExt.n_rows; ++i) {
-        double z = dot(patronesExt.row(i), pesos);
-        //        int y = ic::sign(z);
+    for (unsigned int n = 0; n < patrones.n_rows; ++n) {
+        vector<vec> ySalidas;
 
-        //        if (y != salidaDeseada(i))
-        //            ++errores;
+        // Calculo de la salida para la primer capa
+        {
+            const vec v = pesos[0] * join_horiz(vec{-1}, patrones.row(n)).t(); // agrega entrada correspondiente al sesgo
+            ySalidas.push_back(ic::sigmoid(v, 1));
+        }
+
+        // Calculo de las salidas para las demas capas
+        const int nCapas = pesos.size(); // Una matriz de pesos por cada capa
+        for (int i = 1; i < nCapas; ++i) {
+            const vec v = pesos[i] * join_vert(vec{-1}, ySalidas[i - 1]); // agrega entrada correspondiente al sesgo
+            ySalidas.push_back(ic::sigmoid(v, 1));                        // TODO: ver qué valor le pasamos como parámetro
+                                                                          // a la sigmoidea
+        }
+
+        const vec salidaRed = ic::pendorcho(ySalidas.back()); // fija los valores en -1 o 1.
+
+        if (any(salidaRed != salidaDeseada.row(n)))
+            ++errores;
     }
 
-    double tasaError = static_cast<double>(errores) / patronesExt.n_rows * 100;
+    const double tasaError = static_cast<double>(errores) / patrones.n_rows * 100;
 
     return tasaError;
 }
@@ -171,16 +209,16 @@ pair<vector<mat>, double> entrenarMulticapa(const EstructuraCapasRed& estructura
 
     // La primer matriz matriz de pesos tiene tantas filas como neuronas en la primer capa
     // y tantas columnas como entradas.
-    pesos.push_back(randu<mat>(estructura(0), nEntradas + 1));
+    pesos.push_back(randu<mat>(estructura(0), nEntradas + 1) - 0.5);
     for (int i = 1; i < nCapas; ++i) {
         // Las siguientes matrices de pesos tienen tantas filas como neuronas en dicha capa
         // y tantas columnas como entradas a esa capa, que van a ser las salidas de
         // la capa anterior mas la entrada correspondiente al sesgo.
         // Las salidas de la capa anterior es igual al nro de neuronas en la capa anterior.
-        pesos.push_back(randu<mat>(estructura(i), estructura(i - 1) + 1));
+        pesos.push_back(randu<mat>(estructura(i), estructura(i - 1) + 1) - 0.5);
     }
 
-    double tasaError = 0;
+    double tasaError = 100;
 
     // Ciclo de las epocas
     for (int epoca = 1; epoca <= nEpocas; ++epoca) {
