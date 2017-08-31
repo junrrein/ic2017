@@ -55,7 +55,7 @@ int main()
                                             salidaDeseadaEntXOR,
                                             100,
                                             0.1,
-                                            5,
+                                            30,
                                             "XOR");
     tasaError = errorPrueba(pesos, patronesPruebaXOR, salidaDeseadaPruebaXOR);
     cout << "tasa de error del XOR : " << tasaError << endl;

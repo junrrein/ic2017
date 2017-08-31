@@ -36,6 +36,13 @@ int main()
     // Primera parte del ejercicio (spheres1d)
     {
         datos.load("spheres1d10.csv");
+
+        // FIXME:
+        // 1: Las particiones tendrían que contener los índices a usar, no replicar los datos.
+        // 2: Las particiones tendrían que ser generadas una sola vez, guardadas
+        //    en un archivo, y luego levantarlas para que de esta manera poder repetir
+        //    sesiones de entrenamiento/prueba con distintos clasificadores en
+        //    los mismos datos. Incluso fijar la semilla de generación de núeros aleatorios.
         const vector<Particion> particiones = particionar(datos, 5, 80);
 
         vec errores;
@@ -44,7 +51,7 @@ int main()
 
         for (const Particion& particion : particiones) {
             vec pesos;
-            tie(pesos, ignore) = entrenarPerceptron(particion.first, 100, 0.1, 5);
+            tie(pesos, ignore) = entrenarPerceptron(particion.first, 100, 0.1, 20);
 
             const double tasaError = errorPrueba(pesos,
                                                  particion.second.head_cols(3),
@@ -78,6 +85,16 @@ int main()
             errores[i++] = tasaError;
         }
 
+        // FIXME:
+        // Para que los resultados sean más informativos habría que proporcionar tambíen lo siguiente:
+        // (para cada partición)
+        // - Epocas que demoró en converger
+        // - Error
+        // Esto sirve para detectar (por ejemplo):
+        // - Si siempre está terminando el entrenamiento por límite de épocas
+        // - Si los errores están dando siempre altos
+        //      Esto puede querer decir que la tolerancia de error que le estamos pidiendo es
+        //      demasiado alta.
         cout << "La validación cruzada del perceptron en " << archivo << " da como error:\n"
              << "Media: " << mean(errores) << '\n'
              << "Varianza: " << var(errores) << endl;
