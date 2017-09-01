@@ -43,7 +43,6 @@ if (WIN32)
     file (GLOB Fortran_LIB ${MSYS_LIBRARY_PATH}/libgfortran*.dll)
     file (GLOB WinPThread_LIB ${MSYS_LIBRARY_PATH}/libwinpthread*.dll)
     file (GLOB QuadMath_LIB ${MSYS_LIBRARY_PATH}/libquadmath*.dll)
-    # OpenBLAS se copia separadamente
     set (COPIAR_LIBS ${openblas_LIBS} ${GCC_LIB} ${gomp_LIB} ${Fortran_LIB} ${WinPThread_LIB} ${QuadMath_LIB})
 endif ()
 
@@ -70,15 +69,15 @@ function (agregar_fuentes nombre_ejercicio string_archivos)
     target_sources (${PREFIJO}-${nombre_ejercicio} PUBLIC ${lista_archivos})
 endfunction ()
 
-# Función para agregar fuentes a un ejercicio existente
+# Función para agregar archivos de datos usados por algún ejercicio
 function (agregar_datos archivo)
     get_filename_component (PREFIJO ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-    get_filename_component (NOMBRE ${CMAKE_CURRENT_SOURCE_DIR}/${archivo} NAME)
-    add_custom_target (${PREFIJO}-${NOMBRE} ALL
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${CMAKE_CURRENT_SOURCE_DIR}/${archivo}
-                ${CMAKE_CURRENT_BINARY_DIR}
-    )
+        get_filename_component (NOMBRE ${CMAKE_CURRENT_SOURCE_DIR}/${archivo} NAME)
+        add_custom_target (${PREFIJO}-${NOMBRE} ALL
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_CURRENT_SOURCE_DIR}/${archivo}
+                    ${CMAKE_CURRENT_BINARY_DIR}
+        )
 endfunction ()
 
 # Ejemplos

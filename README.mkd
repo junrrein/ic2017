@@ -153,7 +153,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 9. En el panel izquierdo, ir a `Edit`. En el árbol de proyectos, desplejar la carpeta `guia1`, luego desplegar el objetivo `guia1-ejercicio1`, y abrir `ejercicio1.cpp`.
 
-10. Para compilar los ejercicios y ejemplos, usar el ícono 🔨 en el panel izquierdo o la combinación de teclas `Ctrl + B`. Para ejecutar el ejercicio seleccionado en el paso 7, usar el ícono ▶️ en el panel izquierdo o `Ctrl + R`.
+10. Para compilar los ejercicios, usar el ícono 🔨 en el panel izquierdo o la combinación de teclas `Ctrl + B`. Para ejecutar el ejercicio seleccionado en el paso 7, usar el ícono ▶️ en el panel izquierdo o `Ctrl + R`.
 
 ### En línea de comandos (Linux)
 
@@ -178,7 +178,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
     make external
     ```
 
-4. Compilar ejercicios y ejemplos
+4. Compilar ejercicios
 
     ```bash
     make
@@ -223,7 +223,7 @@ make
     agregar_fuentes (ejercicio2 "fuente1.cpp fuente2.cpp")
     ```
 
-    **Nota:** No es necesario agregar los encabezados (por ejemplo `fuente1.hpp`).
+    **Nota:** No agregar de esta manera encabezados u otras fuentes incluidas en un ejercicio mediante la directiva `#include`.
 
 2. Si no se está usando Qt Creator, regenerar el sistema de construcción.
 
@@ -237,8 +237,11 @@ make
 1. Agregar al final de `guia1/CMakeLists.txt` lo siguiente:
 
     ```cmake
-    agregar_datos ("indiceMerval2012.txt casa.jpg")
+    agregar_datos ("indiceMerval2012.txt")
+    agregar_datos ("casa.jpg")
     ```
+
+    **Nota:** Agregar un solo archivo de datos por llamada a la función.
 
 2. Si no se está usando Qt Creator, regenerar el sistema de construcción.
 
