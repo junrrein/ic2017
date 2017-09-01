@@ -237,12 +237,18 @@ istream& operator>>(istream& is, ic::EstructuraCapasRed& estructura)
 istream& operator>>(istream& is, ic::ParametrosMulticapa& parametros)
 {
     // Formato:
-    // [3 2 1] 200 0.1 1 5
-    is >> parametros.estructuraRed
-       >> parametros.nEpocas
-       >> parametros.tasaAprendizaje
-       >> parametros.parametroSigmoidea
-       >> parametros.toleranciaError;
+    // estructura: [3 2 1]
+    // n_epocas: 200
+    // tasa_entrenamiento: 0.1
+    // parametro_sigmoidea: 1
+    // tolerancia_error: 5
+    string str;
+
+    is >> str >> parametros.estructuraRed
+       >> str >> parametros.nEpocas
+       >> str >> parametros.tasaAprendizaje
+       >> str >> parametros.parametroSigmoidea
+       >> str >> parametros.toleranciaError;
 
     // Control básico de parámetros
     if (parametros.nEpocas <= 0
