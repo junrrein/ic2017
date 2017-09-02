@@ -202,13 +202,13 @@ struct ParametrosMulticapa {
 
 istream& operator>>(istream& is, ic::EstructuraCapasRed& estructura)
 {
-    // Formato estructura:
+    // Formato de estructuraCapasRed:
     // [2 3 1]
     {
-    char ch = ' ';
+    char ch;
     is >> ch;
-    if (ch != '['){
-        is.clear(ios::failbit);
+    if (ch != '['){             // Si lo leído no empieza con corchete, la estructura
+        is.clear(ios::failbit); // está mal formateada.
         return is;
     }
     }
@@ -224,7 +224,7 @@ istream& operator>>(istream& is, ic::EstructuraCapasRed& estructura)
             int numero;
             is >> numero;
 
-            if (numero == 0) {      // No podemos tener una capa con 0 neuronas
+            if (numero == 0) {      // No podemos tener una capa con cero neuronas
                 is.clear(ios::failbit);
                 return is;
             }
@@ -267,7 +267,8 @@ istream& operator>>(istream& is, ic::ParametrosMulticapa& parametros)
     if (parametros.nEpocas <= 0
         || parametros.tasaAprendizaje <= 0
         || parametros.parametroSigmoidea <= 0
-        || parametros.toleranciaError <= 0 || parametros.toleranciaError >= 100)
+        || parametros.toleranciaError <= 0
+        || parametros.toleranciaError >= 100)
         is.clear(ios::failbit);
 
     return is;
