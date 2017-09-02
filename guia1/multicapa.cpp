@@ -213,6 +213,9 @@ istream& operator>>(istream& is, ic::EstructuraCapasRed& estructura)
     }
     }
 
+    // Asegurarnos de que la variable 'estructura' esté vacía
+    estructura.clear();
+
     // Primero chequear si estamos por leer un número (con el primer caracter)
     // y después leerlo posta.
     for (char ch; is >> ch;) {
@@ -220,15 +223,24 @@ istream& operator>>(istream& is, ic::EstructuraCapasRed& estructura)
             is.unget();
             int numero;
             is >> numero;
+
+            if (numero == 0) {      // No podemos tener una capa con 0 neuronas
+                is.clear(ios::failbit);
+                return is;
+            }
+
             estructura.insert_rows(estructura.n_elem, vec{static_cast<double>(numero)});
         }
-        else if (ch == ']')
-            break;
-        else
-            is.clear(ios::failbit);
+        else if (ch == ']') {       // Cuando se encuentra el corchete que cierra,
+            break;                  // se terminó de leer la estructura.
+        }
+        else {                      // Si lo que se leyó no es número ni corchete, la estructura leída
+            is.clear(ios::failbit); // tiene formato erróneo.
+            return is;
+        }
     }
 
-    if (estructura.empty())
+    if (estructura.empty()) // Fallar si lo que se leyó es "[]"
         is.clear(ios::failbit);
 
     return is;
@@ -244,13 +256,14 @@ istream& operator>>(istream& is, ic::ParametrosMulticapa& parametros)
     // tolerancia_error: 5
     string str;
 
+    // No chequeamos si la etiqueta de cada línea está bien o no. No nos importa
     is >> str >> parametros.estructuraRed
        >> str >> parametros.nEpocas
        >> str >> parametros.tasaAprendizaje
        >> str >> parametros.parametroSigmoidea
        >> str >> parametros.toleranciaError;
 
-    // Control básico de parámetros
+    // Control básico de valores de parámetros
     if (parametros.nEpocas <= 0
         || parametros.tasaAprendizaje <= 0
         || parametros.parametroSigmoidea <= 0
