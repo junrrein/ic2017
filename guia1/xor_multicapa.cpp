@@ -10,7 +10,7 @@ int main()
 {
     arma_rng::set_seed_random();
 
-    ifstream ifs{config::sourceDir + "/guia1/xorParametrosEntrenamiento.txt"};
+    ifstream ifs{config::sourceDir + "/guia1/parametrosXorMulticapa.txt"};
     ic::ParametrosMulticapa parametros;
     if (!(ifs >> parametros))
         throw runtime_error("No se pudo cargar correctamente el archivo de parámetros");
