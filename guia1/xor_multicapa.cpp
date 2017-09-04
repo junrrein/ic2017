@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include "multicapa.cpp"
+#include "../config.hpp"
 
 using namespace std;
 using namespace arma;
@@ -9,13 +10,13 @@ int main()
 {
     arma_rng::set_seed_random();
 
-    ifstream ifs{"xorParametrosEntrenamiento.txt"};
+    ifstream ifs{config::sourceDir + "/guia1/xorParametrosEntrenamiento.txt"};
     ic::ParametrosMulticapa parametros;
     if (!(ifs >> parametros))
         throw runtime_error("No se pudo cargar correctamente el archivo de parámetros");
 
     mat datos;
-    datos.load("XOR_trn.csv");
+    datos.load(config::sourceDir + "/guia1/icgtp1datos/XOR_trn.csv");
 
     vector<mat> pesos;
     double tasaError;
@@ -28,7 +29,7 @@ int main()
 
     cout << "Tasa de error del Multicapa [2 1] para el XOR (entrenamiento): " << tasaError << endl;
 
-    datos.load("XOR_tst.csv");
+    datos.load(config::sourceDir + "/guia1/icgtp1datos/XOR_tst.csv");
     const mat patrones = datos.head_cols(2);
     const mat salidaDeseada = datos.tail_cols(1);
     tasaError = ic::errorPrueba(pesos, patrones, salidaDeseada, parametros.toleranciaError);

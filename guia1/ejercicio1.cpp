@@ -1,8 +1,7 @@
-// http://arma.sourceforge.net/docs.html#example_prog
-
 #include <iostream>
 #include <armadillo>
 #include <gnuplot-iostream.h>
+#include "../config.hpp"
 
 using namespace std;
 using namespace arma;
@@ -22,10 +21,10 @@ int main()
     arma_rng::set_seed_random();
 
     mat datos;
-    datos.load("OR_trn.csv");
+    datos.load(config::sourceDir + "/guia1/icgtp1datos/OR_trn.csv");
     mat patronesEntOR = datos.head_cols(2);
     vec salidaDeseadaEntOR = datos.tail_cols(1);
-    datos.load("OR_tst.csv");
+    datos.load(config::sourceDir + "/guia1/icgtp1datos/OR_tst.csv");
     mat patronesPruebaOR = datos.head_cols(2);
     vec salidaDeseadaPruebaOR = datos.tail_cols(1);
 
@@ -44,17 +43,17 @@ int main()
     // XOR
     // Entrenar la red graficando resultados intermedios (la recta)
     // Prueba
-    datos.load("XOR_trn.csv");
+    datos.load(config::sourceDir + "/guia1/icgtp1datos/XOR_trn.csv");
     mat patronesEntXOR = datos.head_cols(2);
     vec salidaDeseadaEntXOR = datos.tail_cols(1);
-    datos.load("XOR_tst.csv");
+    datos.load(config::sourceDir + "/guia1/icgtp1datos/XOR_tst.csv");
     mat patronesPruebaXOR = datos.head_cols(2);
     vec salidaDeseadaPruebaXOR = datos.tail_cols(1);
 
     tie(pesos, ignore) = entrenarPerceptron(patronesEntXOR,
                                             salidaDeseadaEntXOR,
                                             100,
-                                            0.1,
+                                            0.4,
                                             30,
                                             "XOR");
     tasaError = errorPrueba(pesos, patronesPruebaXOR, salidaDeseadaPruebaXOR);

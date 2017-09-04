@@ -13,6 +13,7 @@
 // mejor separacion entre las clases.
 #include <iostream>
 #include <armadillo>
+#include "../config.hpp"
 
 using namespace std;
 using namespace arma;
@@ -35,7 +36,7 @@ int main()
 
     // Primera parte del ejercicio (spheres1d)
     {
-        datos.load("spheres1d10.csv");
+        datos.load(config::sourceDir + "/guia1/icgtp1datos/spheres1d10.csv");
 
         // FIXME:
         // 1: Las particiones tendrían que contener los índices a usar, no replicar los datos.
@@ -65,7 +66,9 @@ int main()
     }
 
     // Segunda parte del ejercicio (spheres2d)
-    vector<string> archivos = {"spheres2d10.csv", "spheres2d50.csv", "spheres2d70.csv"};
+    vector<string> archivos = {config::sourceDir + "/guia1/icgtp1datos/spheres2d10.csv",
+                               config::sourceDir + "/guia1/icgtp1datos/spheres2d50.csv",
+                               config::sourceDir + "/guia1/icgtp1datos/spheres2d70.csv"};
 
     for (string archivo : archivos) {
         datos.load(archivo);
