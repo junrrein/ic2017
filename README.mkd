@@ -232,22 +232,26 @@ make
     cmake -DCMAKE_BUILD_TYPE=Debug ..
     ```
 
-### Agregar archivos de datos ocupado por una guía práctica
+### Cargar un archivo de datos ocupado en un ejercicio
 
-1. Agregar al final de `guia1/CMakeLists.txt` lo siguiente:
+Armadillo permite la carga de datos utilizando la función `load` en sus matrices:
 
-    ```cmake
-    agregar_datos ("indiceMerval2012.txt")
-    agregar_datos ("casa.jpg")
+    ```cpp
+    mat datos;
+    datos.load("ruta/al/archivo.txt");
     ```
 
-    **Nota:** Agregar un solo archivo de datos por llamada a la función.
+Hay que tener en cuenta que el directorio en el que se ejecutan los ejercicios es distinto del directorio en el cual vive el código fuente de los mismos. Por lo tanto, es necesario especificar la ruta completa a los archivos de datos, o los ejecutables no podrán encontrar estos archivos.
 
-2. Si no se está usando Qt Creator, regenerar el sistema de construcción.
+Para facilitar esto, el sistema de construcción genera el archivo `config.hpp` en el directorio raíz, el cual define una única variable `config::sourceDir` que guarda la ruta al directorio raíz. Esto permite construir la ruta completa al archivo de datos fácilmente:
 
-    ```bash
-    cd build-debug
-    cmake -DCMAKE_BUILD_TYPE=Debug ..
+    ```cpp
+    #include "../config.hpp"
+
+    ...
+
+    mat datos;
+    datos.load(config::sourceDir + "guia1/datos/temperaturas.txt");
     ```
 
 ### Agregar una nueva guía práctica
