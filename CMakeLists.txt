@@ -69,16 +69,8 @@ function (agregar_fuentes nombre_ejercicio string_archivos)
     target_sources (${PREFIJO}-${nombre_ejercicio} PUBLIC ${lista_archivos})
 endfunction ()
 
-# Función para agregar archivos de datos usados por algún ejercicio
-function (agregar_datos archivo)
-    get_filename_component (PREFIJO ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-        get_filename_component (NOMBRE ${CMAKE_CURRENT_SOURCE_DIR}/${archivo} NAME)
-        add_custom_target (${PREFIJO}-${NOMBRE} ALL
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                    ${CMAKE_CURRENT_SOURCE_DIR}/${archivo}
-                    ${CMAKE_CURRENT_BINARY_DIR}
-        )
-endfunction ()
+# Configurar el archivo que va a tener la referencia al directorio fuente del proyecto
+configure_file(config.hpp.cmake ${CMAKE_SOURCE_DIR}/config.hpp)
 
 # Ejemplos
 add_subdirectory (ejemplos)

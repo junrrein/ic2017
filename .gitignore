@@ -4,3 +4,4 @@ external/gnuplot-iostream
 external/openblas
 utilidades/__pycache__/
 CMakeLists.txt.user
+config.hpp
