@@ -24,11 +24,12 @@ Probado en Windows 10 y Fedora 26 usando Qt Creator 4.3.1.
     * [Compilar y ejecutar ejercicios](#compilar-y-ejecutar-ejercicios)
     * [Agregar un nuevo ejercicio](#agregar-un-nuevo-ejercicio)
     * [Agregar fuentes a un ejercicio](#agregar-fuentes-a-un-ejercicio)
-    * [Agregar archivos de datos a un ejercicio](#agregar-archivos-de-datos-a-un-ejercicio)
+    * [Cargar un archivo de datos ocupado en un ejercicio](#cargar-un-archivo-de-datos-ocupado-en-un-ejercicio)
     * [Agregar una nueva guía práctica](#agregar-una-nueva-guía-práctica)
 * [Velocidad](#velocidad)
 * [Ejemplos](#ejemplos)
 * [Problemas (que no tiene Matlab)](#problemas-que-no-tiene-matlab)
+
 
 ## Motivación
 
