@@ -1,16 +1,3 @@
-// el perceptron simple se comporta, en promedio, peor para los datos del archivo
-// spheres2d10 que para los datos de los archivos siguientes.
-// Esto va en contra de nuestra intuicion porque esperamos que el clasificador se
-// comporte mejor en datos con menor dispersion (mayor separacion entre las clases).
-// Esto sucede porque al tener las clases mas separadas, el clasificador tiene mucho mas
-// margen para ubicar la recta que las separa. En consecuencia, esta recta podria quedar ubicada
-// demasiado cerca de alguna/s de las clases. Esto ocasiona que en la etapa de prueba pueda
-// haber patrones de esta clase limitrofe que quedan justo del otro lado de la recta.
-// En conclusion pueden resultar malos clasificadores bajo estas condiciones. Esto podria mejorarse
-// con otras tecnicas como SVM.
-// En los otros dos casos esto no sucede porque al estar mas disperso los datos, el clasificador tiene
-// menos margen para ubicar la recta. Esto hace que sea mas probable que la recta encontrada haga una
-// mejor separacion entre las clases.
 #include <iostream>
 #include <armadillo>
 #include "../config.hpp"
