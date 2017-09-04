@@ -237,23 +237,23 @@ make
 
 Armadillo permite la carga de datos utilizando la función `load` en sus matrices:
 
-    ```cpp
-    mat datos;
-    datos.load("ruta/al/archivo.txt");
-    ```
+```cpp
+mat datos;
+datos.load("ruta/al/archivo.txt");
+```
 
 Hay que tener en cuenta que el directorio en el que se ejecutan los ejercicios es distinto del directorio en el cual vive el código fuente de los mismos. Por lo tanto, es necesario especificar la ruta completa a los archivos de datos, o los ejecutables no podrán encontrar estos archivos.
 
 Para facilitar esto, el sistema de construcción genera el archivo `config.hpp` en el directorio raíz, el cual define una única variable `config::sourceDir` que guarda la ruta al directorio raíz. Esto permite construir la ruta completa al archivo de datos fácilmente:
 
-    ```cpp
-    #include "../config.hpp"
+```cpp
+#include "../config.hpp"
 
-    ...
+...
 
-    mat datos;
-    datos.load(config::sourceDir + "guia1/datos/temperaturas.txt");
-    ```
+mat datos;
+datos.load(config::sourceDir + "guia1/datos/temperaturas.txt");
+```
 
 ### Agregar una nueva guía práctica
 
