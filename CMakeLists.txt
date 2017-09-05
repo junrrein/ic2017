@@ -30,7 +30,6 @@ set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS
 add_definitions (-DARMA_DONT_USE_WRAPPER)
 include_directories (SYSTEM
 	${openblas_INCLUDE_DIRS}
-	${hdf5_INCLUDE_DIRS}
 	${arma_INCLUDE_DIRS}
 	${gpio_INCLUDE_DIRS}
 )
