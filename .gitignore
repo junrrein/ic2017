@@ -2,6 +2,7 @@ build*/
 external/armadillo
 external/gnuplot-iostream
 external/openblas
+external/hdf5
 utilidades/__pycache__/
 CMakeLists.txt.user
 config.hpp
