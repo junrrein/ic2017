@@ -20,14 +20,16 @@ int main()
 
     vector<mat> pesos;
     double tasaError;
-    tie(pesos, tasaError) = ic::entrenarMulticapa(parametros.estructuraRed,
-                                                  datos,
-                                                  parametros.nEpocas,
-                                                  parametros.tasaAprendizaje,
-                                                  parametros.parametroSigmoidea,
-                                                  parametros.toleranciaError);
+    int epoca;
+    tie(pesos, tasaError, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
+                                                         datos,
+                                                         parametros.nEpocas,
+                                                         parametros.tasaAprendizaje,
+                                                         parametros.parametroSigmoidea,
+                                                         parametros.toleranciaError);
 
-    cout << "Tasa de error del Multicapa [2 1] para el XOR (entrenamiento): " << tasaError << endl;
+    cout << "Tasa de error del Multicapa [2 1] para el XOR (entrenamiento): " << tasaError << '\n'
+         << "Terminó de entrenar en " << epoca << " épocas" << endl;
 
     datos.load(config::sourceDir + "/guia1/icgtp1datos/XOR_tst.csv");
     const mat patrones = datos.head_cols(2);
