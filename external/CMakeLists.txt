@@ -78,7 +78,7 @@ set (hdf5_LIBS
 ExternalProject_Add (armadillo
     EXCLUDE_FROM_ALL 1
 
-    URL http://sourceforge.net/projects/arma/files/armadillo-7.950.1.tar.xz
+    URL http://sourceforge.net/projects/arma/files/armadillo-8.100.1.tar.xz
 
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/armadillo"
     UPDATE_COMMAND ""
