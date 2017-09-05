@@ -35,6 +35,43 @@ set (openblas_LIBS
 )
 
 ###########################
+#	HDF5
+###########################
+
+#TODO: Hacer andar esto en Windows
+
+if (WIN32)
+    # TODO: Usar -no-start
+    # https://github.com/Alexpux/MSYS2-packages/blob/master/filesystem/msys2_shell.cmd#L164
+    #set (hdf5_BUILD_COMMAND ${MSYS_PATH}/msys2_shell.cmd -here -mingw32 -c "make USE_OPENMP=1")
+else ()
+    #set (hdf5_BUILD_COMMAND sh build-unix.sh)
+endif ()
+
+set (hdf5_CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/hdf5/configure --prefix=${CMAKE_CURRENT_SOURCE_DIR}/hdf5)
+set (hdf5_INSTALL_COMMAND "make install")
+
+ExternalProject_Add (hdf5
+    EXCLUDE_FROM_ALL 1
+
+    URL https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-1.8.19.tar.gz
+
+    UPDATE_COMMAND ""
+    PATCH_COMMAND ""
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/hdf5"
+    CONFIGURE_COMMAND ${hdf5_CONFIGURE_COMMAND}
+    BUILD_COMMAND make
+    BUILD_IN_SOURCE 1
+    # CMake corre "make install" solo
+)
+
+set (hdf5_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/hdf5/include" PARENT_SCOPE)
+set (hdf5_LIBS
+    "${CMAKE_CURRENT_SOURCE_DIR}/hdf5/lib/${CMAKE_SHARED_LIBRARY_PREFIX}hdf5${CMAKE_SHARED_LIBRARY_SUFFIX}"
+	PARENT_SCOPE
+)
+
+###########################
 #	Armadillo
 ###########################
 
@@ -84,5 +121,5 @@ set (gpio_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/gnuplot-iostream" PARENT_SCO
 #################################################################
 
 # Objetivo de CMake para construir todas estas cosas de una
-add_custom_target (external DEPENDS openblas armadillo gnuplot-iostream)
+add_custom_target (external DEPENDS openblas hdf5 armadillo gnuplot-iostream)
 
