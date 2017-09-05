@@ -1,0 +1,6 @@
+estructura: [3 1]
+n_epocas: 1000
+tasa_entrenamiento: 0.01
+parametro_sigmoidea: 1
+tolerancia_error: 5
+
