@@ -4,6 +4,8 @@
 
 int main()
 {
+    arma_rng::set_seed_random();
+
     mat datos;
     datos.load(config::sourceDir + "/guia1/icgtp1datos/concentlite.csv");
 
