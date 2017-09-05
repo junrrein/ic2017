@@ -190,6 +190,9 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 	}
 	// Fin ciclo (epocas)
 
+	if (epoca>nEpocas)
+		epoca = nEpocas;
+
 	return {pesos, tasaError, epoca};
 }
 
