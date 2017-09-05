@@ -28,7 +28,6 @@ add_subdirectory (external)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 add_definitions (-DARMA_DONT_USE_WRAPPER)
-add_definitions (-DARMA_USE_HDF5)
 include_directories (SYSTEM
 	${openblas_INCLUDE_DIRS}
 	${hdf5_INCLUDE_DIRS}
@@ -38,7 +37,7 @@ include_directories (SYSTEM
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wshadow -pedantic -march=native")
 
 # Bibliotecas a usar en los ejercicios y ejemplos
-set (IC_LIBS ${openblas_LIBS} ${hdf5_LIBS} Boost::filesystem Boost::iostreams)
+set (IC_LIBS ${openblas_LIBS} Boost::filesystem Boost::iostreams)
 if (WIN32)
     file (GLOB GCC_LIB ${MSYS_LIBRARY_PATH}/libgcc*.dll)
     file (GLOB gomp_LIB ${MSYS_LIBRARY_PATH}/libgomp*.dll)
