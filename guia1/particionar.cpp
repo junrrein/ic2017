@@ -14,7 +14,7 @@ vector<Particion> particionar(mat datos, int nParticiones, double porcentajeEnt)
 	uvec indices = linspace<uvec>(0, datos.n_rows - 1, datos.n_rows);
 
 	for (int i = 0; i < nParticiones; ++i) {
-		indices = shuffle(indices); // Mezcla las filas de los datos
+		indices = shuffle(indices);
 		particiones.push_back({indices.head_rows(nPatronesEnt),
 		                       indices.tail_rows(indices.n_rows - nPatronesEnt)});
 	}
@@ -24,12 +24,9 @@ vector<Particion> particionar(mat datos, int nParticiones, double porcentajeEnt)
 
 void guardarParticiones(const vector<Particion>& particiones, string rutaCarpeta)
 {
-	int i = 0;
-
-	for (const Particion& particion : particiones) {
-		particion.first.save(rutaCarpeta + "particionEnt" + to_string(i));
-		particion.second.save(rutaCarpeta + "particionPrueba" + to_string(i));
-		++i;
+	for (unsigned int i = 0; i < particiones.size(); ++i) {
+		particiones[i].first.save(rutaCarpeta + "particionEnt" + to_string(i));
+		particiones[i].second.save(rutaCarpeta + "particionPrueba" + to_string(i));
 	}
 }
 
@@ -45,5 +42,4 @@ vector<Particion> cargarParticiones(string rutaCarpeta, int nParticiones)
 
 	return particiones;
 }
-
 }
