@@ -61,13 +61,28 @@ double errorPrueba(const vector<mat>& pesos,
 
 		const vec salidaRed = pendorcho(ySalidas.back()); // fija los valores en -1 o 1.
 
-		if (any(salidaRed != salidaDeseada.row(n)))
+		if (any(salidaRed.t() != salidaDeseada.row(n)))
 			++errores;
 	}
 
 	double tasaError = static_cast<double>(errores) / patrones.n_rows * 100;
 
 	return tasaError;
+}
+
+double errorPrueba(const vector<mat>& pesos,
+                   const mat& datos,
+                   double parametroSigmoidea)
+{
+	const int nEntradas = pesos.front().n_cols - 1;
+	const int nSalidas = pesos.back().n_rows;
+	if (nEntradas + nSalidas != int(datos.n_cols))
+		throw runtime_error("Están mal calculados el número de entradas y salidas");
+
+	return errorPrueba(pesos,
+	                   datos.head_cols(nEntradas),
+	                   datos.tail_cols(nSalidas),
+	                   parametroSigmoidea);
 }
 
 vector<vec> salidaMulticapa(vector<mat>& pesos,

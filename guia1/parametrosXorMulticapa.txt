@@ -1,6 +1,7 @@
 estructura: [2 1]
 n_epocas: 200
 tasa_entrenamiento: 0.4
+inercia: 0
 parametro_sigmoidea: 1
 tolerancia_error: 1
 
