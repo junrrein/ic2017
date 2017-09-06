@@ -39,7 +39,7 @@ double errorPrueba(const vector<mat>& pesos,
                    const mat& salidaDeseada,
                    double parametroSigmoidea)
 {
-    int errores = 0;
+	int errores = 0;
 
 	for (unsigned int n = 0; n < patrones.n_rows; ++n) {
 		vector<vec> ySalidas;
@@ -70,34 +70,46 @@ double errorPrueba(const vector<mat>& pesos,
 	return tasaError;
 }
 
+vector<vec> salidaMulticapa(vector<mat>& pesos,
+
+                            const vec& patron)
+{
+	vector<vec> ySalidas;
+
+	// Calculo de la salida para la primer capa
+	{
+		const vec v = pesos[0] * join_vert(vec{-1}, patron); // agrega entrada correspondiente al sesgo
+		ySalidas.push_back(sigmoid(v, 1));
+	}
+
+	// Calculo de las salidas para las demas capas
+	for (unsigned int i = 1; i < pesos.size(); ++i) {
+		const vec v = pesos[i] * join_vert(vec{-1}, ySalidas[i - 1]); // agrega entrada correspondiente al sesgo
+		ySalidas.push_back(sigmoid(v, 1));                            // TODO: ver qué valor le pasamos como parámetro
+		                                                              // a la sigmoidea
+	}
+
+	return ySalidas;
+}
+
 pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
                                          const mat& salidaDeseada,
                                          double tasaAprendizaje,
+                                         double inercia,
                                          double parametroSigmoidea,
                                          const vector<mat>& pesos)
 {
 	//Entrenamiento
 	vector<mat> nuevosPesos = pesos;
-	const int nCapas = nuevosPesos.size();
+	vector<mat> deltaW;
+	for (unsigned int i = 0; i < pesos.size(); ++i)
+		deltaW.push_back(zeros<mat>(size(pesos[i])));
 
 	for (unsigned int n = 0; n < patrones.n_rows; ++n) {
 		// Calcular las salidas para cada capa
 		// También vamos a meter la entrada a la red en la estructura de salidas.
 		// Esto es necesario para el cálculo de ajuste de pesos.
-		vector<vec> ySalidas;
-
-		// Calculo de la salida para la primer capa
-		{
-			const vec v = nuevosPesos[0] * join_horiz(vec{-1}, patrones.row(n)).t(); // agrega entrada correspondiente al sesgo
-			ySalidas.push_back(sigmoid(v, parametroSigmoidea));
-		}
-
-		// Calculo de las salidas para las demas capas
-		for (int i = 1; i < nCapas; ++i) {
-			const vec v = nuevosPesos[i] * join_vert(vec{-1}, ySalidas[i - 1]); // agrega entrada correspondiente al sesgo
-			ySalidas.push_back(sigmoid(v, parametroSigmoidea));                 // TODO: ver qué valor le pasamos como parámetro
-			                                                                    // a la sigmoidea
-		}
+		vector<vec> ySalidas = salidaMulticapa(nuevosPesos, patrones.row(n).t());
 
 		// Calculo del error
 		// Se quita tambien la componente correspondiente al sesgo
@@ -123,16 +135,18 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
 
 		// Actualizacion de pesos de todas las capas menos la primera
 		for (int i = nuevosPesos.size() - 1; i >= 1; --i) {
-			const mat deltaW = tasaAprendizaje
-			                   * delta[i]
-			                   * join_horiz(vec{-1}, ySalidas[i - 1].t());
-			nuevosPesos[i] += deltaW;
+			deltaW[i] = tasaAprendizaje
+			                * delta[i]
+			                * join_horiz(vec{-1}, ySalidas[i - 1].t())
+			            + inercia * deltaW[i];
+			nuevosPesos[i] += deltaW[i];
 		}
 		// Actualización de pesos de la primer capa
-		const mat deltaW = tasaAprendizaje
-		                   * delta[0]
-		                   * join_horiz(vec{-1}, patrones.row(n));
-		nuevosPesos[0] += deltaW;
+		deltaW[0] = tasaAprendizaje
+		                * delta[0]
+		                * join_horiz(vec{-1}, patrones.row(n))
+		            + inercia * deltaW[0];
+		nuevosPesos[0] += deltaW[0];
 	}
 
 	// Calculo de Tasa de error
@@ -145,6 +159,7 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
                                                   const mat& datos,
                                                   int nEpocas,
                                                   double tasaAprendizaje,
+                                                  double inercia,
                                                   double parametroSigmoidea,
                                                   double toleranciaError)
 {
@@ -182,6 +197,7 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 		tie(pesos, tasaError) = epocaMulticapa(patrones,
 		                                       salidaDeseada,
 		                                       tasaAprendizaje,
+		                                       inercia,
 		                                       parametroSigmoidea,
 		                                       pesos);
 
@@ -190,16 +206,33 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 	}
 	// Fin ciclo (epocas)
 
-	if (epoca>nEpocas)
+	if (epoca > nEpocas)
 		epoca = nEpocas;
 
-	return {pesos, tasaError, epoca};
+	return make_tuple(pesos, tasaError, epoca);
+}
+
+tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estructura,
+                                                  const mat& datos,
+                                                  int nEpocas,
+                                                  double tasaAprendizaje,
+                                                  double parametroSigmoidea,
+                                                  double toleranciaError)
+{
+	return entrenarMulticapa(estructura,
+	                         datos,
+	                         nEpocas,
+	                         tasaAprendizaje,
+	                         0,
+	                         parametroSigmoidea,
+	                         toleranciaError);
 }
 
 struct ParametrosMulticapa {
 	EstructuraCapasRed estructuraRed;
 	int nEpocas;
 	double tasaAprendizaje;
+	double inercia;
 	double parametroSigmoidea;
 	double toleranciaError;
 };
@@ -257,6 +290,7 @@ istream& operator>>(istream& is, ic::ParametrosMulticapa& parametros)
 	// estructura: [3 2 1]
 	// n_epocas: 200
 	// tasa_entrenamiento: 0.1
+	// inercia: 0.5
 	// parametro_sigmoidea: 1
 	// tolerancia_error: 5
 	string str;
@@ -265,6 +299,7 @@ istream& operator>>(istream& is, ic::ParametrosMulticapa& parametros)
 	is >> str >> parametros.estructuraRed
 	    >> str >> parametros.nEpocas
 	    >> str >> parametros.tasaAprendizaje
+	    >> str >> parametros.inercia
 	    >> str >> parametros.parametroSigmoidea
 	    >> str >> parametros.toleranciaError;
 
