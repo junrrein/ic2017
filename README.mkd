@@ -60,7 +60,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 ### Windows
 
-* [Qt Creator](https://www.qt.io/download-open-source/)
+* [Qt Creator](https://www.qt.io/download-open-source/#section-9)
 * [Git](https://git-scm.com/download/)
 * [CMake](https://cmake.org/download/#latest)
 
@@ -93,7 +93,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 * Qt Creator
 
-    Se recomienda Qt Creator ≥ 4.3. Si su distribución no lo provee, obténgalo  [utilizando el instalador](https://www.qt.io/download-open-source/) o [compilando el programa desde el código fuente](https://wiki.qt.io/Building_Qt_Creator_from_Git).
+    Se recomienda Qt Creator ≥ 4.3. Si su distribución no lo provee, obténgalo  [utilizando el instalador](https://www.qt.io/download-open-source/#section-9) o [compilando el programa desde el código fuente](https://wiki.qt.io/Building_Qt_Creator_from_Git).
 
 * Otras dependencias
 
@@ -139,6 +139,8 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
     El proyecto será configurado, y una de las dependencias externas (Boost) será descargada.
 
 5. En el árbol de proyectos, desplegar `ic-template`, luego desplegar la carpeta `external`. Hacer click derecho en el objetivo `external` (los objetivos están simbolizados con un martillo 🔨) y seleccionar la opción `Build "external"`.
+
+    **Nota**: En caso de que no aparezca ningún objetivo bajo la carpeta `external`, ejecutar el comando `cm external` en la caja de búsqueda de Qt Creator (`Ctrl + K`).
 
     Este paso descargará el resto de las dependencias externas, y una de ellas (OpenBLAS) será compilada. Esto tardará un buen rato. Puede verse el progreso en la parte inferior de la ventana, en el panel `4 Compile Output`.
 
