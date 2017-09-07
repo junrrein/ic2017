@@ -15,7 +15,7 @@ vec sigmoid(const vec& v, double b)
 	return 2 / (1 + exp(-b * v)) - 1;
 }
 
-vec pendorcho(const vec& v)
+vec winnerTakesAll(const vec& v)
 {
 	if (v.n_elem == 1)
 		// Si la red tiene una sola salida, aplicar la función signo
@@ -59,7 +59,7 @@ double errorPrueba(const vector<mat>& pesos,
 			                                                              // a la sigmoidea
 		}
 
-		const vec salidaRed = pendorcho(ySalidas.back()); // fija los valores en -1 o 1.
+		const vec salidaRed = winnerTakesAll(ySalidas.back()); // fija los valores en -1 o 1.
 
 		if (any(salidaRed.t() != salidaDeseada.row(n)))
 			++errores;
@@ -150,18 +150,21 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
 
 		// Actualizacion de pesos de todas las capas menos la primera
 		for (int i = nuevosPesos.size() - 1; i >= 1; --i) {
-			deltaW[i] = tasaAprendizaje
-			                * delta[i]
-			                * join_horiz(vec{-1}, ySalidas[i - 1].t())
-			            + inercia * deltaW[i];
-			nuevosPesos[i] += deltaW[i];
+			const mat deltaWnuevo = tasaAprendizaje
+			                            * delta[i]
+			                            * join_horiz(vec{-1}, ySalidas[i - 1].t())
+			                        + inercia * deltaW[i];
+			nuevosPesos[i] += deltaWnuevo;
+			deltaW[i] = deltaWnuevo;
 		}
+
 		// Actualización de pesos de la primer capa
-		deltaW[0] = tasaAprendizaje
-		                * delta[0]
-		                * join_horiz(vec{-1}, patrones.row(n))
-		            + inercia * deltaW[0];
-		nuevosPesos[0] += deltaW[0];
+		const mat deltaWnuevo = tasaAprendizaje
+		                            * delta[0]
+		                            * join_horiz(vec{-1}, patrones.row(n))
+		                        + inercia * deltaW[0];
+		nuevosPesos[0] += deltaWnuevo;
+		deltaW[0] = deltaWnuevo;
 	}
 
 	// Calculo de Tasa de error
@@ -221,6 +224,8 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 	}
 	// Fin ciclo (epocas)
 
+	// Si el bucle anterior no cortó por tolerancia de error,
+	// el for va a incrementar la variable una vez de más.
 	if (epoca > nEpocas)
 		epoca = nEpocas;
 
