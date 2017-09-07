@@ -140,6 +140,8 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 5. En el árbol de proyectos, desplegar `ic-template`, luego desplegar la carpeta `external`. Hacer click derecho en el objetivo `external` (los objetivos están simbolizados con un martillo 🔨) y seleccionar la opción `Build "external"`.
 
+    **Nota**: En caso de que no aparezca ningún objetivo bajo la carpeta `external`, ejecutar el comando `cm external` en la caja de búsqueda de Qt Creator (`Ctrl + K`).
+
     Este paso descargará el resto de las dependencias externas, y una de ellas (OpenBLAS) será compilada. Esto tardará un buen rato. Puede verse el progreso en la parte inferior de la ventana, en el panel `4 Compile Output`.
 
     En Windows, este paso compilará OpenBLAS en una nueva ventana llamada `MinGW x32`, que se cerrará automáticamente cuando la compilación termine.
