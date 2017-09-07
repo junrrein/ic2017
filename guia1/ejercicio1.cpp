@@ -12,7 +12,7 @@ pair<vec, double> entrenarPerceptron(const mat& patrones,
                                      double tasaAprendizaje,
                                      double tolerancia,
                                      string tituloGrafica);
-double errorPrueba(const vec& pesos,
+double errorPerceptron(const vec& pesos,
                    const mat& patrones,
                    const vec& salidaDeseada);
 
@@ -37,7 +37,7 @@ int main()
                                             0.1,
                                             5,
                                             "OR");
-    double tasaError = errorPrueba(pesos, patronesPruebaOR, salidaDeseadaPruebaOR);
+    double tasaError = errorPerceptron(pesos, patronesPruebaOR, salidaDeseadaPruebaOR);
     cout << "tasa de error del OR : " << tasaError << endl;
 
     // XOR
@@ -56,7 +56,7 @@ int main()
                                             0.4,
                                             30,
                                             "XOR");
-    tasaError = errorPrueba(pesos, patronesPruebaXOR, salidaDeseadaPruebaXOR);
+    tasaError = errorPerceptron(pesos, patronesPruebaXOR, salidaDeseadaPruebaXOR);
     cout << "tasa de error del XOR : " << tasaError << endl;
 
     return 0;
@@ -155,7 +155,7 @@ pair<vec, double> entrenarPerceptron(const mat& patrones,
     return {pesos, tasaError};
 }
 
-double errorPrueba(const vec& pesos,
+double errorPerceptron(const vec& pesos,
                    const mat& patrones,
                    const vec& salidaDeseada)
 {

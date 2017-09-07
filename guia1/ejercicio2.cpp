@@ -9,7 +9,7 @@ pair<vec, double> entrenarPerceptron(const mat& datos,
                                      int nEpocas,
                                      double tasaAprendizaje,
                                      double toleranciaError);
-double errorPrueba(const vec& pesos,
+double errorPerceptron(const vec& pesos,
                    const mat& patrones,
                    const vec& salidaDeseada);
 
@@ -41,7 +41,7 @@ int main()
             vec pesos;
             tie(pesos, ignore) = entrenarPerceptron(particion.first, 100, 0.1, 20);
 
-            const double tasaError = errorPrueba(pesos,
+            const double tasaError = errorPerceptron(pesos,
                                                  particion.second.head_cols(3),
                                                  particion.second.tail_cols(1));
             errores[i++] = tasaError;
@@ -69,7 +69,7 @@ int main()
             vec pesos;
             tie(pesos, ignore) = entrenarPerceptron(particion.first, 100, 0.1, 1);
 
-            const double tasaError = errorPrueba(pesos,
+            const double tasaError = errorPerceptron(pesos,
                                                  particion.second.head_cols(3),
                                                  particion.second.tail_cols(1));
             errores[i++] = tasaError;
@@ -150,7 +150,7 @@ pair<vec, double> epocaPerceptron(const mat& patronesExt,
     return {nuevosPesos, tasaError};
 } // fin funcion Epoca
 
-double errorPrueba(const vec& pesos,
+double errorPerceptron(const vec& pesos,
                    const mat& patrones,
                    const vec& salidaDeseada)
 {
