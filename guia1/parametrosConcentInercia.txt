@@ -1,7 +1,7 @@
 estructura: [3 1]
-n_epocas: 5000
+n_epocas: 3000
 tasa_entrenamiento: 0.01
 inercia: 0.3
 parametro_sigmoidea: 1
-tolerancia_error: 0.5
+tolerancia_error: 4
 

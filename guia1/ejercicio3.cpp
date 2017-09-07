@@ -8,15 +8,24 @@ tuple<vec, double, int> entrenarPerceptron(const mat& datos,
                                            int nEpocas,
                                            double tasaAprendizaje,
                                            double toleranciaError);
+double errorPerceptron(const vec& pesos,
+                       const mat& patrones,
+                       const vec& salidaDeseada);
+double errorPerceptron(const vec& pesos,
+                       const mat& datos);
 
 int main()
 {
     arma_rng::set_seed_random();
 
+    // Vamos a usar las mismas semillas para inicializar los pesos
+    // en los distintos algoritmos de entrenamiento
+    const uvec semillas = randi<uvec>(10);
+
     mat datos;
     datos.load(config::sourceDir + "/guia1/icgtp1datos/concentlite.csv");
-    //string rutaCarpeta = config::sourceDir + "/guia1/icgtp1datos/particionesConcent/";
-    //const vector<ic::Particion> particiones = ic::cargarParticiones(rutaCarpeta, 10);
+    string rutaCarpeta = config::sourceDir + "/guia1/icgtp1datos/particionesConcent/";
+    const vector<ic::Particion> particiones = ic::cargarParticiones(rutaCarpeta, 10);
 
     // Parte a: Entrenar una red multicapa para clasificar los patrones
 
@@ -25,29 +34,142 @@ int main()
     if (!(ifs >> parametros))
         throw runtime_error{"Error al leer los parámetros"};
 
-    vector<mat> pesos;
-    double tasaError;
-    int epoca;
+    vec errores;
+    vec epocas;
+    int indiceSemilla = 0;
 
-    tie(pesos, tasaError, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
-                                                         datos,
-                                                         parametros.nEpocas,
-                                                         parametros.tasaAprendizaje,
-                                                         parametros.parametroSigmoidea,
-                                                         parametros.toleranciaError);
+    for (const ic::Particion& particion : particiones) {
+        // Seteamos una semilla en particular para que los pesos se inicialicen
+        // de la misma manera en los distintos algoritmos
+        arma_rng::set_seed(semillas(indiceSemilla++));
+
+        vector<mat> pesos;
+        int epoca;
+
+        tie(pesos, ignore, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
+                                                          datos.rows(particion.first),
+                                                          parametros.nEpocas,
+                                                          parametros.tasaAprendizaje,
+                                                          parametros.parametroSigmoidea,
+                                                          parametros.toleranciaError);
+
+        epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
+
+        double tasaError = ic::errorPrueba(pesos,
+                                           datos.rows(particion.second),
+                                           parametros.parametroSigmoidea);
+
+        errores.insert_rows(errores.n_elem, tasaError);
+    }
 
     cout << "Multicapa sin inercia" << endl
-         << "Tasa de error: " << tasaError << endl
-         << "N° de epocas de entrenamiento: " << epoca << endl;
+         << "Tasa de error promedio en prueba: " << mean(errores) << endl
+         << "Desvío estándar de la tasa de error: " << stddev(errores) << endl
+         << "N° de épocas promedio que tarda en converger: " << mean(epocas) << endl
+         << "Desvío estándar de lo anterior: " << stddev(epocas) << endl;
+
+    // Parte b : Experimentar qué pasa al usar el término de inercia
+    // en el algoritmo de ajuste de pesos
+
+    ifs.close();
+    ifs.open(config::sourceDir + "/guia1/parametrosConcentInercia.txt");
+    if (!(ifs >> parametros))
+        throw runtime_error{"Error al leer los parámetros"};
+
+    errores.clear();
+    epocas.clear();
+    indiceSemilla = 0;
+
+    for (const ic::Particion& particion : particiones) {
+        // Seteamos una semilla en particular para que los pesos se inicialicen
+        // de la misma manera en los distintos algoritmos
+        arma_rng::set_seed(semillas(indiceSemilla++));
+
+        vector<mat> pesos;
+        int epoca;
+
+        tie(pesos, ignore, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
+                                                          datos.rows(particion.first),
+                                                          parametros.nEpocas,
+                                                          parametros.tasaAprendizaje,
+                                                          parametros.inercia,
+                                                          parametros.parametroSigmoidea,
+                                                          parametros.toleranciaError);
+
+        epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
+
+        double tasaError = ic::errorPrueba(pesos,
+                                           datos.rows(particion.second),
+                                           parametros.parametroSigmoidea);
+
+        errores.insert_rows(errores.n_elem, tasaError);
+    }
+
+    cout << "\nMulticapa con inercia " << parametros.inercia << endl
+         << "Tasa de error promedio en prueba: " << mean(errores) << endl
+         << "Desvío estándar de la tasa de error: " << stddev(errores) << endl
+         << "N° de épocas promedio que tarda en converger: " << mean(epocas) << endl
+         << "Desvío estándar de lo anterior: " << stddev(epocas) << endl;
+
+    // Parte c: Convertir los patrones a una sola dimensión, obtenida como
+    // la distancia de cada patrón a la media total.
+    // Luego entrenar con un perceptrón simple y comparar resultados con lo anterior.
+
+    const mat datosReducidos = reducirDimension(datos);
+
+    errores.clear();
+    epocas.clear();
+    indiceSemilla = 0;
+
+    for (const ic::Particion& particion : particiones) {
+        // Seteamos una semilla en particular para que los pesos se inicialicen
+        // de la misma manera en los distintos algoritmos
+        arma_rng::set_seed(semillas(indiceSemilla++));
+
+        vec pesos;
+        int epoca;
+        tie(pesos, ignore, epoca) = entrenarPerceptron(datosReducidos.rows(particion.first),
+                                                       500,
+                                                       0.01,
+                                                       4);
+
+        epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
+
+        double tasaError = errorPerceptron(pesos,
+                                           datosReducidos.rows(particion.second));
+
+        errores.insert_rows(errores.n_elem, tasaError);
+    }
+
+    cout << "\nPerceptrón simple en datos con dimensión reducida" << endl
+         << "Tasa de error promedio en prueba: " << mean(errores) << endl
+         << "Desvío estándar de la tasa de error: " << stddev(errores) << endl
+         << "N° de épocas promedio que tarda en converger: " << mean(epocas) << endl
+         << "Desvío estándar de lo anterior: " << stddev(epocas) << endl;
+
+    // Ultima parte:
+    // Entrenar un clasificador con inercia y graficar el resultado de la clasificación
+
+    vector<mat> pesos;
+
+    tie(pesos, ignore, ignore) = ic::entrenarMulticapa(parametros.estructuraRed,
+                                                       datos.rows(particiones[0].first),
+                                                       parametros.nEpocas,
+                                                       parametros.tasaAprendizaje,
+                                                       parametros.inercia,
+                                                       parametros.parametroSigmoidea,
+                                                       parametros.toleranciaError);
+
+    const mat datosPrueba = datos.rows(particiones[0].second);
 
     mat falsosPositivos, falsosNegativos, verdaderosPositivos, verdaderosNegativos;
 
-    for (unsigned int i = 0; i < datos.n_rows; i++) {
-        const rowvec patron = datos.row(i).head(2);
-        const double salidaDeseada = datos(i, 2);
+    for (unsigned int i = 0; i < datosPrueba.n_rows; i++) {
+        const rowvec patron = datosPrueba.row(i).head(2);
+        const double salidaDeseada = datosPrueba(i, 2);
 
         vec salidaRed = ic::salidaMulticapa(pesos, patron.t()).back();
-        salidaRed = ic::pendorcho(salidaRed);
+        salidaRed = ic::winnerTakesAll(salidaRed);
 
         if (salidaRed(0) == salidaDeseada) {
             if (salidaDeseada == 1)
@@ -62,37 +184,6 @@ int main()
                 falsosNegativos.insert_rows(falsosNegativos.n_rows, patron);
         }
     }
-
-    // Parte b : Experimentar qué pasa al usar el término de inercia
-    // en el algoritmo de ajuste de pesos
-
-    ifs.close();
-    ifs.open(config::sourceDir + "/guia1/parametrosConcentInercia.txt");
-    if (!(ifs >> parametros))
-        throw runtime_error{"Error al leer los parámetros"};
-
-    tie(ignore, tasaError, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
-                                                          datos,
-                                                          parametros.nEpocas,
-                                                          parametros.tasaAprendizaje,
-                                                          parametros.inercia,
-                                                          parametros.parametroSigmoidea,
-                                                          parametros.toleranciaError);
-
-    cout << "\nMulticapa con inercia " << parametros.inercia << endl
-         << "Tasa de error: " << tasaError << endl
-         << "N° de epocas de entrenamiento: " << epoca << endl;
-
-    // Parte c: Convertir los patrones a una sola dimensión, obtenida como
-    // la distancia de cada patrón a la media total.
-    // Luego entrenar con un perceptrón simple y comparar resultados con lo anterior.
-
-    const mat datosReducidos = reducirDimension(datos);
-    tie(ignore, tasaError, epoca) = entrenarPerceptron(datosReducidos, 500, 0.01, 4);
-
-    cout << "\nPerceptrón simple en datos con dimensión reducida" << endl
-         << "Tasa de error: " << tasaError << endl
-         << "Epocas de entrenamiento: " << epoca << endl;
 
     // Graficar los resultados de clasificación de la primer red multicapa
 
@@ -171,9 +262,9 @@ pair<vec, double> epocaPerceptron(const mat& patronesExt,
     return {nuevosPesos, tasaError};
 } // fin funcion Epoca
 
-double errorPrueba(const vec& pesos,
-                   const mat& patrones,
-                   const vec& salidaDeseada)
+double errorPerceptron(const vec& pesos,
+                       const mat& patrones,
+                       const vec& salidaDeseada)
 {
     // Se extiende la matriz de patrones con la entrada correspondiente al umbral
     const mat patronesExt = join_horiz(ones(patrones.n_rows) * (-1), patrones);
@@ -191,6 +282,14 @@ double errorPrueba(const vec& pesos,
     double tasaError = static_cast<double>(errores) / patronesExt.n_rows * 100;
 
     return tasaError;
+}
+
+double errorPerceptron(const vec& pesos,
+                       const mat& datos)
+{
+    return errorPerceptron(pesos,
+                           datos.head_cols(datos.n_cols - 1),
+                           datos.tail_cols(1));
 }
 
 tuple<vec, double, int> entrenarPerceptron(const mat& datos,
