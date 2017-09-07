@@ -30,14 +30,14 @@ vector<Particion> leaveKOut(mat datos, int k)
 	const uvec indices = shuffle(linspace<uvec>(0, datos.n_rows - 1, datos.n_rows));
 
 	for (int i = 0; i < nParticiones; ++i) {
-		const uvec indicesPrueba = indices.rows(span(k * i, k * i + k - 1));
+		const uvec indicesPrueba = indices.rows(span(k * i, (i + 1) * k - 1)); // De 0 a k-1, de k a 2k-1, ...
 		uvec indicesEnt;
 
 		if (k * i - 1 >= 0)
 			indicesEnt.insert_rows(0, indices.rows(span(0, k * i - 1)));
 
-		if (k * i + k <= int(indices.n_elem - 1))
-			indicesEnt.insert_rows(0, indices.rows(span(k * i + k, indices.n_elem - 1)));
+		if ((i + 1) * k <= int(indices.n_elem - 1))
+			indicesEnt.insert_rows(indicesEnt.n_elem, indices.rows(span((i + 1) * k, indices.n_elem - 1)));
 
 		particiones.push_back({indicesEnt, indicesPrueba});
 	}
