@@ -48,6 +48,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 * Git
 * CMake (≥ 3.7 si se usa Qt Creator)
 * Gnuplot
+* Clang y clang-format
 
 ## Dependencias externas (descargadas por la plantilla)
 
@@ -101,13 +102,13 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
         ```bash
         sudo dnf groupinstall 'Herramientas y Librerías de Desarrollo en C'
-        sudo dnf install gcc-gfortran git-core cmake gnuplot
+        sudo dnf install gcc-gfortran git-core cmake gnuplot clang
         ```
 
     * Ubuntu
 
         ```bash
-        sudo apt install build-essential gfortran git-core cmake gnuplot
+        sudo apt install build-essential gfortran git-core cmake gnuplot clang clang-format
         ```
 
         **Nota:** Para versiones de Ubuntu anteriores a 17.04, y si se desea usar Qt Creator, es necesario [agregar un PPA](https://launchpad.net/~ppsspp/+archive/ubuntu/cmake) para tener una versión más reciente de CMake:
@@ -157,6 +158,22 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 9. En el panel izquierdo, ir a `Edit`. En el árbol de proyectos, desplejar la carpeta `guia1`, luego desplegar el objetivo `guia1-ejercicio1`, y abrir `ejercicio1.cpp`.
 
 10. Para compilar los ejercicios, usar el ícono 🔨 en el panel izquierdo o la combinación de teclas `Ctrl + B`. Para ejecutar el ejercicio seleccionado en el paso 7, usar el ícono ▶️ en el panel izquierdo o `Ctrl + R`.
+
+11. *(Recomendado)* Para activar el formateador automático de código, ir al menú `Help` → `About Plugins...`. Activar el plugin `Beautifier` y reiniciar Qt Creator.
+
+    Luego, ir al menú `Tools` → `Options...`, sección`Beautifier`.
+
+    En la pestaña `General`, activar `Enable auto format on file save`, y desactivar `Restrict to files contained in current project`. En el selector `Tool:`, seleccionar `ClangFormat`.
+
+    En la pestaña `Clang Format`, sección `Options`, elegir `Use predefined style:` `File`.
+
+12. *(Recomendado)* Para que Qt Creator utilice Clang para analizar el código fuente, ir al menú `Help` → `About Plugins...`. Activar el plugin `ClangCodeModel` y reiniciar Qt Creator.
+
+    Luego, ir al menú `Tools` → `Options...`, sección `C++`.
+
+    En la pestaña `Code Model`, sección `Clang Code Model Warnings`, hacer `Copy...`, elegir un nombre para la configuración nueva, y reemplazar las opciones de dicha configuración por `-Wall -Wextra -pedantic -Wshadow`.
+
+    Finalmente, reiniciar Qt Creator.
 
 ### En línea de comandos (Linux)
 
