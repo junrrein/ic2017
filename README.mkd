@@ -1,4 +1,4 @@
-# Plantilla para usar C++ en Inteligencia Computacional
+# Práctica de Inteligencia Computacional en C++ 
 
 Esto es una plantilla que provee lo necesario para hacer los ejercicios de Inteligencia Computacional usando C++ junto con:
 
@@ -126,7 +126,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 2. Completar los campos:
 
-    * `Repository`: *https://github.com/junrrein/ic-template.git*
+    * `Repository`: *git@github.com:junrrein/ic2017.git*
     * `Path`: Directorio padre de la plantilla
     * `Directory`: Nombre del directorio donde irá la plantilla
 
