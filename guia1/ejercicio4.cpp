@@ -22,10 +22,11 @@ int main()
 
     {
         vector<ic::Particion> particiones = ic::cargarParticiones(rutaBaseDatos + "particionesIrisKOut/", 10);
-        vec errores;
+        vec errores, epocas;
         errores.resize(particiones.size());
-        vec epocas;
+        epocas.resize(particiones.size());
 
+#pragma omp parallel for
         for (unsigned int i = 0; i < particiones.size(); ++i) {
             vector<mat> pesos;
             int epoca;
@@ -37,12 +38,15 @@ int main()
                                                               parametros.parametroSigmoidea,
                                                               parametros.toleranciaError);
 
-            epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
-
             const double tasaError = ic::errorPrueba(pesos,
                                                      datos.rows(particiones[i].second),
                                                      parametros.parametroSigmoidea);
-            errores[i] = tasaError;
+
+#pragma omp critical
+            {
+                epocas(i) = epoca;
+                errores(i) = tasaError;
+            }
         }
 
         cout << "Iris multicapa, Leave K Out" << endl
@@ -56,10 +60,11 @@ int main()
 
     {
         vector<ic::Particion> particiones = ic::cargarParticiones(rutaBaseDatos + "particionesIris1Out/", 150);
-        vec errores;
+        vec errores, epocas;
         errores.resize(particiones.size());
-        vec epocas;
+        epocas.resize(particiones.size());
 
+#pragma omp parallel for
         for (unsigned int i = 0; i < particiones.size(); ++i) {
             vector<mat> pesos;
             int epoca;
@@ -71,12 +76,15 @@ int main()
                                                               parametros.parametroSigmoidea,
                                                               parametros.toleranciaError);
 
-            epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
-
             const double tasaError = ic::errorPrueba(pesos,
                                                      datos.rows(particiones[i].second),
                                                      parametros.parametroSigmoidea);
-            errores[i] = tasaError;
+
+#pragma omp critical
+            {
+                epocas(i) = epoca;
+                errores(i) = tasaError;
+            }
         }
 
         cout << "\nIris multicapa, Leave One Out" << endl
