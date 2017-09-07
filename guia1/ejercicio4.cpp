@@ -1,3 +1,6 @@
+// El Leave One Out estima mejor el error promedio
+// pero peor el desvío. Elaborar por qué.
+
 #include "multicapa.cpp"
 #include "particionar.cpp"
 #include "../config.hpp"
@@ -21,21 +24,20 @@ int main()
         vector<ic::Particion> particiones = ic::cargarParticiones(rutaBaseDatos + "particionesIrisKOut/", 10);
         vec errores;
         errores.resize(particiones.size());
-        int noConvergio = 0;
+        vec epocas;
 
         for (unsigned int i = 0; i < particiones.size(); ++i) {
             vector<mat> pesos;
-            int epocas;
-            tie(pesos, ignore, epocas) = ic::entrenarMulticapa(parametros.estructuraRed,
-                                                               datos.rows(particiones[i].first),
-                                                               parametros.nEpocas,
-                                                               parametros.tasaAprendizaje,
-                                                               parametros.inercia,
-                                                               parametros.parametroSigmoidea,
-                                                               parametros.toleranciaError);
+            int epoca;
+            tie(pesos, ignore, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
+                                                              datos.rows(particiones[i].first),
+                                                              parametros.nEpocas,
+                                                              parametros.tasaAprendizaje,
+                                                              parametros.inercia,
+                                                              parametros.parametroSigmoidea,
+                                                              parametros.toleranciaError);
 
-            if (epocas == parametros.nEpocas)
-                ++noConvergio;
+            epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
 
             const double tasaError = ic::errorPrueba(pesos,
                                                      datos.rows(particiones[i].second),
@@ -46,7 +48,8 @@ int main()
         cout << "Iris multicapa, Leave K Out" << endl
              << "Error promedio: " << mean(errores) << endl
              << "Desvío estándar del error: " << stddev(errores) << endl
-             << "El algoritmo no convergió en " << noConvergio << " casos" << endl;
+             << "N° de épocas promedio que tarda en converger: " << mean(epocas) << endl
+             << "Desvío estándar de lo anterior: " << stddev(epocas) << endl;
     }
 
     // Leave One Out
@@ -55,21 +58,20 @@ int main()
         vector<ic::Particion> particiones = ic::cargarParticiones(rutaBaseDatos + "particionesIris1Out/", 150);
         vec errores;
         errores.resize(particiones.size());
-        int noConvergio = 0;
+        vec epocas;
 
         for (unsigned int i = 0; i < particiones.size(); ++i) {
             vector<mat> pesos;
-            int epocas;
-            tie(pesos, ignore, epocas) = ic::entrenarMulticapa(parametros.estructuraRed,
-                                                               datos.rows(particiones[i].first),
-                                                               parametros.nEpocas,
-                                                               parametros.tasaAprendizaje,
-                                                               parametros.inercia,
-                                                               parametros.parametroSigmoidea,
-                                                               parametros.toleranciaError);
+            int epoca;
+            tie(pesos, ignore, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
+                                                              datos.rows(particiones[i].first),
+                                                              parametros.nEpocas,
+                                                              parametros.tasaAprendizaje,
+                                                              parametros.inercia,
+                                                              parametros.parametroSigmoidea,
+                                                              parametros.toleranciaError);
 
-            if (epocas == parametros.nEpocas)
-                ++noConvergio;
+            epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
 
             const double tasaError = ic::errorPrueba(pesos,
                                                      datos.rows(particiones[i].second),
@@ -80,7 +82,8 @@ int main()
         cout << "\nIris multicapa, Leave One Out" << endl
              << "Error promedio: " << mean(errores) << endl
              << "Desvío estándar del error: " << stddev(errores) << endl
-             << "El algoritmo no convergió en " << noConvergio << " casos" << endl;
+             << "N° de épocas promedio que tarda en converger: " << mean(epocas) << endl
+             << "Desvío estándar de lo anterior: " << stddev(epocas) << endl;
     }
 
     return 0;
