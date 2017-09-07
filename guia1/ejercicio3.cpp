@@ -50,14 +50,12 @@ int main()
                                                           datos.rows(particion.first),
                                                           parametros.nEpocas,
                                                           parametros.tasaAprendizaje,
-                                                          parametros.parametroSigmoidea,
                                                           parametros.toleranciaError);
 
         epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
 
         double tasaError = ic::errorPrueba(pesos,
-                                           datos.rows(particion.second),
-                                           parametros.parametroSigmoidea);
+                                           datos.rows(particion.second));
 
         errores.insert_rows(errores.n_elem, tasaError);
     }
@@ -93,14 +91,12 @@ int main()
                                                           parametros.nEpocas,
                                                           parametros.tasaAprendizaje,
                                                           parametros.inercia,
-                                                          parametros.parametroSigmoidea,
                                                           parametros.toleranciaError);
 
         epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
 
         double tasaError = ic::errorPrueba(pesos,
-                                           datos.rows(particion.second),
-                                           parametros.parametroSigmoidea);
+                                           datos.rows(particion.second));
 
         errores.insert_rows(errores.n_elem, tasaError);
     }
@@ -157,7 +153,6 @@ int main()
                                                        parametros.nEpocas,
                                                        parametros.tasaAprendizaje,
                                                        parametros.inercia,
-                                                       parametros.parametroSigmoidea,
                                                        parametros.toleranciaError);
 
     const mat datosPrueba = datos.rows(particiones[0].second);

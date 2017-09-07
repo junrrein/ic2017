@@ -35,18 +35,13 @@ int main()
                                                               parametros.nEpocas,
                                                               parametros.tasaAprendizaje,
                                                               parametros.inercia,
-                                                              parametros.parametroSigmoidea,
                                                               parametros.toleranciaError);
 
             const double tasaError = ic::errorPrueba(pesos,
-                                                     datos.rows(particiones[i].second),
-                                                     parametros.parametroSigmoidea);
+                                                     datos.rows(particiones[i].second));
 
-#pragma omp critical
-            {
-                epocas(i) = epoca;
-                errores(i) = tasaError;
-            }
+            epocas(i) = epoca;
+            errores(i) = tasaError;
         }
 
         cout << "Iris multicapa, Leave K Out" << endl
@@ -73,18 +68,13 @@ int main()
                                                               parametros.nEpocas,
                                                               parametros.tasaAprendizaje,
                                                               parametros.inercia,
-                                                              parametros.parametroSigmoidea,
                                                               parametros.toleranciaError);
 
             const double tasaError = ic::errorPrueba(pesos,
-                                                     datos.rows(particiones[i].second),
-                                                     parametros.parametroSigmoidea);
+                                                     datos.rows(particiones[i].second));
 
-#pragma omp critical
-            {
-                epocas(i) = epoca;
-                errores(i) = tasaError;
-            }
+            epocas(i) = epoca;
+            errores(i) = tasaError;
         }
 
         cout << "\nIris multicapa, Leave One Out" << endl

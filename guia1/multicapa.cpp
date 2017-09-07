@@ -10,9 +10,9 @@ namespace ic {
 // EstructuraCapasRed para esa red será [2 3 1].
 using EstructuraCapasRed = vec;
 
-vec sigmoid(const vec& v, double b)
+vec sigmoid(const vec& v)
 {
-	return 2 / (1 + exp(-b * v)) - 1;
+	return 2 / (1 + exp(-v)) - 1;
 }
 
 vec winnerTakesAll(const vec& v)
@@ -36,8 +36,7 @@ vec winnerTakesAll(const vec& v)
 
 double errorPrueba(const vector<mat>& pesos,
                    const mat& patrones,
-                   const mat& salidaDeseada,
-                   double parametroSigmoidea)
+                   const mat& salidaDeseada)
 {
 	int errores = 0;
 
@@ -47,7 +46,7 @@ double errorPrueba(const vector<mat>& pesos,
 		// Calculo de la salida para la primer capa
 		{
 			const vec v = pesos[0] * join_horiz(vec{-1}, patrones.row(n)).t(); // agrega entrada correspondiente al sesgo
-			ySalidas.push_back(sigmoid(v, parametroSigmoidea));
+			ySalidas.push_back(sigmoid(v));
 		}
 
 		// Calculo de las salidas para las demas capas
@@ -55,7 +54,7 @@ double errorPrueba(const vector<mat>& pesos,
 		const int nCapas = pesos.size();
 		for (int i = 1; i < nCapas; ++i) {
 			const vec v = pesos[i] * join_vert(vec{-1}, ySalidas[i - 1]); // agrega entrada correspondiente al sesgo
-			ySalidas.push_back(sigmoid(v, parametroSigmoidea));           // TODO: ver qué valor le pasamos como parámetro
+			ySalidas.push_back(sigmoid(v));                               // TODO: ver qué valor le pasamos como parámetro
 			                                                              // a la sigmoidea
 		}
 
@@ -71,8 +70,7 @@ double errorPrueba(const vector<mat>& pesos,
 }
 
 double errorPrueba(const vector<mat>& pesos,
-                   const mat& datos,
-                   double parametroSigmoidea)
+                   const mat& datos)
 {
 	const int nEntradas = pesos.front().n_cols - 1;
 	const int nSalidas = pesos.back().n_rows;
@@ -81,8 +79,7 @@ double errorPrueba(const vector<mat>& pesos,
 
 	return errorPrueba(pesos,
 	                   datos.head_cols(nEntradas),
-	                   datos.tail_cols(nSalidas),
-	                   parametroSigmoidea);
+	                   datos.tail_cols(nSalidas));
 }
 
 vector<vec> salidaMulticapa(vector<mat>& pesos,
@@ -94,13 +91,13 @@ vector<vec> salidaMulticapa(vector<mat>& pesos,
 	// Calculo de la salida para la primer capa
 	{
 		const vec v = pesos[0] * join_vert(vec{-1}, patron); // agrega entrada correspondiente al sesgo
-		ySalidas.push_back(sigmoid(v, 1));
+		ySalidas.push_back(sigmoid(v));
 	}
 
 	// Calculo de las salidas para las demas capas
 	for (unsigned int i = 1; i < pesos.size(); ++i) {
 		const vec v = pesos[i] * join_vert(vec{-1}, ySalidas[i - 1]); // agrega entrada correspondiente al sesgo
-		ySalidas.push_back(sigmoid(v, 1));                            // TODO: ver qué valor le pasamos como parámetro
+		ySalidas.push_back(sigmoid(v));                               // TODO: ver qué valor le pasamos como parámetro
 		                                                              // a la sigmoidea
 	}
 
@@ -111,7 +108,6 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
                                          const mat& salidaDeseada,
                                          double tasaAprendizaje,
                                          double inercia,
-                                         double parametroSigmoidea,
                                          const vector<mat>& pesos)
 {
 	//Entrenamiento
@@ -168,7 +164,7 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
 	}
 
 	// Calculo de Tasa de error
-	double tasaError = errorPrueba(nuevosPesos, patrones, salidaDeseada, parametroSigmoidea);
+	double tasaError = errorPrueba(nuevosPesos, patrones, salidaDeseada);
 
 	return {nuevosPesos, tasaError};
 } // fin funcion Epoca
@@ -178,7 +174,6 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
                                                   int nEpocas,
                                                   double tasaAprendizaje,
                                                   double inercia,
-                                                  double parametroSigmoidea,
                                                   double toleranciaError)
 {
 	const int nSalidas = estructura(estructura.n_elem - 1);
@@ -216,7 +211,6 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 		                                       salidaDeseada,
 		                                       tasaAprendizaje,
 		                                       inercia,
-		                                       parametroSigmoidea,
 		                                       pesos);
 
 		if (tasaError < toleranciaError)
@@ -236,7 +230,6 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
                                                   const mat& datos,
                                                   int nEpocas,
                                                   double tasaAprendizaje,
-                                                  double parametroSigmoidea,
                                                   double toleranciaError)
 {
 	return entrenarMulticapa(estructura,
@@ -244,7 +237,6 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 	                         nEpocas,
 	                         tasaAprendizaje,
 	                         0,
-	                         parametroSigmoidea,
 	                         toleranciaError);
 }
 
@@ -253,7 +245,6 @@ struct ParametrosMulticapa {
 	int nEpocas;
 	double tasaAprendizaje;
 	double inercia;
-	double parametroSigmoidea;
 	double toleranciaError;
 };
 }
@@ -320,13 +311,11 @@ istream& operator>>(istream& is, ic::ParametrosMulticapa& parametros)
 	    >> str >> parametros.nEpocas
 	    >> str >> parametros.tasaAprendizaje
 	    >> str >> parametros.inercia
-	    >> str >> parametros.parametroSigmoidea
 	    >> str >> parametros.toleranciaError;
 
 	// Control básico de valores de parámetros
 	if (parametros.nEpocas <= 0
 	    || parametros.tasaAprendizaje <= 0
-	    || parametros.parametroSigmoidea <= 0
 	    || parametros.toleranciaError <= 0
 	    || parametros.toleranciaError >= 100)
 		is.clear(ios::failbit);
