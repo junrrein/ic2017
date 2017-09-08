@@ -51,8 +51,8 @@ int main()
                                                           parametros.toleranciaError,
                                                           semillas(i));
 
-        double tasaError = ic::errorPrueba(pesos,
-                                           datos.rows(particiones[i].second));
+        double tasaError = ic::errorMulticapa(pesos,
+                                              datos.rows(particiones[i].second));
 
         epocas(i) = epoca;
         errores(i) = tasaError;
@@ -90,8 +90,8 @@ int main()
                                                           parametros.toleranciaError,
                                                           semillas(i));
 
-        double tasaError = ic::errorPrueba(pesos,
-                                           datos.rows(particiones[i].second));
+        double tasaError = ic::errorMulticapa(pesos,
+                                              datos.rows(particiones[i].second));
 
         epocas(i) = epoca;
         errores(i) = tasaError;
@@ -118,7 +118,7 @@ int main()
         vec pesos;
         int epoca;
         tie(pesos, ignore, epoca) = entrenarPerceptron(datosReducidos.rows(particiones[i].first),
-                                                       500,
+                                                       1000,
                                                        0.01,
                                                        4);
 

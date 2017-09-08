@@ -34,9 +34,9 @@ vec winnerTakesAll(const vec& v)
 	}
 }
 
-double errorPrueba(const vector<mat>& pesos,
-                   const mat& patrones,
-                   const mat& salidaDeseada)
+double errorMulticapa(const vector<mat>& pesos,
+                      const mat& patrones,
+                      const mat& salidaDeseada)
 {
 	int errores = 0;
 
@@ -69,17 +69,17 @@ double errorPrueba(const vector<mat>& pesos,
 	return tasaError;
 }
 
-double errorPrueba(const vector<mat>& pesos,
-                   const mat& datos)
+double errorMulticapa(const vector<mat>& pesos,
+                      const mat& datos)
 {
 	const int nEntradas = pesos.front().n_cols - 1;
 	const int nSalidas = pesos.back().n_rows;
 	if (nEntradas + nSalidas != int(datos.n_cols))
 		throw runtime_error("Están mal calculados el número de entradas y salidas");
 
-	return errorPrueba(pesos,
-	                   datos.head_cols(nEntradas),
-	                   datos.tail_cols(nSalidas));
+	return errorMulticapa(pesos,
+	                      datos.head_cols(nEntradas),
+	                      datos.tail_cols(nSalidas));
 }
 
 vector<vec> salidaMulticapa(vector<mat>& pesos,
@@ -164,7 +164,7 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
 	}
 
 	// Calculo de Tasa de error
-	double tasaError = errorPrueba(nuevosPesos, patrones, salidaDeseada);
+	double tasaError = errorMulticapa(nuevosPesos, patrones, salidaDeseada);
 
 	return {nuevosPesos, tasaError};
 } // fin funcion Epoca

@@ -36,8 +36,8 @@ int main()
                                                               parametros.inercia,
                                                               parametros.toleranciaError);
 
-            const double tasaError = ic::errorPrueba(pesos,
-                                                     datos.rows(particiones[i].second));
+            const double tasaError = ic::errorMulticapa(pesos,
+                                                        datos.rows(particiones[i].second));
 
             epocas(i) = epoca;
             errores(i) = tasaError;
@@ -69,8 +69,8 @@ int main()
                                                               parametros.inercia,
                                                               parametros.toleranciaError);
 
-            const double tasaError = ic::errorPrueba(pesos,
-                                                     datos.rows(particiones[i].second));
+            const double tasaError = ic::errorMulticapa(pesos,
+                                                        datos.rows(particiones[i].second));
 
             epocas(i) = epoca;
             errores(i) = tasaError;
