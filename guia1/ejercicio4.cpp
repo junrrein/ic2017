@@ -21,7 +21,7 @@ int main()
     // Leave K Out
 
     {
-        vector<ic::Particion> particiones = ic::cargarParticiones(rutaBaseDatos + "particionesIrisKOut/", 10);
+        const vector<ic::Particion> particiones = ic::cargarParticiones(rutaBaseDatos + "particionesIrisKOut/", 10);
         vec errores, epocas;
         errores.resize(particiones.size());
         epocas.resize(particiones.size());
@@ -54,7 +54,7 @@ int main()
     // Leave One Out
 
     {
-        vector<ic::Particion> particiones = ic::cargarParticiones(rutaBaseDatos + "particionesIris1Out/", 150);
+        const vector<ic::Particion> particiones = ic::cargarParticiones(rutaBaseDatos + "particionesIris1Out/", 150);
         vec errores, epocas;
         errores.resize(particiones.size());
         epocas.resize(particiones.size());
