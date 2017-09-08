@@ -2,5 +2,5 @@ estructura: [3 1]
 n_epocas: 3000
 tasa_entrenamiento: 0.01
 inercia: 0
-tolerancia_error: 3
+tolerancia_error: 4
 
