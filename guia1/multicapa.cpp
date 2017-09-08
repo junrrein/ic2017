@@ -226,20 +226,6 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 	return make_tuple(pesos, tasaError, epoca);
 }
 
-tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estructura,
-                                                  const mat& datos,
-                                                  int nEpocas,
-                                                  double tasaAprendizaje,
-                                                  double toleranciaError)
-{
-	return entrenarMulticapa(estructura,
-	                         datos,
-	                         nEpocas,
-	                         tasaAprendizaje,
-	                         0,
-	                         toleranciaError);
-}
-
 struct ParametrosMulticapa {
 	EstructuraCapasRed estructuraRed;
 	int nEpocas;

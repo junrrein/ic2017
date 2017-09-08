@@ -25,6 +25,7 @@ int main()
                                                          datos,
                                                          parametros.nEpocas,
                                                          parametros.tasaAprendizaje,
+                                                         parametros.inercia,
                                                          parametros.toleranciaError);
 
     cout << "Tasa de error del Multicapa [2 1] para el XOR (entrenamiento): " << tasaError << '\n'

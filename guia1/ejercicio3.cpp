@@ -50,6 +50,7 @@ int main()
                                                           datos.rows(particion.first),
                                                           parametros.nEpocas,
                                                           parametros.tasaAprendizaje,
+                                                          parametros.inercia,
                                                           parametros.toleranciaError);
 
         epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
