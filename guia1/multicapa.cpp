@@ -174,7 +174,8 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
                                                   int nEpocas,
                                                   double tasaAprendizaje,
                                                   double inercia,
-                                                  double toleranciaError)
+                                                  double toleranciaError,
+                                                  long long semilla = -1)
 {
 	const int nSalidas = estructura(estructura.n_elem - 1);
 	const int nEntradas = datos.n_cols - nSalidas;
@@ -188,17 +189,23 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 	// Inicializar pesos y tasa de error
 	vector<mat> pesos;
 
-	// La primer matriz matriz de pesos tiene tantas filas como neuronas en la primer capa
-	// y tantas columnas como componentes tiene la entrada, más la entrada correspondiente
-	// al sesgo.
-	pesos.push_back(randu<mat>(estructura(0), nEntradas + 1) - 0.5);
+#pragma omp critical(inicializarPesos)
+	{
+		if (semilla != -1)
+			arma_rng::set_seed(semilla);
 
-	for (int i = 1; i < nCapas; ++i) {
-		// Las siguientes matrices de pesos tienen tantas filas como neuronas en dicha capa
-		// y tantas columnas como entradas a esa capa, que van a ser las salidas de
-		// la capa anterior mas la entrada correspondiente al sesgo.
-		// Las salidas de la capa anterior es igual al nro de neuronas en la capa anterior.
-		pesos.push_back(randu<mat>(estructura(i), estructura(i - 1) + 1) - 0.5);
+		// La primer matriz matriz de pesos tiene tantas filas como neuronas en la primer capa
+		// y tantas columnas como componentes tiene la entrada, más la entrada correspondiente
+		// al sesgo.
+		pesos.push_back(randu<mat>(estructura(0), nEntradas + 1) - 0.5);
+
+		for (int i = 1; i < nCapas; ++i) {
+			// Las siguientes matrices de pesos tienen tantas filas como neuronas en dicha capa
+			// y tantas columnas como entradas a esa capa, que van a ser las salidas de
+			// la capa anterior mas la entrada correspondiente al sesgo.
+			// Las salidas de la capa anterior es igual al nro de neuronas en la capa anterior.
+			pesos.push_back(randu<mat>(estructura(i), estructura(i - 1) + 1) - 0.5);
+		}
 	}
 
 	double tasaError = 100;
