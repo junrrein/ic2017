@@ -26,7 +26,6 @@ int main()
         errores.resize(particiones.size());
         epocas.resize(particiones.size());
 
-#pragma omp parallel for
         for (unsigned int i = 0; i < particiones.size(); ++i) {
             vector<mat> pesos;
             int epoca;
