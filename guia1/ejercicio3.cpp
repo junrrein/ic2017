@@ -20,7 +20,7 @@ int main()
 
     // Vamos a usar las mismas semillas para inicializar los pesos
     // en los distintos algoritmos de entrenamiento
-    const uvec semillas = randi<uvec>(10);
+    const ivec semillas = randi(10);
 
     mat datos;
     datos.load(config::sourceDir + "/guia1/icgtp1datos/concentlite.csv");
@@ -34,31 +34,28 @@ int main()
     if (!(ifs >> parametros))
         throw runtime_error{"Error al leer los parámetros"};
 
-    vec errores;
-    vec epocas;
-    int indiceSemilla = 0;
+    vec errores, epocas;
+    errores.set_size(particiones.size());
+    epocas.set_size(particiones.size());
 
-    for (const ic::Particion& particion : particiones) {
-        // Seteamos una semilla en particular para que los pesos se inicialicen
-        // de la misma manera en los distintos algoritmos
-        arma_rng::set_seed(semillas(indiceSemilla++));
-
+#pragma omp parallel for
+    for (unsigned int i = 0; i < particiones.size(); ++i) {
         vector<mat> pesos;
         int epoca;
 
         tie(pesos, ignore, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
-                                                          datos.rows(particion.first),
+                                                          datos.rows(particiones[i].first),
                                                           parametros.nEpocas,
                                                           parametros.tasaAprendizaje,
                                                           parametros.inercia,
-                                                          parametros.toleranciaError);
-
-        epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
+                                                          parametros.toleranciaError,
+                                                          semillas(i));
 
         double tasaError = ic::errorPrueba(pesos,
-                                           datos.rows(particion.second));
+                                           datos.rows(particiones[i].second));
 
-        errores.insert_rows(errores.n_elem, tasaError);
+        epocas(i) = epoca;
+        errores(i) = tasaError;
     }
 
     cout << "Multicapa sin inercia" << endl
@@ -77,29 +74,27 @@ int main()
 
     errores.clear();
     epocas.clear();
-    indiceSemilla = 0;
+    errores.set_size(particiones.size());
+    epocas.set_size(particiones.size());
 
-    for (const ic::Particion& particion : particiones) {
-        // Seteamos una semilla en particular para que los pesos se inicialicen
-        // de la misma manera en los distintos algoritmos
-        arma_rng::set_seed(semillas(indiceSemilla++));
-
+#pragma omp parallel for
+    for (unsigned int i = 0; i < particiones.size(); ++i) {
         vector<mat> pesos;
         int epoca;
 
         tie(pesos, ignore, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
-                                                          datos.rows(particion.first),
+                                                          datos.rows(particiones[i].first),
                                                           parametros.nEpocas,
                                                           parametros.tasaAprendizaje,
                                                           parametros.inercia,
-                                                          parametros.toleranciaError);
-
-        epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
+                                                          parametros.toleranciaError,
+                                                          semillas(i));
 
         double tasaError = ic::errorPrueba(pesos,
-                                           datos.rows(particion.second));
+                                           datos.rows(particiones[i].second));
 
-        errores.insert_rows(errores.n_elem, tasaError);
+        epocas(i) = epoca;
+        errores(i) = tasaError;
     }
 
     cout << "\nMulticapa con inercia " << parametros.inercia << endl
@@ -116,26 +111,22 @@ int main()
 
     errores.clear();
     epocas.clear();
-    indiceSemilla = 0;
+    errores.set_size(particiones.size());
+    epocas.set_size(particiones.size());
 
-    for (const ic::Particion& particion : particiones) {
-        // Seteamos una semilla en particular para que los pesos se inicialicen
-        // de la misma manera en los distintos algoritmos
-        arma_rng::set_seed(semillas(indiceSemilla++));
-
+    for (unsigned int i = 0; i < particiones.size(); ++i) {
         vec pesos;
         int epoca;
-        tie(pesos, ignore, epoca) = entrenarPerceptron(datosReducidos.rows(particion.first),
+        tie(pesos, ignore, epoca) = entrenarPerceptron(datosReducidos.rows(particiones[i].first),
                                                        500,
                                                        0.01,
                                                        4);
 
-        epocas.insert_rows(epocas.n_elem, vec{double(epoca)});
-
         double tasaError = errorPerceptron(pesos,
-                                           datosReducidos.rows(particion.second));
+                                           datosReducidos.rows(particiones[i].second));
 
-        errores.insert_rows(errores.n_elem, tasaError);
+        epocas(i) = epoca;
+        errores(i) = tasaError;
     }
 
     cout << "\nPerceptrón simple en datos con dimensión reducida" << endl
