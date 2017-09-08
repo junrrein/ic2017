@@ -45,7 +45,7 @@ int main()
         }
 
         cout << "Iris multicapa, Leave K Out" << endl
-             << "Error promedio: " << mean(errores) << endl
+             << "Error promedio en la prueba: " << mean(errores) << endl
              << "Desvío estándar del error: " << stddev(errores) << endl
              << "N° de épocas promedio que tarda en converger: " << mean(epocas) << endl
              << "Desvío estándar de lo anterior: " << stddev(epocas) << endl;
@@ -78,7 +78,7 @@ int main()
         }
 
         cout << "\nIris multicapa, Leave One Out" << endl
-             << "Error promedio: " << mean(errores) << endl
+             << "Error promedio en la prueba: " << mean(errores) << endl
              << "Desvío estándar del error: " << stddev(errores) << endl
              << "N° de épocas promedio que tarda en converger: " << mean(epocas) << endl
              << "Desvío estándar de lo anterior: " << stddev(epocas) << endl;
