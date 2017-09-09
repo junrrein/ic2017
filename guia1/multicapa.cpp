@@ -112,9 +112,9 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
 {
 	//Entrenamiento
 	vector<mat> nuevosPesos = pesos;
-	vector<mat> deltaW;
+	vector<mat> deltaWOld;
 	for (unsigned int i = 0; i < pesos.size(); ++i)
-		deltaW.push_back(zeros<mat>(size(pesos[i])));
+		deltaWOld.push_back(zeros<mat>(size(pesos[i])));
 
 	for (unsigned int n = 0; n < patrones.n_rows; ++n) {
 		// Calcular las salidas para cada capa
@@ -149,18 +149,18 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
 			const mat deltaWnuevo = tasaAprendizaje
 			                            * delta[i]
 			                            * join_horiz(vec{-1}, ySalidas[i - 1].t())
-			                        + inercia * deltaW[i];
+			                        + inercia * deltaWOld[i];
 			nuevosPesos[i] += deltaWnuevo;
-			deltaW[i] = deltaWnuevo;
+			deltaWOld[i] = deltaWnuevo;
 		}
 
 		// Actualización de pesos de la primer capa
-		const mat deltaWnuevo = tasaAprendizaje
-		                            * delta[0]
-		                            * join_horiz(vec{-1}, patrones.row(n))
-		                        + inercia * deltaW[0];
-		nuevosPesos[0] += deltaWnuevo;
-		deltaW[0] = deltaWnuevo;
+		const mat deltaW = tasaAprendizaje
+		                       * delta[0]
+		                       * join_horiz(vec{-1}, patrones.row(n))
+		                   + inercia * deltaWOld[0];
+		nuevosPesos[0] += deltaW;
+		deltaWOld[0] = deltaW;
 	}
 
 	// Calculo de Tasa de error
