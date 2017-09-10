@@ -187,10 +187,9 @@ int main()
             for (unsigned int k = 0; k < y.n_elem; ++k) {
                 const vector<vec> salidaRed = ic::salidaMulticapa(pesos, vec{x(j), y(k)});
                 const double salidaNeurona = salidaRed.front()(i);
-                const rowvec aInsertar = {x(j), y(k), ic::sigmoid(vec{salidaNeurona})(0)};
+                const rowvec punto = {x(j), y(k), ic::sigmoid(vec{salidaNeurona})(0)};
 
-                puntosSuperficie.insert_rows(puntosSuperficie.n_rows,
-                                             aInsertar);
+                puntosSuperficie.insert_rows(puntosSuperficie.n_rows, punto);
             }
         }
 
@@ -232,7 +231,8 @@ int main()
         rectas.push_back({pendiente, ordenada});
     }
 
-    // Función que devuelve el string que Gnuplot usa para graficar una recta
+    // Función que devuelve el string que Gnuplot usa para graficar una recta.
+    // Lo que devuelve tiene la forma "x * pendiente  + ordenda".
     auto stringRecta = [](double pendiente, double ordenada) {
         return "x * " + to_string(pendiente) + " + " + to_string(ordenada) + " ";
     };
