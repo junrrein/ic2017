@@ -166,9 +166,9 @@ int main()
         }
         else {
             if (salidaDeseada == 1)
-                falsosPositivos.insert_rows(falsosPositivos.n_rows, patron);
-            else
                 falsosNegativos.insert_rows(falsosNegativos.n_rows, patron);
+            else
+                falsosPositivos.insert_rows(falsosPositivos.n_rows, patron);
         }
     }
 
