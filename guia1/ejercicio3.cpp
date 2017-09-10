@@ -141,13 +141,13 @@ int main()
     vector<mat> pesos;
 
     tie(pesos, ignore, ignore) = ic::entrenarMulticapa(parametros.estructuraRed,
-                                                       datos.rows(particiones[0].first),
+                                                       datos.rows(particiones[1].first),
                                                        parametros.nEpocas,
                                                        parametros.tasaAprendizaje,
                                                        parametros.inercia,
                                                        parametros.toleranciaError);
 
-    const mat datosPrueba = datos.rows(particiones[0].second);
+    const mat datosPrueba = datos.rows(particiones[1].second);
 
     mat falsosPositivos, falsosNegativos, verdaderosPositivos, verdaderosNegativos;
 
@@ -173,8 +173,63 @@ int main()
     }
 
     // Graficar los resultados de clasificación de la primer red multicapa
-
+    // Vamos a hacer un gráfico para cada neurona de la primer capa, mostrando
+    // la superficie sigmoidea que genera esa neurona
     Gnuplot gp;
+
+    for (unsigned int i = 0; i < parametros.estructuraRed(0); ++i) {
+        // Calcular los puntos de la superficie sigmoidea
+        const vec x = linspace(0, 1, 20);
+        const vec y = linspace(0, 1, 20);
+        mat puntosSuperficie;
+
+        for (unsigned int j = 0; j < x.n_elem; ++j) {
+            for (unsigned int k = 0; k < y.n_elem; ++k) {
+                const vector<vec> salidaRed = ic::salidaMulticapa(pesos, vec{x(j), y(k)});
+                const double salidaNeurona = salidaRed.front()(i);
+                const rowvec aInsertar = {x(j), y(k), ic::sigmoid(vec{salidaNeurona})(0)};
+
+                puntosSuperficie.insert_rows(puntosSuperficie.n_rows,
+                                             aInsertar);
+            }
+        }
+
+        gp << "set xrange [0:1]" << endl
+           << "set yrange [0:1]" << endl
+           << "set xlabel 'x'" << endl
+           << "set ylabel 'y'" << endl
+           << "set zlabel 'z'" << endl
+           << "set grid linewidth 2" << endl
+           << "set xyplane at 0" << endl
+           << "set dgrid3d 20,20" << endl
+           << "set hidden3d" << endl
+           << "set table 'superficie.dat'" << endl
+           << "splot " << gp.file1d(puntosSuperficie) << "using 1:2:3 with lines" << endl
+           << "unset table" << endl
+           << "unset dgrid3d" << endl
+           << "splot 'superficie.dat' with lines notitle, "
+           << gp.file1d(verdaderosPositivos) << "using 1:2:(0.0) title 'Verdaderos Positivos' with points lt rgb 'blue' pt 1, "
+           << gp.file1d(verdaderosNegativos) << "using 1:2:(0.0) title 'Verdaderos Negativos' with points lt rgb 'red' pt 1, "
+           << gp.file1d(falsosPositivos) << "using 1:2:(0.0) title 'Falsos Positivos' with points lt rgb 'red' ps 1.5 pt 5, "
+           << gp.file1d(falsosNegativos) << "using 1:2:(0.0) title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5" << endl;
+
+        getchar();
+    }
+
+    // Graficar las fronteras de decisión de las neuronas de la primer capa en 2D
+    // Primero calcular dichas fronteras de decisión
+    vector<mat> rectas;
+
+    for (unsigned int i = 0; i < parametros.estructuraRed(0); ++i) {
+        const double w0 = pesos[0](i, 0);
+        const double w1 = pesos[0](i, 1);
+        const double w2 = pesos[0](i, 2);
+        const double pendiente = -w1 / w2;
+        const double ordenada = w0 / w2;
+
+        rectas.push_back({{0, 0 * pendiente + ordenada},
+                          {1, 1 * pendiente + ordenada}});
+    }
 
     gp << "set title 'Clasificación de patrones' font ',13'\n"
        << "set xlabel 'x_1' font ',11'\n"
@@ -183,10 +238,13 @@ int main()
        << "set pointsize 2\n"
        << "plot " << gp.file1d(verdaderosPositivos) << "title 'Verdaderos Positivos' with points lt rgb 'blue', "
        << gp.file1d(verdaderosNegativos) << "title 'Verdaderos Negativos' with points lt rgb 'red', "
-       << gp.file1d(falsosPositivos) << "title 'Falsos Positivos' with points lt rgb 'red' ps 1.5 pt 5, "
-       << gp.file1d(falsosNegativos) << "title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5" << endl;
+       << gp.file1d(falsosPositivos) << "title 'Falsos Positivos' with points lt rgb 'red' ps 1.5 pt 5, ";
 
-    getchar();
+    for (const mat& recta : rectas) {
+        gp << gp.file1d(recta) << "with lines notitle lt rgb 'green', ";
+    }
+
+    gp << gp.file1d(falsosNegativos) << "title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5" << endl;
 
     return 0;
 }
