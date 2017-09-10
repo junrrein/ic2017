@@ -196,10 +196,12 @@ int main()
 
         gp << "set xrange [0:1]" << endl
            << "set yrange [0:1]" << endl
-           << "set xlabel 'x'" << endl
-           << "set ylabel 'y'" << endl
-           << "set zlabel 'z'" << endl
+           << "set title 'Clasificación de patrones' font ',13'" << endl
+           << "set xlabel 'x_1' font ',11'" << endl
+           << "set ylabel 'x_2' font ',11'" << endl
+           << "set zlabel 'y^1_" << to_string(i + 1) << "' font ',11'" << endl
            << "set grid linewidth 2" << endl
+           << "set key box opaque" << endl
            << "set xyplane at 0" << endl
            << "set dgrid3d 20,20" << endl
            << "set hidden3d" << endl
@@ -207,18 +209,18 @@ int main()
            << "splot " << gp.file1d(puntosSuperficie) << "using 1:2:3 with lines" << endl
            << "unset table" << endl
            << "unset dgrid3d" << endl
-           << "splot 'superficie.dat' with lines notitle, "
-           << gp.file1d(verdaderosPositivos) << "using 1:2:(0.0) title 'Verdaderos Positivos' with points lt rgb 'blue' pt 1, "
+           << "splot " << gp.file1d(verdaderosPositivos) << "using 1:2:(0.0) title 'Verdaderos Positivos' with points lt rgb 'blue' pt 1, "
            << gp.file1d(verdaderosNegativos) << "using 1:2:(0.0) title 'Verdaderos Negativos' with points lt rgb 'red' pt 1, "
            << gp.file1d(falsosPositivos) << "using 1:2:(0.0) title 'Falsos Positivos' with points lt rgb 'red' ps 1.5 pt 5, "
-           << gp.file1d(falsosNegativos) << "using 1:2:(0.0) title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5" << endl;
+           << gp.file1d(falsosNegativos) << "using 1:2:(0.0) title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5, "
+           << "'superficie.dat' with lines title 'Salida de la neurona " << to_string(i + 1) << "' " << endl;
 
         getchar();
     }
 
     // Graficar las fronteras de decisión de las neuronas de la primer capa en 2D
     // Primero calcular dichas fronteras de decisión
-    vector<mat> rectas;
+    vector<pair<double, double>> rectas;
 
     for (unsigned int i = 0; i < parametros.estructuraRed(0); ++i) {
         const double w0 = pesos[0](i, 0);
@@ -227,24 +229,29 @@ int main()
         const double pendiente = -w1 / w2;
         const double ordenada = w0 / w2;
 
-        rectas.push_back({{0, 0 * pendiente + ordenada},
-                          {1, 1 * pendiente + ordenada}});
+        rectas.push_back({pendiente, ordenada});
     }
 
-    gp << "set title 'Clasificación de patrones' font ',13'\n"
-       << "set xlabel 'x_1' font ',11'\n"
-       << "set ylabel 'x_2' font ',11'\n"
-       << "set grid\n"
-       << "set pointsize 2\n"
+    // Función que devuelve el string que Gnuplot usa para graficar una recta
+    auto stringRecta = [](double pendiente, double ordenada) {
+        return "x * " + to_string(pendiente) + " + " + to_string(ordenada) + " ";
+    };
+
+    gp << "set pointsize 2" << endl
+       << "set grid linewidth 1" << endl
        << "plot " << gp.file1d(verdaderosPositivos) << "title 'Verdaderos Positivos' with points lt rgb 'blue', "
        << gp.file1d(verdaderosNegativos) << "title 'Verdaderos Negativos' with points lt rgb 'red', "
-       << gp.file1d(falsosPositivos) << "title 'Falsos Positivos' with points lt rgb 'red' ps 1.5 pt 5, ";
+       << gp.file1d(falsosPositivos) << "title 'Falsos Positivos' with points lt rgb 'red' ps 1.5 pt 5, "
+       << gp.file1d(falsosNegativos) << "title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5, ";
 
-    for (const mat& recta : rectas) {
-        gp << gp.file1d(recta) << "with lines notitle lt rgb 'green', ";
+    for (const auto& recta : rectas) {
+        gp << stringRecta(recta.first, recta.second) << "with lines notitle lt rgb 'green', ";
     }
 
-    gp << gp.file1d(falsosNegativos) << "title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5" << endl;
+    // Agregar leyenda para las fronteras de decisión
+    gp << "NaN title 'Fronteras de decisión' with lines lt rgb 'green'" << endl;
+
+    getchar();
 
     return 0;
 }
