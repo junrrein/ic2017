@@ -172,7 +172,7 @@ int main()
         }
     }
 
-    // Graficar los resultados de clasificación de la primer red multicapa
+    // Graficar los resultados de clasificación de la red multicapa
     // Vamos a hacer un gráfico para cada neurona de la primer capa, mostrando
     // la superficie sigmoidea que genera esa neurona
     Gnuplot gp;
@@ -187,7 +187,7 @@ int main()
             for (unsigned int k = 0; k < y.n_elem; ++k) {
                 const vector<vec> salidaRed = ic::salidaMulticapa(pesos, vec{x(j), y(k)});
                 const double salidaNeurona = salidaRed.front()(i);
-                const rowvec punto = {x(j), y(k), ic::sigmoid(vec{salidaNeurona})(0)};
+                const rowvec punto = {x(j), y(k), salidaNeurona};
 
                 puntosSuperficie.insert_rows(puntosSuperficie.n_rows, punto);
             }
@@ -212,10 +212,90 @@ int main()
            << gp.file1d(verdaderosNegativos) << "using 1:2:(0.0) title 'Verdaderos Negativos' with points lt rgb 'red' pt 1, "
            << gp.file1d(falsosPositivos) << "using 1:2:(0.0) title 'Falsos Positivos' with points lt rgb 'red' ps 1.5 pt 5, "
            << gp.file1d(falsosNegativos) << "using 1:2:(0.0) title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5, "
-           << "'superficie.dat' with lines title 'Salida de la neurona " << to_string(i + 1) << "' " << endl;
+           << "'superficie.dat' title 'Salida de la neurona " << to_string(i + 1) << "' with lines palette" << endl;
 
         getchar();
     }
+
+    // Graficar la superficie que la red neuronal da como resultado
+    {
+        const vec x = linspace(0, 1, 20);
+        const vec y = linspace(0, 1, 20);
+        mat puntosSuperficie;
+
+        for (unsigned int j = 0; j < x.n_elem; ++j) {
+            for (unsigned int k = 0; k < y.n_elem; ++k) {
+                const vector<vec> salidaRed = ic::salidaMulticapa(pesos, vec{x(j), y(k)});
+                const double salidaFinal = salidaRed.back()(0);
+                const rowvec punto = {x(j), y(k), salidaFinal};
+
+                puntosSuperficie.insert_rows(puntosSuperficie.n_rows, punto);
+            }
+        }
+
+        gp << "set xrange [0:1]" << endl
+           << "set yrange [0:1]" << endl
+           << "set title 'Clasificación de patrones' font ',13'" << endl
+           << "set xlabel 'x_1' font ',11'" << endl
+           << "set ylabel 'x_2' font ',11'" << endl
+           << "set zlabel 'y_{final}' font ',11'" << endl
+           << "set grid linewidth 2" << endl
+           << "set key box opaque" << endl
+           << "set xyplane at 0" << endl
+           << "set dgrid3d 20,20" << endl
+           << "set hidden3d" << endl
+           << "set table 'superficie.dat'" << endl
+           << "splot " << gp.file1d(puntosSuperficie) << "using 1:2:3 with lines" << endl
+           << "unset table" << endl
+           << "unset dgrid3d" << endl
+           << "splot " << gp.file1d(verdaderosPositivos) << "using 1:2:(0.0) title 'Verdaderos Positivos' with points lt rgb 'blue' pt 1, "
+           << gp.file1d(verdaderosNegativos) << "using 1:2:(0.0) title 'Verdaderos Negativos' with points lt rgb 'red' pt 1, "
+           << gp.file1d(falsosPositivos) << "using 1:2:(0.0) title 'Falsos Positivos' with points lt rgb 'red' ps 1.5 pt 5, "
+           << gp.file1d(falsosNegativos) << "using 1:2:(0.0) title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5, "
+           << "'superficie.dat' title 'Salida de la red' with lines palette" << endl;
+
+        getchar();
+    }
+
+    // Calcular la frontera de decisión final de la red en 2D.
+    // No se mete esto dentro del bloque anterior porque para esto
+    // hace falta calcular en una mayor cantidad de puntos del plano x1-x2.
+    mat puntosFronteraArriba;
+    mat puntosFronteraAbajo;
+    {
+        const vec x = linspace(0, 1, 200);
+        const vec y = linspace(0, 1, 200);
+        mat puntosSuperficie;
+
+        for (unsigned int j = 0; j < x.n_elem; ++j) {
+            for (unsigned int k = 0; k < y.n_elem; ++k) {
+                const vector<vec> salidaRed = ic::salidaMulticapa(pesos, vec{x(j), y(k)});
+                const double salidaFinal = salidaRed.back()(0);
+
+                // Si en este punto del plano, la salida es cero,
+                // dicho punto pertenece a la frontera de decisión.
+                if (abs(salidaFinal) < 0.01) {
+                    // Para graficar la frontera, es necesario separar los puntos
+                    // de la parte "de arriba" de la frontera, de los de la parte "de abajo".
+                    // Si no hacemos esto, al unir los puntos mediante líneas se haría un
+                    // zigzagueo de arriba hacia abajo, de abajo hacia arriba, y así sucesivamente.
+                    if (y(k) >= 0.5)
+                        puntosFronteraArriba.insert_rows(puntosFronteraArriba.n_rows,
+                                                         rowvec{x(j), y(k)});
+                    else
+                        puntosFronteraAbajo.insert_rows(puntosFronteraAbajo.n_rows,
+                                                        rowvec{x(j), y(k)});
+                }
+            }
+        }
+    }
+
+    // Ordenar puntosFrontera a lo largo del eje x1, es decir, de izquierda a derecha.
+    // Esto es necesario para poder unir los puntos mediante líneas sin producir zigzagueo.
+    uvec indices = sort_index(puntosFronteraArriba.col(0));
+    puntosFronteraArriba = puntosFronteraArriba.rows(indices);
+    indices = sort_index(puntosFronteraAbajo.col(0));
+    puntosFronteraAbajo = puntosFronteraAbajo.rows(indices);
 
     // Graficar las fronteras de decisión de las neuronas de la primer capa en 2D
     // Primero calcular dichas fronteras de decisión
@@ -242,14 +322,17 @@ int main()
        << "plot " << gp.file1d(verdaderosPositivos) << "title 'Verdaderos Positivos' with points lt rgb 'blue', "
        << gp.file1d(verdaderosNegativos) << "title 'Verdaderos Negativos' with points lt rgb 'red', "
        << gp.file1d(falsosPositivos) << "title 'Falsos Positivos' with points lt rgb 'red' ps 1.5 pt 5, "
-       << gp.file1d(falsosNegativos) << "title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5, ";
+       << gp.file1d(falsosNegativos) << "title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5, "
+       << gp.file1d(puntosFronteraArriba) << "notitle with lines lt rgb 'magenta', "
+       << gp.file1d(puntosFronteraAbajo) << "notitle with lines lt rgb 'magenta', ";
 
     for (const auto& recta : rectas) {
-        gp << stringRecta(recta.first, recta.second) << "with lines notitle lt rgb 'green', ";
+        gp << stringRecta(recta.first, recta.second) << "notitle with lines lt rgb 'green', ";
     }
 
     // Agregar leyenda para las fronteras de decisión
-    gp << "NaN title 'Fronteras de decisión' with lines lt rgb 'green'" << endl;
+    gp << "NaN title 'Fronteras de decisión intermedias' with lines lt rgb 'green', "
+       << "NaN title 'Frontera de decisión final' with lines lt rgb 'magenta'" << endl;
 
     getchar();
 
