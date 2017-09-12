@@ -172,10 +172,94 @@ int main()
         }
     }
 
+    // Calcular la frontera de decisión final de la red en 2D.
+    // No se mete esto dentro del bloque anterior porque para esto
+    // hace falta calcular en una mayor cantidad de puntos del plano x1-x2.
+    mat puntosFronteraArriba;
+    mat puntosFronteraAbajo;
+    {
+        const vec x = linspace(0, 1, 200);
+        const vec y = linspace(0, 1, 200);
+
+        for (unsigned int j = 0; j < x.n_elem; ++j) {
+            for (unsigned int k = 0; k < y.n_elem; ++k) {
+                const vector<vec> salidaRed = ic::salidaMulticapa(pesos, vec{x(j), y(k)});
+                const double salidaFinal = salidaRed.back()(0);
+
+                // Si en este punto del plano, la salida es cero,
+                // dicho punto pertenece a la frontera de decisión.
+                if (abs(salidaFinal) < 0.01) {
+                    // Para graficar la frontera, es necesario separar los puntos
+                    // de la parte "de arriba" de la frontera, de los de la parte "de abajo".
+                    // Si no hacemos esto, al unir los puntos mediante líneas se haría un
+                    // zigzagueo de arriba hacia abajo, de abajo hacia arriba, y así sucesivamente.
+                    if (y(k) >= 0.5)
+                        puntosFronteraArriba.insert_rows(puntosFronteraArriba.n_rows,
+                                                         rowvec{x(j), y(k)});
+                    else
+                        puntosFronteraAbajo.insert_rows(puntosFronteraAbajo.n_rows,
+                                                        rowvec{x(j), y(k)});
+                }
+            }
+        }
+    }
+
+    // Ordenar puntosFrontera a lo largo del eje x1, es decir, de izquierda a derecha.
+    // Esto es necesario para poder unir los puntos mediante líneas sin producir zigzagueo.
+    uvec indices = sort_index(puntosFronteraArriba.col(0));
+    puntosFronteraArriba = puntosFronteraArriba.rows(indices);
+    indices = sort_index(puntosFronteraAbajo.col(0));
+    puntosFronteraAbajo = puntosFronteraAbajo.rows(indices);
+
+    // Graficar las fronteras de decisión de las neuronas de la primer capa en 2D
+    // Primero calcular dichas fronteras de decisión
+    vector<pair<double, double>> rectas;
+
+    for (unsigned int i = 0; i < parametros.estructuraRed(0); ++i) {
+        const double w0 = pesos[0](i, 0);
+        const double w1 = pesos[0](i, 1);
+        const double w2 = pesos[0](i, 2);
+        const double pendiente = -w1 / w2;
+        const double ordenada = w0 / w2;
+
+        rectas.push_back({pendiente, ordenada});
+    }
+
+    // Función que devuelve el string que Gnuplot usa para graficar una recta.
+    // Lo que devuelve tiene la forma "x * pendiente  + ordenda".
+    auto stringRecta = [](double pendiente, double ordenada) {
+        return "x * " + to_string(pendiente) + " + " + to_string(ordenada) + " ";
+    };
+
+    Gnuplot gp;
+
+    gp << "set xrange [0:1]" << endl
+       << "set yrange [0:1]" << endl
+       << "set title 'Clasificación de patrones' font ',13'" << endl
+       << "set xlabel 'x_1' font ',11'" << endl
+       << "set ylabel 'x_2' font ',11'" << endl
+       << "set pointsize 2" << endl
+       << "set grid linewidth 1" << endl
+       << "plot " << gp.file1d(verdaderosPositivos) << "title 'Verdaderos Positivos' with points lt rgb 'blue', "
+       << gp.file1d(verdaderosNegativos) << "title 'Verdaderos Negativos' with points lt rgb 'red', "
+       << gp.file1d(falsosPositivos) << "title 'Falsos Positivos' with points lt rgb 'red' ps 1.5 pt 5, "
+       << gp.file1d(falsosNegativos) << "title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5, "
+       << gp.file1d(puntosFronteraArriba) << "notitle with lines lt rgb 'magenta', "
+       << gp.file1d(puntosFronteraAbajo) << "notitle with lines lt rgb 'magenta', ";
+
+    for (const auto& recta : rectas) {
+        gp << stringRecta(recta.first, recta.second) << "notitle with lines lt rgb 'green', ";
+    }
+
+    // Agregar leyenda para las fronteras de decisión
+    gp << "NaN title 'Fronteras de decisión intermedias' with lines lt rgb 'green', "
+       << "NaN title 'Frontera de decisión final' with lines lt rgb 'magenta'" << endl;
+
+    getchar();
+
     // Graficar los resultados de clasificación de la red multicapa
     // Vamos a hacer un gráfico para cada neurona de la primer capa, mostrando
     // la superficie sigmoidea que genera esa neurona
-    Gnuplot gp;
 
     for (unsigned int i = 0; i < parametros.estructuraRed(0); ++i) {
         // Calcular los puntos de la superficie sigmoidea
@@ -193,12 +277,7 @@ int main()
             }
         }
 
-        gp << "set xrange [0:1]" << endl
-           << "set yrange [0:1]" << endl
-           << "set title 'Clasificación de patrones' font ',13'" << endl
-           << "set xlabel 'x_1' font ',11'" << endl
-           << "set ylabel 'x_2' font ',11'" << endl
-           << "set zlabel 'y^1_" << to_string(i + 1) << "' font ',11'" << endl
+        gp << "set zlabel 'y^1_" << to_string(i + 1) << "' font ',11'" << endl
            << "set grid linewidth 2" << endl
            << "set key box opaque" << endl
            << "set xyplane at 0" << endl
@@ -256,85 +335,6 @@ int main()
 
         getchar();
     }
-
-    // Calcular la frontera de decisión final de la red en 2D.
-    // No se mete esto dentro del bloque anterior porque para esto
-    // hace falta calcular en una mayor cantidad de puntos del plano x1-x2.
-    mat puntosFronteraArriba;
-    mat puntosFronteraAbajo;
-    {
-        const vec x = linspace(0, 1, 200);
-        const vec y = linspace(0, 1, 200);
-        mat puntosSuperficie;
-
-        for (unsigned int j = 0; j < x.n_elem; ++j) {
-            for (unsigned int k = 0; k < y.n_elem; ++k) {
-                const vector<vec> salidaRed = ic::salidaMulticapa(pesos, vec{x(j), y(k)});
-                const double salidaFinal = salidaRed.back()(0);
-
-                // Si en este punto del plano, la salida es cero,
-                // dicho punto pertenece a la frontera de decisión.
-                if (abs(salidaFinal) < 0.01) {
-                    // Para graficar la frontera, es necesario separar los puntos
-                    // de la parte "de arriba" de la frontera, de los de la parte "de abajo".
-                    // Si no hacemos esto, al unir los puntos mediante líneas se haría un
-                    // zigzagueo de arriba hacia abajo, de abajo hacia arriba, y así sucesivamente.
-                    if (y(k) >= 0.5)
-                        puntosFronteraArriba.insert_rows(puntosFronteraArriba.n_rows,
-                                                         rowvec{x(j), y(k)});
-                    else
-                        puntosFronteraAbajo.insert_rows(puntosFronteraAbajo.n_rows,
-                                                        rowvec{x(j), y(k)});
-                }
-            }
-        }
-    }
-
-    // Ordenar puntosFrontera a lo largo del eje x1, es decir, de izquierda a derecha.
-    // Esto es necesario para poder unir los puntos mediante líneas sin producir zigzagueo.
-    uvec indices = sort_index(puntosFronteraArriba.col(0));
-    puntosFronteraArriba = puntosFronteraArriba.rows(indices);
-    indices = sort_index(puntosFronteraAbajo.col(0));
-    puntosFronteraAbajo = puntosFronteraAbajo.rows(indices);
-
-    // Graficar las fronteras de decisión de las neuronas de la primer capa en 2D
-    // Primero calcular dichas fronteras de decisión
-    vector<pair<double, double>> rectas;
-
-    for (unsigned int i = 0; i < parametros.estructuraRed(0); ++i) {
-        const double w0 = pesos[0](i, 0);
-        const double w1 = pesos[0](i, 1);
-        const double w2 = pesos[0](i, 2);
-        const double pendiente = -w1 / w2;
-        const double ordenada = w0 / w2;
-
-        rectas.push_back({pendiente, ordenada});
-    }
-
-    // Función que devuelve el string que Gnuplot usa para graficar una recta.
-    // Lo que devuelve tiene la forma "x * pendiente  + ordenda".
-    auto stringRecta = [](double pendiente, double ordenada) {
-        return "x * " + to_string(pendiente) + " + " + to_string(ordenada) + " ";
-    };
-
-    gp << "set pointsize 2" << endl
-       << "set grid linewidth 1" << endl
-       << "plot " << gp.file1d(verdaderosPositivos) << "title 'Verdaderos Positivos' with points lt rgb 'blue', "
-       << gp.file1d(verdaderosNegativos) << "title 'Verdaderos Negativos' with points lt rgb 'red', "
-       << gp.file1d(falsosPositivos) << "title 'Falsos Positivos' with points lt rgb 'red' ps 1.5 pt 5, "
-       << gp.file1d(falsosNegativos) << "title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5, "
-       << gp.file1d(puntosFronteraArriba) << "notitle with lines lt rgb 'magenta', "
-       << gp.file1d(puntosFronteraAbajo) << "notitle with lines lt rgb 'magenta', ";
-
-    for (const auto& recta : rectas) {
-        gp << stringRecta(recta.first, recta.second) << "notitle with lines lt rgb 'green', ";
-    }
-
-    // Agregar leyenda para las fronteras de decisión
-    gp << "NaN title 'Fronteras de decisión intermedias' with lines lt rgb 'green', "
-       << "NaN title 'Frontera de decisión final' with lines lt rgb 'magenta'" << endl;
-
-    getchar();
 
     return 0;
 }
