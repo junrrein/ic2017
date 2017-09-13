@@ -34,9 +34,47 @@ vec winnerTakesAll(const vec& v)
 	}
 }
 
-double errorMulticapa(const vector<mat>& pesos,
-                      const mat& patrones,
-                      const mat& salidaDeseada)
+vector<vec> salidaMulticapa(const vector<mat>& pesos,
+                            const vec& patron)
+{
+	vector<vec> ySalidas;
+
+	// Calculo de la salida para la primer capa
+	{
+		const vec v = pesos[0] * join_vert(vec{-1}, patron); // agrega entrada correspondiente al sesgo
+		ySalidas.push_back(sigmoid(v));
+	}
+
+	// Calculo de las salidas para las demas capas
+	for (unsigned int i = 1; i < pesos.size(); ++i) {
+		const vec v = pesos[i] * join_vert(vec{-1}, ySalidas[i - 1]); // agrega entrada correspondiente al sesgo
+		ySalidas.push_back(sigmoid(v));                               // TODO: ver qué valor le pasamos como parámetro
+		                                                              // a la sigmoidea
+	}
+
+	return ySalidas;
+}
+
+double errorCuadraticoMulticapa(const vector<mat>& pesos,
+                                const mat& patrones,
+                                const mat& salidaDeseada)
+{
+	double error = 0;
+
+	for (unsigned int n = 0; n < patrones.n_rows; ++n) {
+		vector<vec> ySalidas = salidaMulticapa(pesos, patrones.row(n).t());
+		const vec salidaRed = ySalidas.back();
+
+		const double errorCuadraticoPatron = sum(pow(salidaDeseada.row(n).t() - salidaRed, 2));
+		error += errorCuadraticoPatron;
+	}
+
+	return error;
+}
+
+double errorClasificacionMulticapa(const vector<mat>& pesos,
+                                   const mat& patrones,
+                                   const mat& salidaDeseada)
 {
 	int errores = 0;
 
@@ -69,39 +107,17 @@ double errorMulticapa(const vector<mat>& pesos,
 	return tasaError;
 }
 
-double errorMulticapa(const vector<mat>& pesos,
-                      const mat& datos)
+double errorClasificacionMulticapa(const vector<mat>& pesos,
+                                   const mat& datos)
 {
 	const int nEntradas = pesos.front().n_cols - 1;
 	const int nSalidas = pesos.back().n_rows;
 	if (nEntradas + nSalidas != int(datos.n_cols))
 		throw runtime_error("Están mal calculados el número de entradas y salidas");
 
-	return errorMulticapa(pesos,
-	                      datos.head_cols(nEntradas),
-	                      datos.tail_cols(nSalidas));
-}
-
-vector<vec> salidaMulticapa(vector<mat>& pesos,
-
-                            const vec& patron)
-{
-	vector<vec> ySalidas;
-
-	// Calculo de la salida para la primer capa
-	{
-		const vec v = pesos[0] * join_vert(vec{-1}, patron); // agrega entrada correspondiente al sesgo
-		ySalidas.push_back(sigmoid(v));
-	}
-
-	// Calculo de las salidas para las demas capas
-	for (unsigned int i = 1; i < pesos.size(); ++i) {
-		const vec v = pesos[i] * join_vert(vec{-1}, ySalidas[i - 1]); // agrega entrada correspondiente al sesgo
-		ySalidas.push_back(sigmoid(v));                               // TODO: ver qué valor le pasamos como parámetro
-		                                                              // a la sigmoidea
-	}
-
-	return ySalidas;
+	return errorClasificacionMulticapa(pesos,
+	                                   datos.head_cols(nEntradas),
+	                                   datos.tail_cols(nSalidas));
 }
 
 pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
@@ -164,18 +180,18 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
 	}
 
 	// Calculo de Tasa de error
-	double tasaError = errorMulticapa(nuevosPesos, patrones, salidaDeseada);
+	double tasaError = errorClasificacionMulticapa(nuevosPesos, patrones, salidaDeseada);
 
 	return {nuevosPesos, tasaError};
 } // fin funcion Epoca
 
-tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estructura,
-                                                  const mat& datos,
-                                                  int nEpocas,
-                                                  double tasaAprendizaje,
-                                                  double inercia,
-                                                  double toleranciaError,
-                                                  long long semilla = -1)
+tuple<vector<mat>, vec, vec, int> entrenarMulticapa(const EstructuraCapasRed& estructura,
+                                                    const mat& datos,
+                                                    int nEpocas,
+                                                    double tasaAprendizaje,
+                                                    double inercia,
+                                                    double toleranciaError,
+                                                    long long semilla = -1)
 {
 	const int nSalidas = estructura(estructura.n_elem - 1);
 	const int nEntradas = datos.n_cols - nSalidas;
@@ -209,6 +225,8 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 	}
 
 	double tasaError = 100;
+	vec erroresClasificacion;
+	vec erroresCuadraticos;
 
 	// Ciclo de las epocas
 	int epoca = 1;
@@ -220,6 +238,10 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 		                                       inercia,
 		                                       pesos);
 
+		erroresClasificacion.insert_rows(erroresClasificacion.n_elem, vec{tasaError});
+		const double errorCuadratico = errorCuadraticoMulticapa(pesos, patrones, salidaDeseada);
+		erroresCuadraticos.insert_rows(epoca - 1, vec{errorCuadratico});
+
 		if (tasaError < toleranciaError)
 			break;
 	}
@@ -230,7 +252,7 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 	if (epoca > nEpocas)
 		epoca = nEpocas;
 
-	return make_tuple(pesos, tasaError, epoca);
+	return make_tuple(pesos, erroresClasificacion, erroresCuadraticos, epoca);
 }
 
 struct ParametrosMulticapa {

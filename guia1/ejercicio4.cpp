@@ -29,15 +29,15 @@ int main()
         for (unsigned int i = 0; i < particiones.size(); ++i) {
             vector<mat> pesos;
             int epoca;
-            tie(pesos, ignore, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
-                                                              datos.rows(particiones[i].first),
-                                                              parametros.nEpocas,
-                                                              parametros.tasaAprendizaje,
-                                                              parametros.inercia,
-                                                              parametros.toleranciaError);
+            tie(pesos, ignore, ignore, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
+                                                                      datos.rows(particiones[i].first),
+                                                                      parametros.nEpocas,
+                                                                      parametros.tasaAprendizaje,
+                                                                      parametros.inercia,
+                                                                      parametros.toleranciaError);
 
-            const double tasaError = ic::errorMulticapa(pesos,
-                                                        datos.rows(particiones[i].second));
+            const double tasaError = ic::errorClasificacionMulticapa(pesos,
+                                                                     datos.rows(particiones[i].second));
 
             epocas(i) = epoca;
             errores(i) = tasaError;
@@ -62,15 +62,15 @@ int main()
         for (unsigned int i = 0; i < particiones.size(); ++i) {
             vector<mat> pesos;
             int epoca;
-            tie(pesos, ignore, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
-                                                              datos.rows(particiones[i].first),
-                                                              parametros.nEpocas,
-                                                              parametros.tasaAprendizaje,
-                                                              parametros.inercia,
-                                                              parametros.toleranciaError);
+            tie(pesos, ignore, ignore, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
+                                                                      datos.rows(particiones[i].first),
+                                                                      parametros.nEpocas,
+                                                                      parametros.tasaAprendizaje,
+                                                                      parametros.inercia,
+                                                                      parametros.toleranciaError);
 
-            const double tasaError = ic::errorMulticapa(pesos,
-                                                        datos.rows(particiones[i].second));
+            const double tasaError = ic::errorClasificacionMulticapa(pesos,
+                                                                     datos.rows(particiones[i].second));
 
             epocas(i) = epoca;
             errores(i) = tasaError;

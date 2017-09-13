@@ -19,22 +19,23 @@ int main()
     datos.load(config::sourceDir + "/guia1/icgtp1datos/XOR_trn.csv");
 
     vector<mat> pesos;
-    double tasaError;
+    vec erroresClasificacion;
     int epoca;
-    tie(pesos, tasaError, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
-                                                         datos,
-                                                         parametros.nEpocas,
-                                                         parametros.tasaAprendizaje,
-                                                         parametros.inercia,
-                                                         parametros.toleranciaError);
+    tie(pesos, erroresClasificacion, ignore, epoca) = ic::entrenarMulticapa(parametros.estructuraRed,
+                                                                            datos,
+                                                                            parametros.nEpocas,
+                                                                            parametros.tasaAprendizaje,
+                                                                            parametros.inercia,
+                                                                            parametros.toleranciaError);
 
+    double tasaError = erroresClasificacion(erroresClasificacion.n_elem - 1);
     cout << "Tasa de error del Multicapa [2 1] para el XOR (entrenamiento): " << tasaError << '\n'
          << "Terminó de entrenar en " << epoca << " épocas" << endl;
 
     datos.load(config::sourceDir + "/guia1/icgtp1datos/XOR_tst.csv");
     const mat patrones = datos.head_cols(2);
     const mat salidaDeseada = datos.tail_cols(1);
-    tasaError = ic::errorMulticapa(pesos, patrones, salidaDeseada);
+    tasaError = ic::errorClasificacionMulticapa(pesos, patrones, salidaDeseada);
 
     cout << "Tasa de error del Multicapa [2 1] para el XOR (prueba): " << tasaError << endl;
 
