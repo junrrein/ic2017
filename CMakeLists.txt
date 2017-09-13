@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 3.3)
 
+# Lo siguiente evita un error raro en algunos sistemas.
+# El error es:
+# ic/external/boost-cmake/cmake/Modules/AddBoostLib.cmake:7: error:
+# Target "Boost_mpi" links to item " -Wl,-rpath -Wl,/usr/lib/openmpi/lib
+# -Wl,--enable-new-dtags" which has leading or trailing whitespace.
+# This is now an error according to policy CMP0004. external/boost-cmake/libs/mpi.cmake:7
+# (_add_boost_lib) external/boost-cmake/CMakeLists.txt:62 (include)
+cmake_policy (SET CMP0004 OLD)
+
 project(ic-template)
 
 # Requisitos para usar la plantilla
