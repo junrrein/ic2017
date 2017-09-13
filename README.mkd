@@ -127,7 +127,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 2. Completar los campos:
 
-    * `Repository`: *git@github.com:junrrein/ic2017.git*
+    * `Repository`: https://github.com/junrrein/ic2017.git
     * `Path`: Directorio padre de la plantilla
     * `Directory`: Nombre del directorio donde irá la plantilla
 
