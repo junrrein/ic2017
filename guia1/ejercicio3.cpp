@@ -27,7 +27,7 @@ int main()
     string rutaCarpeta = config::sourceDir + "/guia1/icgtp1datos/particionesConcent/";
     const vector<ic::Particion> particiones = ic::cargarParticiones(rutaCarpeta, 10);
 
-    // Parte a: Entrenar una red multicapa para clasificar los patrones
+    // Parte a: Entrenar una red multicapa sin inercia para clasificar los patrones
 
     ifstream ifs{config::sourceDir + "/guia1/parametrosConcentMulticapa.txt"};
     ic::ParametrosMulticapa parametros;
@@ -54,6 +54,8 @@ int main()
         double tasaError = ic::errorClasificacionMulticapa(pesos,
                                                            datos.rows(particiones[i].second));
 
+        // Para cada partición, se guarda el número de épocas que tardó en converger
+        // y la tasa de error de clasificación en la partición de prueba.
         epocas(i) = epoca;
         errores(i) = tasaError;
     }
@@ -141,12 +143,17 @@ int main()
     vector<mat> pesos;
     vec erroresClasificacion, erroresCuadraticos;
     int nEpocas;
+    // Elegimos una semilla en particular para luego usarla para entrenar
+    // un multicapa sin inercia y comparar velocidad de convergencia.
+    const long long semilla = randi(1)(0);
+
     tie(pesos, erroresClasificacion, erroresCuadraticos, nEpocas) = ic::entrenarMulticapa(parametros.estructuraRed,
                                                                                           datos.rows(particiones[1].first),
                                                                                           parametros.nEpocas,
                                                                                           parametros.tasaAprendizaje,
                                                                                           parametros.inercia,
-                                                                                          parametros.toleranciaError);
+                                                                                          parametros.toleranciaError,
+                                                                                          semilla);
 
     const mat datosPrueba = datos.rows(particiones[1].second);
 
@@ -189,7 +196,7 @@ int main()
 
                 // Si en este punto del plano, la salida es cero,
                 // dicho punto pertenece a la frontera de decisión.
-                if (abs(salidaFinal) < 0.01) {
+                if (abs(salidaFinal) < 0.03) {
                     // Para graficar la frontera, es necesario separar los puntos
                     // de la parte "de arriba" de la frontera, de los de la parte "de abajo".
                     // Si no hacemos esto, al unir los puntos mediante líneas se haría un
@@ -338,15 +345,42 @@ int main()
     }
 
     // Graficar evolucion del error durante el entrenamiento
-    gp << "set xrange [1:" << nEpocas << "]" << endl
-       << "set yrange [0:40]" << endl
-       << "plot " << gp.file1d(erroresClasificacion) << "with lines" << endl;
-
-    getchar();
-
-    gp << "set xrange [1:" << nEpocas << "]" << endl
-       << "set yrange restore" << endl
+    gp << "set multiplot layout 2, 1 title 'Multicapa con inercia' font ',14'" << endl
+       << "set xrange [1:" << nEpocas + 1 << "]" << endl
+       << "set yrange [0:*]" << endl
+       << "unset key" << endl
+       << "set grid linewidth 1" << endl
+       << "set title 'Evolución del error de clasificación'" << endl
+       << "set xlabel 'Epoca'" << endl
+       << "set ylabel 'Tasa de error (%)'" << endl
+       << "plot " << gp.file1d(erroresClasificacion) << "with lines" << endl
+       << "set title 'Evolución de la suma del error cuadrático'" << endl
+       << "set ylabel 'Suma del error cuadrático'" << endl
        << "plot " << gp.file1d(erroresCuadraticos) << "with lines" << endl;
+
+    // Mostrar la evolución del error en un multicapa sin inercia
+    tie(pesos, erroresClasificacion, erroresCuadraticos, nEpocas) = ic::entrenarMulticapa(parametros.estructuraRed,
+                                                                                          datos.rows(particiones[1].first),
+                                                                                          parametros.nEpocas,
+                                                                                          parametros.tasaAprendizaje,
+                                                                                          0,
+                                                                                          parametros.toleranciaError,
+                                                                                          semilla);
+
+    Gnuplot gp2;
+
+    gp2 << "set multiplot layout 2, 1 title 'Multicapa sin inercia' font ',14'" << endl
+        << "set xrange [1:" << nEpocas + 1 << "]" << endl
+        << "set yrange [0:*]" << endl
+        << "unset key" << endl
+        << "set grid" << endl
+        << "set title 'Evolución del error de clasificación' font ',13'" << endl
+        << "set xlabel 'Epoca'" << endl
+        << "set ylabel 'Tasa de error (%)'" << endl
+        << "plot " << gp.file1d(erroresClasificacion) << "with lines" << endl
+        << "set title 'Evolución de la suma del error cuadrático' font ',13'" << endl
+        << "set ylabel 'Suma del error cuadrático'" << endl
+        << "plot " << gp.file1d(erroresCuadraticos) << "with lines" << endl;
 
     getchar();
 
