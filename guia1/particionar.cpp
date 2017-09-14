@@ -7,26 +7,30 @@ using namespace arma;
 namespace ic {
 using Particion = pair<uvec, uvec>;
 
-vector<Particion> particionar(mat datos, int nParticiones, double porcentajeEnt)
+// Particionamiento con reposición
+vector<Particion> particionar(const mat& datos, int nParticiones, double porcentajeEnt)
 {
 	vector<Particion> particiones;
 	const int nPatronesEnt = datos.n_rows * porcentajeEnt / 100;
+
+        // Creo el vector de índices.
+        // Va desde 0 hasta la cantidad de patrones menos 1.
 	uvec indices = linspace<uvec>(0, datos.n_rows - 1, datos.n_rows);
 
 	for (int i = 0; i < nParticiones; ++i) {
 		indices = shuffle(indices);
-		particiones.push_back({indices.head_rows(nPatronesEnt),
-		                       indices.tail_rows(indices.n_rows - nPatronesEnt)});
+                particiones.push_back({indices.head(nPatronesEnt),
+                                       indices.tail(indices.n_rows - nPatronesEnt)});
 	}
 
 	return particiones;
 }
 
-vector<Particion> leaveKOut(mat datos, int k)
+// Particionamiento sin reposición
+vector<Particion> leaveKOut(const mat& datos, int k)
 {
 	vector<Particion> particiones;
-	const int nParticiones = datos.n_rows / k; // TODO: Preguntar qué hacer cuando la cantidad
-	                                           // de patrones no es divisible por k
+        const int nParticiones = datos.n_rows / k;
 	const uvec indices = shuffle(linspace<uvec>(0, datos.n_rows - 1, datos.n_rows));
 
 	for (int i = 0; i < nParticiones; ++i) {
