@@ -133,4 +133,94 @@ entrenarRadialPorLotes(const mat& patrones,
 
 	return {centroides, sigmas};
 }
+
+// EstructruraRed especifica la estructura de la red compuesta
+// por una capa de base radial mas una capa de salida.
+// Por ejemplo, si la red tiene 5 centroides neuronas en la capa de,
+// base radial, y el clasificador debe arrojar 3 salidas,
+// EstructuraRed para esa red será [5 3].
+using EstructuraRed = vec;
+
+struct ParametrosRBF {
+	EstructuraRed estructuraRed;
+	int nEpocas;
+	double tasaAprendizaje;
+	double inercia;
+	double toleranciaError;
+};
+}
+
+istream& operator>>(istream& is, ic::EstructuraRed& estructura)
+{
+	// Formato de estructuraRed:
+	// [5 3]
+	{
+		char ch;
+		is >> ch;
+		if (ch != '[') {            // Si lo leído no empieza con corchete, la estructura
+			is.clear(ios::failbit); // está mal formateada.
+			return is;
+		}
+	}
+
+	// Asegurarnos de que la variable 'estructura' esté vacía
+	estructura.clear();
+
+	// Primero chequear si estamos por leer un número (con el primer caracter)
+	// y después leerlo posta.
+	for (char ch; is >> ch;) {
+		if (isdigit(ch)) {
+			is.unget();
+			int numero;
+			is >> numero;
+
+			if (numero == 0) { // No podemos tener una capa con cero neuronas
+				is.clear(ios::failbit);
+				return is;
+			}
+
+			estructura.insert_rows(estructura.n_elem, vec{double(numero)});
+		}
+		else if (ch == ']') { // Cuando se encuentra el corchete que cierra,
+			break;            // se terminó de leer la estructura.
+		}
+		else {                      // Si lo que se leyó no es número ni corchete, la estructura leída
+			is.clear(ios::failbit); // tiene formato erróneo.
+			return is;
+		}
+	}
+
+	if (estructura.n_elem != 2) // Fallar si se leyó una estructura
+		                        // con más o menos de dos capas.
+		is.clear(ios::failbit);
+
+	return is;
+}
+
+istream& operator>>(istream& is, ic::ParametrosRBF& parametros)
+{
+	// Formato:
+	// estructura: [3 2 1]
+	// n_epocas: 200
+	// tasa_entrenamiento: 0.1
+	// inercia: 0.5
+	// parametro_sigmoidea: 1
+	// tolerancia_error: 5
+	string str;
+
+	// No chequeamos si la etiqueta de cada línea está bien o no. No nos importa
+	is >> str >> parametros.estructuraRed
+	    >> str >> parametros.nEpocas
+	    >> str >> parametros.tasaAprendizaje
+	    >> str >> parametros.inercia
+	    >> str >> parametros.toleranciaError;
+
+	// Control básico de valores de parámetros
+	if (parametros.nEpocas <= 0
+	    || parametros.tasaAprendizaje <= 0
+	    || parametros.toleranciaError <= 0
+	    || parametros.toleranciaError >= 100)
+		is.clear(ios::failbit);
+
+	return is;
 }
