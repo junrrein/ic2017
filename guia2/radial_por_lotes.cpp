@@ -5,10 +5,132 @@ using namespace arma;
 
 namespace ic {
 
-pair<vec, double> entrenarRadialPorLotes(const mat& patrones,
-                                         int nConjuntos,
-                                         int nEpocas)
+enum class tipoInicializacion {
+	conjuntosAleatorios,
+	valoresAlAzar
+};
+
+vec asignarPatrones(const mat& patrones,
+                    vector<rowvec> centroides)
 {
-	vector<vec> conjuntos;
+	const int nPatrones = patrones.n_rows;
+	const int nConjuntos = centroides.size();
+	vec tablaPatronConjunto;
+	tablaPatronConjunto.set_size(nPatrones);
+
+	for (int i = 0; i < nPatrones; ++i) {
+		vec distancias;
+		distancias.set_size(nConjuntos);
+
+		for (int j = 0; j < nConjuntos; ++j) {
+			distancias(j) = norm(patrones.row(i) - centroides[j]);
+		}
+
+		const int conjuntoGanador = distancias.index_min();
+		tablaPatronConjunto(i) = conjuntoGanador;
+	}
+
+	return tablaPatronConjunto;
+}
+
+// patrones es una matriz que tiene un patrón en cada fila.
+// Cada columna representa una dimensión.
+
+// La función devuelve un pair.
+// pair.first es un vector de STL que contiene los centroides de cada conjunto.
+// pair.second es un vec de Armadillo que contiene el sigma de cada conjunto.
+pair<vector<rowvec>, vec>
+entrenarRadialPorLotes(const mat& patrones,
+                       int nConjuntos,
+                       tipoInicializacion tipo = tipoInicializacion::conjuntosAleatorios)
+{
+	const int nPatrones = patrones.n_rows;
+
+	vec tablaPatronConjunto;
+	tablaPatronConjunto.set_size(nPatrones);
+	vector<rowvec> centroides;
+	centroides.resize(nConjuntos);
+
+	// 1. Inicialización
+	switch (tipo) {
+	case tipoInicializacion::conjuntosAleatorios: {
+		// Se forman los k conjuntos con patrones elegidos aleatoriamente.
+		// Se asigna la misma cantidad de patrones a cada conjunto.
+		const uvec indicesMezclados = shuffle(linspace<uvec>(0, nPatrones - 1, nPatrones));
+		int conjunto = 0;
+
+		for (int i = 0; i < nPatrones; ++i) {
+			// Los patrones no asignados se agregan a cada conjunto,
+			// en round-robin.
+			tablaPatronConjunto(indicesMezclados(i)) = conjunto;
+
+			if (conjunto + 1 < nConjuntos)
+				++conjunto;
+			else
+				conjunto = 0;
+		}
+
+		break;
+	}
+
+	case tipoInicializacion::valoresAlAzar: {
+		// Se le asignan valores aleatorios a los centroides.
+		// Los valores van a estar en el rango [-0.5; 0.5]
+		for (rowvec& centroide : centroides) {
+			centroide = randu<rowvec>(patrones.n_cols) - 0.5;
+		}
+
+		// Asignar los patrones al conjunto que tiene el centroide mas cercano
+		tablaPatronConjunto = asignarPatrones(patrones, centroides);
+
+		break;
+	}
+	}
+
+	// Bucle del k-medias
+	while (true) {
+		// 2. Calcular los centroides de cada conjunto
+		for (int i = 0; i < nConjuntos; ++i) {
+			// Se extraen los indices de los patrones correspondientes al conjunto i
+			const uvec indicesConjunto = find(tablaPatronConjunto == i);
+
+			if (!indicesConjunto.empty()) {
+				// Se calcula el centroide a lo largo de los patrones del conjunto.
+				const rowvec centroide = mean(patrones.rows(indicesConjunto));
+				centroides[i] = centroide;
+			}
+		}
+
+		// 3. Asignar los patrones al conjunto que tiene el centroide mas cercano
+		const vec nuevaTabla = asignarPatrones(patrones, centroides);
+
+		// Detectar si hubo reasignaciones de patrones a conjuntos.
+		// Si no hubo reasignaciones, terminamos.
+		if (any(tablaPatronConjunto != nuevaTabla))
+			tablaPatronConjunto = nuevaTabla;
+		else
+			break;
+	}
+
+	// Terminó el bucle de los k-medias.
+	// Ahora hay que calcular el sigma dentro de cada conjunto.
+	vec sigmas;
+	sigmas.set_size(nConjuntos);
+
+	for (int i = 0; i < nConjuntos; ++i) {
+		// Se extraen los indices de los patrones correspondientes al conjunto i
+		const uvec indicesConjunto = find(tablaPatronConjunto == i);
+
+		// Se calcula el desvio a lo largo de los patrones del conjunto,
+		// a lo largo de las diferentes dimensiones, y luego se saca
+		// el promedio de estos desvíos.
+		if (!indicesConjunto.empty()) {
+			const rowvec aux = stddev(patrones.rows(indicesConjunto));
+			const double sigma = mean(aux);
+			sigmas[i] = sigma;
+		}
+	}
+
+	return {centroides, sigmas};
 }
 }
