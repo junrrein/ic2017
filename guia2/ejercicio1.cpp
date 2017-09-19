@@ -38,9 +38,9 @@ int main()
        << "set xlabel 'x_1'" << endl
        << "set ylabel 'x_2'" << endl
        << "set grid" << endl
-       << "plot " << gp.file1d(verdaderos) << "title 'Verdaderos' with points lt rgb 'blue', "
-       << gp.file1d(falsos) << "title 'Falsos' with points lt rgb 'red', "
-       << gp.file1d(matrizCentroides) << "title 'Centroides' with points pt 5 ps 2 lt rgb 'green'" << endl;
+       << "plot " << gp.file1d(verdaderos) << "title 'Verdaderos' with points lt rgb 'cyan', "
+       << gp.file1d(falsos) << "title 'Falsos' with points lt rgb 'green', "
+       << gp.file1d(matrizCentroides) << "title 'Centroides' with points pt 6 ps 2 lw 3 lt rgb 'black'" << endl;
 
     return 0;
 }
