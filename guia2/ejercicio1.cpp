@@ -9,12 +9,20 @@ int main()
     mat datos;
     datos.load(config::sourceDir + "/guia2/datos/XOR_trn.csv");
 
+    ic::ParametrosRBF parametros;
+    ifstream ifs{config::sourceDir + "/guia2/parametrosRbfXor.txt"};
+    if (!ifs)
+        throw runtime_error("No se pudo abrir el archivo");
+
+    if (!(ifs >> parametros))
+        throw runtime_error("Se leyeron mal los parametros del RBF para el XOR");
+
     const mat patrones = datos.head_cols(2);
     const vec salidaDeseada = datos.tail_cols(1);
     vector<rowvec> centroides;
     vec sigmas;
     tie(centroides, sigmas) = ic::entrenarRadialPorLotes(patrones,
-                                                         6,
+                                                         parametros.estructuraRed(0),
                                                          ic::tipoInicializacion::valoresAlAzar);
 
     mat matrizCentroides;
