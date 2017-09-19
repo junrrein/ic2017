@@ -119,12 +119,9 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
 
 	for (unsigned int n = 0; n < patrones.n_rows; ++n) {
 		// Calcular las salidas para cada capa
-		// También vamos a meter la entrada a la red en la estructura de salidas.
-		// Esto es necesario para el cálculo de ajuste de pesos.
-		vector<vec> ySalidas = salidaMulticapa(nuevosPesos, patrones.row(n).t());
+                const vector<vec> ySalidas = salidaMulticapa(nuevosPesos, patrones.row(n).t());
 
 		// Calculo del error
-		// Se quita tambien la componente correspondiente al sesgo
 		const vec error = salidaDeseada.row(n).t() - ySalidas.back();
 
 		// Calculo retropropagacion
