@@ -1,4 +1,6 @@
-#include <armadillo>
+#pragma once
+
+#include "../guia1/multicapa.cpp"
 
 using namespace std;
 using namespace arma;
@@ -131,71 +133,54 @@ entrenarRadialPorLotes(const mat& patrones,
 		}
 	}
 
-	return {centroides, sigmas};
+	// Solo vamos a devolver los centroides y sigmas para los que el conjunto
+	// correspondiente no está vacío.
+	vector<rowvec> centroidesFinales;
+	vec sigmasFinales;
+
+	for (int i = 0; i < nConjuntos; ++i) {
+		const uvec indicesConjunto = find(tablaPatronConjunto == i);
+
+		if (!indicesConjunto.empty()) {
+			centroidesFinales.push_back(centroides[i]);
+			sigmasFinales.insert_rows(sigmasFinales.n_elem, vec{sigmas(i)});
+		}
+	}
+
+	return {centroidesFinales, sigmasFinales};
 }
 
-// EstructruraRed especifica la estructura de la red compuesta
-// por una capa de base radial mas una capa de salida.
-// Por ejemplo, si la red tiene 5 centroides neuronas en la capa de,
-// base radial, y el clasificador debe arrojar 3 salidas,
-// EstructuraRed para esa red será [5 3].
-using EstructuraRed = vec;
-
 struct ParametrosRBF {
-	EstructuraRed estructuraRed;
+	EstructuraCapasRed estructuraRed;
 	int nEpocas;
 	double tasaAprendizaje;
 	double inercia;
 	double toleranciaError;
 };
-}
 
-istream& operator>>(istream& is, ic::EstructuraRed& estructura)
+double gaussiana(const rowvec& patron,
+                 rowvec centroide,
+                 double sigma)
 {
-	// Formato de estructuraRed:
-	// [5 3]
-	{
-		char ch;
-		is >> ch;
-		if (ch != '[') {            // Si lo leído no empieza con corchete, la estructura
-			is.clear(ios::failbit); // está mal formateada.
-			return is;
-		}
-	}
-
-	// Asegurarnos de que la variable 'estructura' esté vacía
-	estructura.clear();
-
-	// Primero chequear si estamos por leer un número (con el primer caracter)
-	// y después leerlo posta.
-	for (char ch; is >> ch;) {
-		if (isdigit(ch)) {
-			is.unget();
-			int numero;
-			is >> numero;
-
-			if (numero == 0) { // No podemos tener una capa con cero neuronas
-				is.clear(ios::failbit);
-				return is;
-			}
-
-			estructura.insert_rows(estructura.n_elem, vec{double(numero)});
-		}
-		else if (ch == ']') { // Cuando se encuentra el corchete que cierra,
-			break;            // se terminó de leer la estructura.
-		}
-		else {                      // Si lo que se leyó no es número ni corchete, la estructura leída
-			is.clear(ios::failbit); // tiene formato erróneo.
-			return is;
-		}
-	}
-
-	if (estructura.n_elem != 2) // Fallar si se leyó una estructura
-		                        // con más o menos de dos capas.
-		is.clear(ios::failbit);
-
-	return is;
+	// TODO: Corroborar si hay que elevar la distancia al cuadrado
+	return exp(-pow(norm(patron - centroide), 2) / (2 * sigma * sigma));
 }
+
+rowvec salidaRadial(const rowvec& patron,
+                    vector<rowvec> centroides,
+                    vec sigmas)
+{
+	rowvec salida;
+	salida.set_size(centroides.size());
+
+	for (unsigned int i = 0; i < centroides.size(); ++i) {
+		salida(i) = gaussiana(patron, centroides[i], sigmas(i));
+	}
+
+	return salida;
+}
+
+} // namespace ic
 
 istream& operator>>(istream& is, ic::ParametrosRBF& parametros)
 {
@@ -216,7 +201,8 @@ istream& operator>>(istream& is, ic::ParametrosRBF& parametros)
 	    >> str >> parametros.toleranciaError;
 
 	// Control básico de valores de parámetros
-	if (parametros.nEpocas <= 0
+	if (parametros.estructuraRed.size() != 2
+	    || parametros.nEpocas <= 0
 	    || parametros.tasaAprendizaje <= 0
 	    || parametros.toleranciaError <= 0
 	    || parametros.toleranciaError >= 100)
