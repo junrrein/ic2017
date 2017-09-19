@@ -2,5 +2,9 @@ estructura: [3 1]
 n_epocas: 3000
 tasa_entrenamiento: 0.01
 inercia: 0.3
-tolerancia_error: 4
+tolerancia_error: 3
 
+Para probar la diferencia entre "con inercia" y "sin inercia"
+usar los siguientes parámetros:
+tasa_entrenamiento: 0.07
+inercia: 0.1
