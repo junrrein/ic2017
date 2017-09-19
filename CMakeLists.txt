@@ -77,4 +77,5 @@ add_subdirectory (ejemplos)
 
 # Ejercicios
 add_subdirectory (guia1)
+add_subdirectory (guia2)
 
