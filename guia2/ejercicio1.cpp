@@ -70,6 +70,7 @@ int main()
     gp << "set title 'XOR base radial' font ',13'" << endl
        << "set xlabel 'x_1'" << endl
        << "set ylabel 'x_2'" << endl
+       << "set key box opaque center right width 4" << endl
        << "set grid" << endl
        << "plot " << gp.file1d(verdaderos) << "title 'Verdaderos' with points lt rgb 'cyan', "
        << gp.file1d(falsos) << "title 'Falsos' with points lt rgb 'green', "
