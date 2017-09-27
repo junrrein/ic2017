@@ -9,7 +9,7 @@ namespace ic {
 
 enum class tipoInicializacion {
 	conjuntosAleatorios,
-	valoresAlAzar
+    valoresAlAzar //FIXME: Esto es una cagada. Usar patrones al azar
 };
 
 vec asignarPatrones(const mat& patrones,
