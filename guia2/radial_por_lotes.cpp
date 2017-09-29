@@ -129,7 +129,7 @@ entrenarRadialPorLotes(const mat& patrones,
 		if (!indicesConjunto.empty()) {
 			const rowvec aux = stddev(patrones.rows(indicesConjunto));
 			const double sigma = mean(aux);
-			sigmas[i] = sigma;
+            sigmas[i] = sigma;
 		}
 	}
 
@@ -163,7 +163,7 @@ double gaussiana(const rowvec& patron,
                  double sigma)
 {
 	// TODO: Corroborar si hay que elevar la distancia al cuadrado
-	return exp(-pow(norm(patron - centroide), 2) / (2 * sigma * sigma));
+    return exp(-pow(norm(patron - centroide), 2) / (2 * sigma * sigma));
 }
 
 rowvec salidaRadial(const rowvec& patron,

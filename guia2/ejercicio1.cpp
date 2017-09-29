@@ -18,8 +18,8 @@ int main()
     if (!(ifs >> parametros))
         throw runtime_error("Se leyeron mal los parametros del RBF para el XOR");
 
-    const mat patrones = datos.head_cols(2);
-    const vec salidaDeseada = datos.tail_cols(1);
+    mat patrones = datos.head_cols(2);
+    vec salidaDeseada = datos.tail_cols(1);
 
     // 1. Entrenar capa de base radial
     vector<rowvec> centroides;
@@ -47,6 +47,10 @@ int main()
 
     // 4. Calcular el error de clasificación de la red final
     datos.load(config::sourceDir + "/guia2/datos/XOR_tst.csv");
+    patrones = datos.head_cols(2);
+    salidaDeseada = datos.tail_cols(1);
+    salidasRadiales.clear();
+    salidasRadiales.set_size(patrones.n_rows, centroides.size());
 
     for (unsigned int i = 0; i < patrones.n_rows; ++i) {
         salidasRadiales.row(i) = ic::salidaRadial(patrones.row(i), centroides, sigmas);
@@ -66,15 +70,45 @@ int main()
     const mat verdaderos = patrones.rows(find(salidaDeseada == 1));
     const mat falsos = patrones.rows(find(salidaDeseada == -1));
 
+    // Se calcula la salida de la red híbrida para todo el plano,
+    // para luego graficar la frontera de decisión.
+    const int N = 125;
+    mat puntosSuperficie(N * N, 3);
+    const vec x = linspace(-1.5, 1.5, N);
+    const vec y = linspace(-1.5, 1.5, N);
+
+    for (unsigned int i = 0; i < x.n_elem; ++i) {
+        for (unsigned int j = 0; j < y.n_elem; ++j) {
+            const rowvec salidaRBF = ic::salidaRadial(rowvec{x(i), y(j)}, centroides, sigmas);
+            const vector<vec> salidasRed = ic::salidaMulticapa(pesos, salidaRBF.t());
+            const double salidaFinal = salidasRed.back()(0);
+
+            puntosSuperficie.row(N * i + j) = rowvec{x(i), y(j), salidaFinal};
+        }
+    }
+
     Gnuplot gp;
     gp << "set title 'XOR base radial' font ',13'" << endl
        << "set xlabel 'x_1'" << endl
        << "set ylabel 'x_2'" << endl
-       << "set key box opaque center right width 4" << endl
+       << "set key box opaque outside width 3" << endl
        << "set grid" << endl
+
+       // Se plotea la frontera de decisión a un archivo
+       << "set contour base" << endl
+       << "set cntrparam levels discrete 0" << endl
+       << "set dgrid3d " << N << "," << N << endl
+       << "unset surface" << endl
+       << "set table 'fronteraRbfXor.dat'" << endl
+       << "splot " << gp.file1d(puntosSuperficie) << endl
+       << "unset table" << endl
+       << "unset dgrid3d" << endl
+       << "unset contour" << endl
+
        << "plot " << gp.file1d(verdaderos) << "title 'Verdaderos' with points lt rgb 'cyan', "
        << gp.file1d(falsos) << "title 'Falsos' with points lt rgb 'green', "
-       << gp.file1d(matrizCentroides) << "title 'Centroides' with points pt 6 ps 2 lw 3 lt rgb 'black'" << endl;
+       << gp.file1d(matrizCentroides) << "title 'Centroides' with points pt 2 ps 1 lw 2 lt rgb 'black', "
+       << "'fronteraRbfXor.dat' title 'Frontera de decisión' with lines lw 2.5 lt rgb 'magenta'" << endl;
 
     getchar();
 
