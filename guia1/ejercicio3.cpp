@@ -180,44 +180,24 @@ int main()
         }
     }
 
-    // Calcular la frontera de decisión final de la red en 2D.
-    // No se mete esto dentro del bloque anterior porque para esto
-    // hace falta calcular en una mayor cantidad de puntos del plano x1-x2.
-    mat puntosFronteraArriba;
-    mat puntosFronteraAbajo;
+    // Evaluar el resultado de la red en todo el plano.
+    // A partir de esto se va a graficar la frontera de decisión
+    // (los valores de y tal que y = 0)
+    mat puntosSuperficie(50 * 50, 3);
     {
-        const vec x = linspace(0, 1, 200);
-        const vec y = linspace(0, 1, 200);
+        const vec x = linspace(0, 1, 50);
+        const vec y = linspace(0, 1, 50);
 
         for (unsigned int j = 0; j < x.n_elem; ++j) {
             for (unsigned int k = 0; k < y.n_elem; ++k) {
                 const vector<vec> salidaRed = ic::salidaMulticapa(pesos, vec{x(j), y(k)});
                 const double salidaFinal = salidaRed.back()(0);
+                const rowvec punto = {x(j), y(k), salidaFinal};
 
-                // Si en este punto del plano, la salida es cero,
-                // dicho punto pertenece a la frontera de decisión.
-                if (abs(salidaFinal) < 0.03) {
-                    // Para graficar la frontera, es necesario separar los puntos
-                    // de la parte "de arriba" de la frontera, de los de la parte "de abajo".
-                    // Si no hacemos esto, al unir los puntos mediante líneas se haría un
-                    // zigzagueo de arriba hacia abajo, de abajo hacia arriba, y así sucesivamente.
-                    if (y(k) >= 0.5)
-                        puntosFronteraArriba.insert_rows(puntosFronteraArriba.n_rows,
-                                                         rowvec{x(j), y(k)});
-                    else
-                        puntosFronteraAbajo.insert_rows(puntosFronteraAbajo.n_rows,
-                                                        rowvec{x(j), y(k)});
-                }
+                puntosSuperficie.row(50 * j + k) = punto;
             }
         }
     }
-
-    // Ordenar puntosFrontera a lo largo del eje x1, es decir, de izquierda a derecha.
-    // Esto es necesario para poder unir los puntos mediante líneas sin producir zigzagueo.
-    uvec indices = sort_index(puntosFronteraArriba.col(0));
-    puntosFronteraArriba = puntosFronteraArriba.rows(indices);
-    indices = sort_index(puntosFronteraAbajo.col(0));
-    puntosFronteraAbajo = puntosFronteraAbajo.rows(indices);
 
     // Graficar las fronteras de decisión de las neuronas de la primer capa en 2D
     // Primero calcular dichas fronteras de decisión
@@ -248,12 +228,23 @@ int main()
        << "set ylabel 'x_2' font ',11'" << endl
        << "set pointsize 2" << endl
        << "set grid linewidth 1" << endl
+
+       // Se plotea la frontera de decisión a un archivo
+       << "set contour base" << endl
+       << "set cntrparam levels discrete 0" << endl
+       << "set dgrid3d 50, 50" << endl
+       << "unset surface" << endl
+       << "set table 'frontera.dat'" << endl
+       << "splot " << gp.file1d(puntosSuperficie) << endl
+       << "unset table" << endl
+       << "unset dgrid3d" << endl
+       << "unset contour" << endl
+
+       // Ploteo final
        << "plot " << gp.file1d(verdaderosPositivos) << "title 'Verdaderos Positivos' with points lt rgb 'blue', "
        << gp.file1d(verdaderosNegativos) << "title 'Verdaderos Negativos' with points lt rgb 'red', "
        << gp.file1d(falsosPositivos) << "title 'Falsos Positivos' with points lt rgb 'red' ps 1.5 pt 5, "
-       << gp.file1d(falsosNegativos) << "title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5, "
-       << gp.file1d(puntosFronteraArriba) << "notitle with lines lt rgb 'magenta', "
-       << gp.file1d(puntosFronteraAbajo) << "notitle with lines lt rgb 'magenta', ";
+       << gp.file1d(falsosNegativos) << "title 'Falsos Negativos' with points lt rgb 'blue' ps 1.5 pt 5, ";
 
     for (const auto& recta : rectas) {
         gp << stringRecta(recta.first, recta.second) << "notitle with lines lt rgb 'green', ";
@@ -261,7 +252,7 @@ int main()
 
     // Agregar leyenda para las fronteras de decisión
     gp << "NaN title 'Fronteras de decisión intermedias' with lines lt rgb 'green', "
-       << "NaN title 'Frontera de decisión final' with lines lt rgb 'magenta'" << endl;
+       << "'frontera.dat' title 'Frontera de decisión final' with lines lt -1 lw 1.5" << endl;
 
     getchar();
 
@@ -273,7 +264,7 @@ int main()
         // Calcular los puntos de la superficie sigmoidea
         const vec x = linspace(0, 1, 20);
         const vec y = linspace(0, 1, 20);
-        mat puntosSuperficie;
+        puntosSuperficie.clear();
 
         for (unsigned int j = 0; j < x.n_elem; ++j) {
             for (unsigned int k = 0; k < y.n_elem; ++k) {
@@ -285,7 +276,8 @@ int main()
             }
         }
 
-        gp << "set zlabel 'y^1_" << to_string(i + 1) << "' font ',11'" << endl
+        gp << "set surface" << endl
+           << "set zlabel 'y^1_" << to_string(i + 1) << "' font ',11'" << endl
            << "set grid linewidth 2" << endl
            << "set key box opaque" << endl
            << "set xyplane at 0" << endl
@@ -308,7 +300,7 @@ int main()
     {
         const vec x = linspace(0, 1, 20);
         const vec y = linspace(0, 1, 20);
-        mat puntosSuperficie;
+        puntosSuperficie.clear();
 
         for (unsigned int j = 0; j < x.n_elem; ++j) {
             for (unsigned int k = 0; k < y.n_elem; ++k) {
