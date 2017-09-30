@@ -102,6 +102,7 @@ int main()
        << "set table 'fronteraRbfXor.dat'" << endl
        << "splot " << gp.file1d(puntosSuperficie) << endl
        << "unset table" << endl
+       << "set surface" << endl
        << "unset dgrid3d" << endl
        << "unset contour" << endl
 
