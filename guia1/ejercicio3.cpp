@@ -237,6 +237,7 @@ int main()
        << "set table 'frontera.dat'" << endl
        << "splot " << gp.file1d(puntosSuperficie) << endl
        << "unset table" << endl
+       << "set surface" << endl
        << "unset dgrid3d" << endl
        << "unset contour" << endl
 
@@ -276,8 +277,7 @@ int main()
             }
         }
 
-        gp << "set surface" << endl
-           << "set zlabel 'y^1_" << to_string(i + 1) << "' font ',11'" << endl
+        gp << "set zlabel 'y^1_" << to_string(i + 1) << "' font ',11'" << endl
            << "set grid linewidth 2" << endl
            << "set key box opaque" << endl
            << "set xyplane at 0" << endl
