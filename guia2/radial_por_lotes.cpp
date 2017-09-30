@@ -12,12 +12,12 @@ enum class tipoInicializacion {
     patronesAlAzar
 };
 
-vec asignarPatrones(const mat& patrones,
-                    vector<rowvec> centroides)
+ivec asignarPatrones(const mat& patrones,
+                     vector<rowvec> centroides)
 {
 	const int nPatrones = patrones.n_rows;
 	const int nConjuntos = centroides.size();
-	vec tablaPatronConjunto;
+    ivec tablaPatronConjunto;
 	tablaPatronConjunto.set_size(nPatrones);
 
 	for (int i = 0; i < nPatrones; ++i) {
@@ -48,7 +48,7 @@ entrenarRadialPorLotes(const mat& patrones,
 {
 	const int nPatrones = patrones.n_rows;
 
-	vec tablaPatronConjunto;
+    ivec tablaPatronConjunto;
 	tablaPatronConjunto.set_size(nPatrones);
 	vector<rowvec> centroides;
 	centroides.resize(nConjuntos);
@@ -103,7 +103,7 @@ entrenarRadialPorLotes(const mat& patrones,
 		}
 
 		// 3. Asignar los patrones al conjunto que tiene el centroide mas cercano
-		const vec nuevaTabla = asignarPatrones(patrones, centroides);
+        const ivec nuevaTabla = asignarPatrones(patrones, centroides);
 
 		// Detectar si hubo reasignaciones de patrones a conjuntos.
 		// Si no hubo reasignaciones, terminamos.
@@ -127,7 +127,8 @@ entrenarRadialPorLotes(const mat& patrones,
 		// el promedio de estos desvíos.
 		if (!indicesConjunto.empty()) {
 			const rowvec aux = stddev(patrones.rows(indicesConjunto));
-			const double sigma = mean(aux);
+            //            const double sigma = mean(aux);
+            const double sigma = 3;
             sigmas[i] = sigma;
 		}
     }
@@ -158,7 +159,7 @@ struct ParametrosRBF {
 };
 
 double gaussiana(const rowvec& patron,
-                 rowvec centroide,
+                 const rowvec& centroide,
                  double sigma)
 {
 	// TODO: Corroborar si hay que elevar la distancia al cuadrado
