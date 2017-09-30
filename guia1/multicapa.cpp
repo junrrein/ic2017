@@ -29,7 +29,11 @@ vec winnerTakesAll(const vec& v)
 		const double maximo = max(result);
 
 		result.transform([maximo](double val) {
-			return val == maximo ? 1 : -1;
+            // Comparación de igualdad de números de coma flotante
+            if (abs(val - maximo) < 1e-9)
+                return 1;
+            else
+                return -1;
 		});
 
 		return result;
@@ -144,7 +148,8 @@ pair<vector<mat>, double> epocaMulticapa(const mat& patrones,
 			           % (1 - ySalidas[i]);
 		}
 
-		// Actualizacion de pesos de todas las capas menos la primera
+        // Actualizacion de pesos de todas las capas menos la primera.
+        // Si la red tiene una sola capa, no se entra acá.
 		for (int i = pesos.size() - 1; i >= 1; --i) {
 			const mat deltaWnuevo = tasaAprendizaje
 			                            * delta[i]
