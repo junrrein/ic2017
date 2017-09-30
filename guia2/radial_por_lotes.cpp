@@ -9,7 +9,7 @@ namespace ic {
 
 enum class tipoInicializacion {
 	conjuntosAleatorios,
-    valoresAlAzar //FIXME: Esto es una cagada. Usar patrones al azar
+    patronesAlAzar
 };
 
 vec asignarPatrones(const mat& patrones,
@@ -75,12 +75,11 @@ entrenarRadialPorLotes(const mat& patrones,
 		break;
 	}
 
-	case tipoInicializacion::valoresAlAzar: {
-		// Se le asignan valores aleatorios a los centroides.
-		// Los valores van a estar en el rango [-0.5; 0.5]
-		for (rowvec& centroide : centroides) {
-			centroide = randu<rowvec>(patrones.n_cols) - 0.5;
-		}
+    case tipoInicializacion::patronesAlAzar: {
+        // Se le asignan un patrón aleatorio a cada centroide.
+        const uvec indicesMezclados = shuffle(linspace<uvec>(0, nPatrones - 1, nPatrones));
+        for (int i = 0; i < nConjuntos; ++i)
+            centroides[i] = patrones.row(indicesMezclados(i));
 
 		// Asignar los patrones al conjunto que tiene el centroide mas cercano
 		tablaPatronConjunto = asignarPatrones(patrones, centroides);
@@ -131,23 +130,23 @@ entrenarRadialPorLotes(const mat& patrones,
 			const double sigma = mean(aux);
             sigmas[i] = sigma;
 		}
-	}
+    }
 
-	// Solo vamos a devolver los centroides y sigmas para los que el conjunto
-	// correspondiente no está vacío.
-	vector<rowvec> centroidesFinales;
-	vec sigmasFinales;
+    // Solo vamos a devolver los centroides y sigmas para los que el conjunto
+    // correspondiente no está vacío.
+    vector<rowvec> centroidesFinales;
+    vec sigmasFinales;
 
-	for (int i = 0; i < nConjuntos; ++i) {
-		const uvec indicesConjunto = find(tablaPatronConjunto == i);
+    for (int i = 0; i < nConjuntos; ++i) {
+        const uvec indicesConjunto = find(tablaPatronConjunto == i);
 
-		if (!indicesConjunto.empty()) {
-			centroidesFinales.push_back(centroides[i]);
-			sigmasFinales.insert_rows(sigmasFinales.n_elem, vec{sigmas(i)});
-		}
-	}
+        if (!indicesConjunto.empty()) {
+            centroidesFinales.push_back(centroides[i]);
+            sigmasFinales.insert_rows(sigmasFinales.n_elem, vec{sigmas(i)});
+        }
+    }
 
-	return {centroidesFinales, sigmasFinales};
+    return {centroidesFinales, sigmasFinales};
 }
 
 struct ParametrosRBF {
