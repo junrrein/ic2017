@@ -1,0 +1,6 @@
+estructura: [2 3]
+n_epocas: 1000
+tasa_entrenamiento: 0.01
+inercia: 0.3
+tolerancia_error: 3
+

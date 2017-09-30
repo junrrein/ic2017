@@ -1,0 +1,1 @@
+Preguntar por qué cuando ponemos un sigma más grande que el máximo de los sigmas de las dimensiones del texto, el algoritmo funciona mejor.
