@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 
-project(ic-template)
+project(inteligencia2017)
 
 # Requisitos para usar la plantilla
 set (CMAKE_CXX_STANDARD 11)
