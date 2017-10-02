@@ -122,13 +122,13 @@ entrenarRadialPorLotes(const mat& patrones,
 		// Se extraen los indices de los patrones correspondientes al conjunto i
 		const uvec indicesConjunto = find(tablaPatronConjunto == i);
 
-		// Se calcula el desvio a lo largo de los patrones del conjunto,
+        // Se calcula el desvio a lo largo de los patrones del conjunto,
 		// a lo largo de las diferentes dimensiones, y luego se saca
-		// el promedio de estos desvíos.
+        // el promedio de estos desvíos.
 		if (!indicesConjunto.empty()) {
-			const rowvec aux = stddev(patrones.rows(indicesConjunto));
-            //            const double sigma = mean(aux);
-            const double sigma = 3;
+            const rowvec desvios = stddev(patrones.rows(indicesConjunto));
+            const double sigma = mean(desvios.t());
+
             sigmas[i] = sigma;
 		}
     }
