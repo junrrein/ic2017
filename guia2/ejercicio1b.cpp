@@ -128,8 +128,10 @@ int main()
 
     // Graficar patrones y centroides proyectados en R^2
     // Separar patrones en clases
-    const mat patrones = datos.head_cols(2);
-    const mat salidaDeseada = datos.tail_cols(3);
+    const int particion = 1;
+    const mat datosPrueba = datos.rows(particiones[particion].first);
+    const mat patrones = datosPrueba.head_cols(2);
+    const mat salidaDeseada = datosPrueba.tail_cols(3);
     vector<mat> clases(3);
 
     for (unsigned int i = 0; i < patrones.n_rows; ++i) {
@@ -139,16 +141,20 @@ int main()
     }
 
     // Agrupar los centroides en una matriz
-    const vector<rowvec> centroides = centroidesRedesRbf[1];
-    mat matrizCentroides(centroides.size(), 2);
-    for (unsigned int i = 0; i < centroides.size(); ++i)
-        matrizCentroides.row(i) = centroides[i].head(2);
+    const vector<rowvec> centroides = centroidesRedesRbf[particion];
+    mat matrizCentroides(centroides.size(), 3);
+    for (unsigned int i = 0; i < centroides.size(); ++i) {
+        matrizCentroides.row(i) = join_horiz(centroides[i].head(2), vec{sigmasRedesRbf[particion](i)});
+    }
 
     Gnuplot gp;
-    gp << "plot " << gp.file1d(clases[0]) << "title 'Clase 1' with points, "
-       << gp.file1d(clases[1]) << "title 'Clase 2' with points, "
-       << gp.file1d(clases[2]) << "title 'Clase 3' with points, "
-       << gp.file1d(matrizCentroides) << "title 'Centroides' with circles" << endl;
+    gp << "set title 'Error en esa partición: " << erroresRbf(particion) << "'" << endl
+       << "plot " << gp.file1d(clases[0]) << "title 'Clase 1' with points ps 2, "
+       << gp.file1d(clases[1]) << "title 'Clase 2' with points ps 2, "
+       << gp.file1d(clases[2]) << "title 'Clase 3' with points ps 2, "
+       << gp.file1d(matrizCentroides) << "using 1:2:(2*($3)) title 'Centroides' with circles" << endl;
+
+    getchar();
 
     // Graficar evolucion del error durante el entrenamiento del RBF para una partición
     /*
