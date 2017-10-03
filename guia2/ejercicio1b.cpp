@@ -117,11 +117,11 @@ int main()
                                                         salidaDeseada);
     }
 
-    cout << "Iris MLP con inercia " << parametrosMlp.inercia << " (19 parámetros)" << endl
+    cout << "Iris MLP con inercia " << parametrosMlp.inercia << " (83 parámetros)" << endl
          << "Tiempo que tarda en entrenar 10 particiones: " << tiempoMlp << " segundos." << endl
          << "Error de clasificación promedio en pruebas: " << mean(erroresMlp) << endl
          << "Desvío de lo anterior: " << stddev(erroresMlp) << endl
-         << "\nIris RBF (19 parámetros)" << endl
+         << "\nIris RBF (83 parámetros)" << endl
          << "Tiempo que tarda en entrenar 10 particiones: " << tiempoRbf << " segundos." << endl
          << "Error de clasificación promedio en pruebas: " << mean(erroresRbf) << endl
          << "Desvío de lo anterior: " << stddev(erroresRbf) << endl;
