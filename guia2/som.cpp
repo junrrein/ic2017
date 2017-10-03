@@ -4,6 +4,8 @@
 using namespace arma;
 using namespace std;
 
+namespace ic {
+
 class SOM {
 public:
     // Constructores
@@ -117,6 +119,7 @@ void SOM::graficar(gnuplotio::Gnuplot& gp) const
     }
 
     // Graficar patrones
-    gp << gp.file1d(m_patrones) << "title 'Patrones' with points pt 2 ps 1, "
+    gp << gp.file1d(m_patrones) << "title 'Patrones' with points pt 2 ps 1 lt rgb 'blue', "
        << "NaN title 'Neuronas' with points ps 2 pt 1 lt -1 lw 3" << endl;
+}
 }
