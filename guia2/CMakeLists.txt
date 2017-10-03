@@ -1,5 +1,7 @@
 agregar_ejercicio (ejercicio1)
 agregar_ejercicio (ejercicio1b)
 agregar_ejercicio (concentrbf)
+agregar_ejercicio (ejercicio2)
+agregar_ejercicio (particionar_merval)
 agregar_ejercicio (ejercicio3)
 agregar_ejercicio (ejercicio4)
