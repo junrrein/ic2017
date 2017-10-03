@@ -86,18 +86,20 @@ void SOM::entrenar(int nEpocas,
     }
 }
 
-void SOM::graficar(gnuplotio::Gnuplot& gp) const
+void SOM::graficar(Gnuplot& gp) const
 {
     gp << "set key box opaque width 3" << endl
        << "set xlabel 'x_1' font ',11'" << endl
        << "set ylabel 'x_2' font ',11'" << endl
        << "plot ";
-    // Graficar neuronas del mapa
+
+    // Graficar neuronas del mapa y las conexiones
     for (unsigned int x = 0; x < m_mapa.n_rows; ++x) {
         for (unsigned int y = 0; y < m_mapa.n_cols; ++y) {
+            // Graficar la neurona
             gp << gp.file1d(m_mapa(x, y).eval()) << "notitle with points ps 2 pt 1 lt -1 lw 3, ";
 
-            // Graficar conexiones con las vecinas
+            // Graficar conexiones con las vecinas horizontales y verticales
             if (x != 0)
                 gp << gp.file1d(join_vert(m_mapa(x, y), m_mapa(x - 1, y)).eval()) << "notitle with lines lt -1, ";
             if (x != m_mapa.n_rows - 1)
@@ -106,6 +108,7 @@ void SOM::graficar(gnuplotio::Gnuplot& gp) const
                 gp << gp.file1d(join_vert(m_mapa(x, y), m_mapa(x, y - 1)).eval()) << "notitle with lines lt -1, ";
             if (y != m_mapa.n_cols - 1)
                 gp << gp.file1d(join_vert(m_mapa(x, y), m_mapa(x, y + 1)).eval()) << "notitle with lines lt -1, ";
+
             // Graficar conexiones con las vecinas diagonales
             if (x != 0 && y != 0)
                 gp << gp.file1d(join_vert(m_mapa(x, y), m_mapa(x - 1, y - 1)).eval()) << "notitle with lines lt -1, ";
