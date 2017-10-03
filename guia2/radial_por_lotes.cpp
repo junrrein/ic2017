@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../guia1/multicapa.cpp"
+#include <armadillo>
+#include "estructura_capas_red.cpp"
 
 using namespace std;
 using namespace arma;
@@ -126,10 +127,11 @@ entrenarRadialPorLotes(const mat& patrones,
 		// a lo largo de las diferentes dimensiones, y luego se saca
         // el promedio de estos desvíos.
 		if (!indicesConjunto.empty()) {
-            //            const rowvec desvios = stddev(patrones.rows(indicesConjunto));
-            //            const double sigma = mean(desvios.t());
-            //            sigmas[i] = sigma;
-            sigmas[i] = 1;
+            const rowvec desvios = stddev(patrones.rows(indicesConjunto));
+            const double sigma = mean(desvios.t());
+            sigmas[i] = sigma;
+
+            //            sigmas[i] = 1;
 		}
     }
 
@@ -151,7 +153,7 @@ entrenarRadialPorLotes(const mat& patrones,
 }
 
 struct ParametrosRBF {
-	EstructuraCapasRed estructuraRed;
+    EstructuraCapasRed estructuraRed;
 	int nEpocas;
 	double tasaAprendizaje;
 	double inercia;
@@ -184,29 +186,28 @@ rowvec salidaRadial(const rowvec& patron,
 
 istream& operator>>(istream& is, ic::ParametrosRBF& parametros)
 {
-	// Formato:
-	// estructura: [3 2 1]
-	// n_epocas: 200
-	// tasa_entrenamiento: 0.1
-	// inercia: 0.5
-	// parametro_sigmoidea: 1
-	// tolerancia_error: 5
-	string str;
+    // Formato:
+    // estructura: [3 2 1]
+    // n_epocas: 200
+    // tasa_entrenamiento: 0.1
+    // inercia: 0.5
+    // parametro_sigmoidea: 1
+    // tolerancia_error: 5
+    string str;
 
-	// No chequeamos si la etiqueta de cada línea está bien o no. No nos importa
-	is >> str >> parametros.estructuraRed
-	    >> str >> parametros.nEpocas
-	    >> str >> parametros.tasaAprendizaje
-	    >> str >> parametros.inercia
-	    >> str >> parametros.toleranciaError;
+    // No chequeamos si la etiqueta de cada línea está bien o no. No nos importa
+    is >> str >> parametros.estructuraRed
+        >> str >> parametros.nEpocas
+        >> str >> parametros.tasaAprendizaje
+        >> str >> parametros.inercia
+        >> str >> parametros.toleranciaError;
 
-	// Control básico de valores de parámetros
-	if (parametros.estructuraRed.size() != 2
-	    || parametros.nEpocas <= 0
-	    || parametros.tasaAprendizaje <= 0
-	    || parametros.toleranciaError <= 0
-	    || parametros.toleranciaError >= 100)
-		is.clear(ios::failbit);
+    // Control básico de valores de parámetros
+    if (parametros.estructuraRed.size() != 2
+        || parametros.nEpocas <= 0
+        || parametros.tasaAprendizaje <= 0
+        || parametros.toleranciaError <= 0)
+        is.clear(ios::failbit);
 
-	return is;
+    return is;
 }
