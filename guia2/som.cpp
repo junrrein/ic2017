@@ -91,7 +91,9 @@ void SOM::graficar(Gnuplot& gp) const
     gp << "set key box opaque width 3" << endl
        << "set xlabel 'x_1' font ',11'" << endl
        << "set ylabel 'x_2' font ',11'" << endl
-       << "plot ";
+
+       // Graficar patrones
+       << "plot " << gp.file1d(m_patrones) << "title 'Patrones' with points pt 2 ps 1 lt rgb 'blue', ";
 
     // Graficar neuronas del mapa y las conexiones
     for (unsigned int x = 0; x < m_mapa.n_rows; ++x) {
@@ -121,8 +123,7 @@ void SOM::graficar(Gnuplot& gp) const
         }
     }
 
-    // Graficar patrones
-    gp << gp.file1d(m_patrones) << "title 'Patrones' with points pt 2 ps 1 lt rgb 'blue', "
-       << "NaN title 'Neuronas' with points ps 2 pt 1 lt -1 lw 3" << endl;
+    // Título de los centroides para la leyenda
+    gp << "NaN title 'Neuronas' with points ps 2 pt 1 lt -1 lw 3" << endl;
 }
 }
