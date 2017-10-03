@@ -63,9 +63,6 @@ int main()
        << gp.file1d(clases[1]) << "title 'Clase 2' with points ps 2, "
        << gp.file1d(matrizCentroides) << "using 1:2:3 title 'Centroides' with circles" << endl;
 
-    cout << "Desvío de los patrones usando Armadillo: " << mean(stddev(patrones).t()) << endl
-         << "Desvío que calculamos nosotros: " << sigmas(0) << endl;
-
     getchar();
 
     return 0;

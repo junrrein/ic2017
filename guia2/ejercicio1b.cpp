@@ -77,7 +77,7 @@ int main()
 
         tie(centroidesRedesRbf[i], sigmasRedesRbf[i]) = ic::entrenarRadialPorLotes(patrones,
                                                                                    parametrosRbf.estructuraRed(0),
-                                                                                   ic::tipoInicializacion::conjuntosAleatorios);
+                                                                                   ic::tipoInicializacion::patronesAlAzar);
 
         mat salidasRadiales(patrones.n_rows, centroidesRedesRbf[i].size());
         for (unsigned int j = 0; j < patrones.n_rows; ++j)
@@ -128,33 +128,33 @@ int main()
 
     // Graficar patrones y centroides proyectados en R^2
     // Separar patrones en clases
-    const int particion = 1;
-    const mat datosPrueba = datos.rows(particiones[particion].first);
-    const mat patrones = datosPrueba.head_cols(2);
-    const mat salidaDeseada = datosPrueba.tail_cols(3);
-    vector<mat> clases(3);
+    //    const int particion = 1;
+    //    const mat datosPrueba = datos.rows(particiones[particion].first);
+    //    const mat patrones = datosPrueba.head_cols(2);
+    //    const mat salidaDeseada = datosPrueba.tail_cols(3);
+    //    vector<mat> clases(3);
 
-    for (unsigned int i = 0; i < patrones.n_rows; ++i) {
-        const int indiceMayor = index_max(salidaDeseada.row(i));
+    //    for (unsigned int i = 0; i < patrones.n_rows; ++i) {
+    //        const int indiceMayor = index_max(salidaDeseada.row(i));
 
-        clases[indiceMayor].insert_rows(clases[indiceMayor].n_rows, patrones.row(i));
-    }
+    //        clases[indiceMayor].insert_rows(clases[indiceMayor].n_rows, patrones.row(i));
+    //    }
 
-    // Agrupar los centroides en una matriz
-    const vector<rowvec> centroides = centroidesRedesRbf[particion];
-    mat matrizCentroides(centroides.size(), 3);
-    for (unsigned int i = 0; i < centroides.size(); ++i) {
-        matrizCentroides.row(i) = join_horiz(centroides[i].head(2), vec{sigmasRedesRbf[particion](i)});
-    }
+    //    // Agrupar los centroides en una matriz
+    //    const vector<rowvec> centroides = centroidesRedesRbf[particion];
+    //    mat matrizCentroides(centroides.size(), 3);
+    //    for (unsigned int i = 0; i < centroides.size(); ++i) {
+    //        matrizCentroides.row(i) = join_horiz(centroides[i].head(2), vec{sigmasRedesRbf[particion](i)});
+    //    }
 
-    Gnuplot gp;
-    gp << "set title 'Error en esa partición: " << erroresRbf(particion) << "'" << endl
-       << "plot " << gp.file1d(clases[0]) << "title 'Clase 1' with points ps 2, "
-       << gp.file1d(clases[1]) << "title 'Clase 2' with points ps 2, "
-       << gp.file1d(clases[2]) << "title 'Clase 3' with points ps 2, "
-       << gp.file1d(matrizCentroides) << "using 1:2:(2*($3)) title 'Centroides' with circles" << endl;
+    //    Gnuplot gp;
+    //    gp << "set title 'Error en esa partición: " << erroresRbf(particion) << "'" << endl
+    //       << "plot " << gp.file1d(clases[0]) << "title 'Clase 1' with points ps 2, "
+    //       << gp.file1d(clases[1]) << "title 'Clase 2' with points ps 2, "
+    //       << gp.file1d(clases[2]) << "title 'Clase 3' with points ps 2, "
+    //       << gp.file1d(matrizCentroides) << "using 1:2:(2*($3)) title 'Centroides' with circles" << endl;
 
-    getchar();
+    //    getchar();
 
     // Graficar evolucion del error durante el entrenamiento del RBF para una partición
     /*

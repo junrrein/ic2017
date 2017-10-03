@@ -26,7 +26,7 @@ int main()
     vec sigmas;
     tie(centroides, sigmas) = ic::entrenarRadialPorLotes(patrones,
                                                          parametros.estructuraRed(0),
-                                                         ic::tipoInicializacion::patronesAlAzar);
+                                                         ic::tipoInicializacion::conjuntosAleatorios);
 
     // 2. Calcular la salida de la capa radial para todos los patrones
     mat salidasRadiales(patrones.n_rows, centroides.size());
