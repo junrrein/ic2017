@@ -4,6 +4,8 @@
 
 int main()
 {
+    arma_rng::set_seed_random();
+
     vec datos;
     datos.load(config::sourceDir + "/guia2/datos/merval.csv");
 
