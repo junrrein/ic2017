@@ -46,6 +46,23 @@ double errorCuadraticoMulticapa(const vector<mat>& pesos,
     return errorCuadraticoTotal;
 }
 
+double errorRelativoPromedioMulticapa(const vector<mat>& pesos,
+                                      const mat& patrones,
+                                      const vec& salidaDeseada)
+{
+    double sumaErroresRelativos = 0;
+
+    for (unsigned int n = 0; n < patrones.n_rows; ++n) {
+        vector<vec> ySalidas = salidaMulticapa(pesos, patrones.row(n).t());
+        const double salidaRed = as_scalar(ySalidas.back());
+
+        const double errorRelativoPatron = abs(salidaRed - salidaDeseada(n)) / salidaDeseada(n);
+        sumaErroresRelativos += errorRelativoPatron;
+    }
+
+    return sumaErroresRelativos / patrones.n_rows * 100;
+}
+
 vector<mat> epocaMulticapa(const mat& patrones,
                            const mat& salidaDeseada,
                            double tasaAprendizaje,
@@ -102,12 +119,12 @@ vector<mat> epocaMulticapa(const mat& patrones,
     return pesos;
 } // fin funcion Epoca
 
-tuple<vector<mat>, vec, int> entrenarMulticapa(const EstructuraCapasRed& estructura,
-                                               const mat& datos,
-                                               int nEpocas,
-                                               double tasaAprendizaje,
-                                               double inercia,
-                                               double toleranciaErrorTotal)
+tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estructura,
+                                                  const mat& datos,
+                                                  int nEpocas,
+                                                  double tasaAprendizaje,
+                                                  double inercia,
+                                                  double tolErrorRelativoPromedio)
 {
     const int nSalidas = estructura(estructura.n_elem - 1);
     const int nEntradas = datos.n_cols - nSalidas;
@@ -134,8 +151,7 @@ tuple<vector<mat>, vec, int> entrenarMulticapa(const EstructuraCapasRed& estruct
         pesos.push_back(randu(estructura(i), estructura(i - 1) + 1) - 0.5);
     }
 
-    double errorTotal = numeric_limits<double>::max();
-    vec erroresCuadraticos;
+    double errorRelativoPromedio;
 
     // Ciclo de las epocas
     int epoca = 1;
@@ -147,10 +163,9 @@ tuple<vector<mat>, vec, int> entrenarMulticapa(const EstructuraCapasRed& estruct
                                inercia,
                                pesos);
 
-        errorTotal = errorCuadraticoMulticapa(pesos, patrones, salidaDeseada);
-        erroresCuadraticos.insert_rows(epoca - 1, vec{errorTotal});
+        errorRelativoPromedio = errorRelativoPromedioMulticapa(pesos, patrones, salidaDeseada);
 
-        if (errorTotal <= toleranciaErrorTotal)
+        if (errorRelativoPromedio <= tolErrorRelativoPromedio)
             break;
     }
     // Fin ciclo (epocas)
@@ -160,7 +175,7 @@ tuple<vector<mat>, vec, int> entrenarMulticapa(const EstructuraCapasRed& estruct
     if (epoca > nEpocas)
         epoca = nEpocas;
 
-    return make_tuple(pesos, erroresCuadraticos, epoca);
+    return make_tuple(pesos, errorRelativoPromedio, epoca);
 }
 
 struct ParametrosMulticapa {

@@ -127,11 +127,12 @@ entrenarRadialPorLotes(const mat& patrones,
 		// a lo largo de las diferentes dimensiones, y luego se saca
         // el promedio de estos desvíos.
 		if (!indicesConjunto.empty()) {
-            const rowvec desvios = stddev(patrones.rows(indicesConjunto));
-            const double sigma = mean(desvios.t());
-            sigmas[i] = sigma;
+            //            const rowvec desvios = stddev(patrones.rows(indicesConjunto));
+            //            const double sigma = mean(desvios.t());
+            //            sigmas[i] = sigma;
 
-            //            sigmas[i] = 1;
+            //            sigmas[i] = 1; // Para el Iris
+            sigmas[i] = 100; // Para el Merval
 		}
     }
 

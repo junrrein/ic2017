@@ -95,14 +95,14 @@ int main()
     mat datosParaCapaFinal = join_horiz(salidasRadiales, salidaDeseada);
 
     vector<mat> pesos;
+    double errorEntrenamiento;
     int epocas;
-    vec errores;
-    tie(pesos, errores, epocas) = ic::entrenarMulticapa(vec{parametrosRbf.estructuraRed(1)},
-                                                        datosParaCapaFinal,
-                                                        parametrosRbf.nEpocas,
-                                                        parametrosRbf.tasaAprendizaje,
-                                                        parametrosRbf.inercia,
-                                                        parametrosRbf.toleranciaError * patrones.n_rows);
+    tie(pesos, errorEntrenamiento, epocas) = ic::entrenarMulticapa(vec{parametrosRbf.estructuraRed(1)},
+                                                                   datosParaCapaFinal,
+                                                                   parametrosRbf.nEpocas,
+                                                                   parametrosRbf.tasaAprendizaje,
+                                                                   parametrosRbf.inercia,
+                                                                   parametrosRbf.toleranciaError);
 
     // Cálculo del error del RBF
     datosParticion = datos.rows(particiones[1].second);
@@ -115,22 +115,22 @@ int main()
                                                   centroides,
                                                   sigmas);
 
-    const double error = ic::errorCuadraticoMulticapa(pesos,
-                                                      salidasRadiales,
-                                                      salidaDeseada);
+    const double errorPrueba = ic::errorRelativoPromedioMulticapa(pesos,
+                                                                  salidasRadiales,
+                                                                  salidaDeseada);
 
     vec salidaRed(patrones.n_rows);
     for (unsigned int n = 0; n < patrones.n_rows; ++n) {
         salidaRed(n) = as_scalar(ic::salidaMulticapa(pesos, salidasRadiales.row(n).t()).back());
     }
 
-    cout << "Error cuadrático promedio prueba: " << error / 47 << endl
-         << "Error cuadrático promedio entrenamiento: " << errores(errores.n_elem - 1) / 426 << endl
+    cout << "Error relativo promedio prueba: " << errorPrueba << endl
+         << "Error relativo promedio entrenamiento: " << errorEntrenamiento << endl
          << "Epocas: " << epocas << endl;
 
     Gnuplot gp;
-    gp << "plot " << gp.file1d(salidaDeseada) << "title 'Salida Deseada' with lines, "
-       << gp.file1d(salidaRed) << "title 'Salida de la Red' with lines lw 2" << endl;
+    gp << "plot " << gp.file1d(salidaDeseada) << "title 'Salida Deseada' with lines lt rgb 'red', "
+       << gp.file1d(salidaRed) << "title 'Salida de la Red' with lines lw 3 lt rgb 'black'" << endl;
 
     return 0;
 }
