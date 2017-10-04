@@ -75,7 +75,7 @@ int main()
 
         const vec x = linspace(1, salidaRed.n_elem, salidaRed.n_elem);
 
-        gp << "set title 'Predicción de la red en la partición " << i + 1 << "' font ',12'" << endl
+        gp << "set title 'Predicción de la red en la partición " << i + 1 << " (Prueba)' font ',12'" << endl
            << "set ylabel 'Valor del índice Merval' font ',11'" << endl
            << "set xrange [0:" << salidaRed.n_elem + 1 << "]" << endl
            << "set yrange [0:1200]" << endl
@@ -97,18 +97,20 @@ int main()
          << "Promedio del error relativo promedio en pruebas: " << mean(erroresPrueba) << " %" << endl
          << "Desvío de lo anterior: " << stddev(erroresPrueba) << " %" << endl;
 
-    const vec salidaDeseada = datos.tail_cols(1);
-    const vec x = linspace(0, datos.n_rows - 1, datos.n_rows);
+    vec merval;
+    merval.load(config::sourceDir + "/guia2/datos/merval.csv");
+    const vec x1 = linspace(0, merval.n_elem - 1, merval.n_elem);
+    const vec x2 = linspace(5, 5 + salidaOrdenada.n_elem - 1, salidaOrdenada.n_elem);
 
-    gp << "set title 'Predicción de la red para el Indice Merval' font ',12'" << endl
+    gp << "set title 'Predicción de la red para el Indice Merval (Prueba)' font ',12'" << endl
        << "set xlabel 't (días)' font ',11'" << endl
        << "set ylabel 'valor del índice' font ',11'" << endl
-       << "set xrange [0:" << datos.n_rows + 1 << "]" << endl
+       << "set xrange [0:" << merval.n_elem + 1 << "]" << endl
        << "set yrange [0:1200]" << endl
        << "set grid" << endl
        << "set key box opaque" << endl
-       << "plot " << gp.file1d(join_horiz(x, salidaDeseada).eval()) << "title 'Salida Deseada' with lines lt rgb 'red', "
-       << gp.file1d(join_horiz(x, salidaOrdenada).eval()) << "title 'Salida de la Red' with lines lw 3 lt rgb 'black'" << endl;
+       << "plot " << gp.file1d(join_horiz(x1, merval).eval()) << "title 'Salida Deseada' with lines lt rgb 'red', "
+       << gp.file1d(join_horiz(x2, salidaOrdenada).eval()) << "title 'Salida de la Red' with lines lw 3 lt rgb 'black'" << endl;
 
     getchar();
 
