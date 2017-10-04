@@ -13,14 +13,14 @@ vector<Particion> particionar(const mat& datos, int nParticiones, double porcent
 	vector<Particion> particiones;
 	const int nPatronesEnt = datos.n_rows * porcentajeEnt / 100;
 
-        // Creo el vector de índices.
-        // Va desde 0 hasta la cantidad de patrones menos 1.
+    // Creo el vector de índices.
+    // Va desde 0 hasta la cantidad de patrones menos 1.
 	uvec indices = linspace<uvec>(0, datos.n_rows - 1, datos.n_rows);
 
 	for (int i = 0; i < nParticiones; ++i) {
 		indices = shuffle(indices);
-                particiones.push_back({indices.head(nPatronesEnt),
-                                       indices.tail(indices.n_rows - nPatronesEnt)});
+        particiones.push_back({indices.head(nPatronesEnt),
+                               indices.tail(indices.n_rows - nPatronesEnt)});
 	}
 
 	return particiones;
@@ -30,18 +30,24 @@ vector<Particion> particionar(const mat& datos, int nParticiones, double porcent
 vector<Particion> leaveKOut(const mat& datos, int k)
 {
 	vector<Particion> particiones;
-        const int nParticiones = datos.n_rows / k;
+    const int nParticiones = datos.n_rows / k;
 	const uvec indices = shuffle(linspace<uvec>(0, datos.n_rows - 1, datos.n_rows));
 
 	for (int i = 0; i < nParticiones; ++i) {
-		const uvec indicesPrueba = indices.rows(span(k * i, (i + 1) * k - 1)); // De 0 a k-1, de k a 2k-1, ...
+        uvec indicesPrueba = indices.rows(span(k * i, (i + 1) * k - 1)); // De 0 a k-1, de k a 2k-1, ...
 		uvec indicesEnt;
 
 		if (k * i - 1 >= 0)
 			indicesEnt.insert_rows(0, indices.rows(span(0, k * i - 1)));
 
-		if ((i + 1) * k <= int(indices.n_elem - 1))
-			indicesEnt.insert_rows(indicesEnt.n_elem, indices.rows(span((i + 1) * k, indices.n_elem - 1)));
+        if ((i + 1) * k <= int(indices.n_elem - 1)) {
+            // Si es la última partición, vamos a meter los elementos del final del bloque de datos
+            // en la partición de prueba
+            if (i == nParticiones - 1)
+                indicesPrueba.insert_rows(indicesPrueba.n_elem, indices.rows(span((i + 1) * k, indices.n_elem - 1)));
+            else
+                indicesEnt.insert_rows(indicesEnt.n_elem, indices.rows(span((i + 1) * k, indices.n_elem - 1)));
+        }
 
 		particiones.push_back({indicesEnt, indicesPrueba});
 	}
