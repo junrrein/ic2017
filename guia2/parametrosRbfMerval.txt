@@ -1,5 +1,5 @@
 estructura: [40 1]
-n_epocas: 5000
+n_epocas: 1000
 tasa_entrenamiento: 0.05
 inercia: 0.3
-tolerancia_error: 2.8
+tolerancia_error: 3.2

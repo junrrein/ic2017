@@ -16,121 +16,98 @@ int main()
     ifstream ifs{config::sourceDir + "/guia2/parametrosRbfMerval.txt"};
     ic::ParametrosRBF parametrosRbf;
     if (!(ifs >> parametrosRbf))
-        throw runtime_error("Se leyeron mal los parámetros del RBF para el Iris");
+        throw runtime_error("Se leyeron mal los parámetros del RBF para el Merval");
 
-    // Estructura de datos para guardar los pesos de todas las redes
-    // (una para cada partición)
-    //    using Centroides = vector<rowvec>;
-    //    vector<Centroides> centroidesRedesRbf;
-    //    vector<vec> sigmasRedesRbf;
-    //    using Pesos = vector<mat>;
-    //    vector<Pesos> pesosCapasFinalesRbf;
-    //    centroidesRedesRbf.resize(particiones.size());
-    //    sigmasRedesRbf.resize(particiones.size());
-    //    pesosCapasFinalesRbf.resize(particiones.size());
+    vec erroresPrueba, salidaOrdenada;
+    erroresPrueba.set_size(particiones.size());
+    salidaOrdenada.set_size(datos.n_rows);
+    Gnuplot gp;
 
-    //    for (unsigned int i = 0; i < particiones.size(); ++i) {
-    //        const mat datosParticion = datos.rows(particiones[i].first);
-    //        const mat patrones = datosParticion.head_cols(4);
-    //        const mat salidaDeseada = datosParticion.tail_cols(3);
+    for (unsigned int i = 0; i < particiones.size(); ++i) {
+        // Entrenamiento
 
-    //        tie(centroidesRedesRbf[i], sigmasRedesRbf[i]) = ic::entrenarRadialPorLotes(patrones,
-    //                                                                                   parametrosRbf.estructuraRed(0),
-    //                                                                                   ic::tipoInicializacion::patronesAlAzar);
+        mat datosParticion = datos.rows(particiones[i].first);
+        mat patrones = datosParticion.head_cols(5);
+        mat salidaDeseada = datosParticion.tail_cols(1);
 
-    //        mat salidasRadiales(patrones.n_rows, centroidesRedesRbf[i].size());
-    //        for (unsigned int j = 0; j < patrones.n_rows; ++j)
-    //            salidasRadiales.row(j) = ic::salidaRadial(patrones.row(j), centroidesRedesRbf[i], sigmasRedesRbf[i]);
+        vector<rowvec> centroides;
+        vec sigmas;
+        tie(centroides, sigmas) = ic::entrenarRadialPorLotes(patrones,
+                                                             parametrosRbf.estructuraRed(0),
+                                                             ic::tipoInicializacion::patronesAlAzar);
 
-    //        const mat datosParaCapaFinal = join_horiz(salidasRadiales, salidaDeseada);
+        mat salidasRadiales(patrones.n_rows, centroides.size());
+        for (unsigned int j = 0; j < patrones.n_rows; ++j)
+            salidasRadiales.row(j) = ic::salidaRadial(patrones.row(j), centroides, sigmas);
 
-    //        tie(pesosCapasFinalesRbf[i], ignore, ignore) = ic::entrenarMulticapa(vec{parametrosRbf.estructuraRed(1)},
-    //                                                                             datosParaCapaFinal,
-    //                                                                             parametrosRbf.nEpocas,
-    //                                                                             parametrosRbf.tasaAprendizaje,
-    //                                                                             parametrosRbf.inercia,
-    //                                                                             parametrosRbf.toleranciaError);
-    //    }
+        mat datosParaCapaFinal = join_horiz(salidasRadiales, salidaDeseada);
 
-    //    // Cálculo del error del RBF
-    //    vec erroresRbf;
-    //    erroresRbf.set_size(particiones.size());
+        vector<mat> pesos;
+        double errorEntrenamiento;
+        int epocas;
+        tie(pesos, errorEntrenamiento, epocas) = ic::entrenarMulticapa(vec{parametrosRbf.estructuraRed(1)},
+                                                                       datosParaCapaFinal,
+                                                                       parametrosRbf.nEpocas,
+                                                                       parametrosRbf.tasaAprendizaje,
+                                                                       parametrosRbf.inercia,
+                                                                       parametrosRbf.toleranciaError);
 
-    //    for (unsigned int i = 0; i < particiones.size(); ++i) {
-    //        const mat datosParticion = datos.rows(particiones[i].second);
-    //        const mat patrones = datosParticion.head_cols(4);
-    //        const mat salidaDeseada = datosParticion.tail_cols(3);
+        // Prueba
 
-    //        mat salidasRadiales(patrones.n_rows, centroidesRedesRbf[i].size());
-    //        for (unsigned int j = 0; j < patrones.n_rows; ++j)
-    //            salidasRadiales.row(j) = ic::salidaRadial(patrones.row(j),
-    //                                                      centroidesRedesRbf[i],
-    //                                                      sigmasRedesRbf[i]);
+        datosParticion = datos.rows(particiones[i].second);
+        patrones = datosParticion.head_cols(5);
+        salidaDeseada = datosParticion.tail_cols(1);
 
-    //        const mat datosParaCapaFinal = join_horiz(salidasRadiales, salidaDeseada);
+        salidasRadiales = mat(patrones.n_rows, centroides.size());
+        for (unsigned int j = 0; j < patrones.n_rows; ++j)
+            salidasRadiales.row(j) = ic::salidaRadial(patrones.row(j),
+                                                      centroides,
+                                                      sigmas);
 
-    //        erroresRbf(i) = ic::errorCuadraticoMulticapa(pesosCapasFinalesRbf[i],
-    //                                                     salidasRadiales,
-    //                                                     salidaDeseada);
-    //    }
+        erroresPrueba(i) = ic::errorRelativoPromedioMulticapa(pesos,
+                                                              salidasRadiales,
+                                                              salidaDeseada);
 
-    //    cout << "Merval RBF" << endl
-    //         << "Error cuadrático promedio en pruebas: " << mean(erroresRbf) << endl
-    //         << "Desvío de lo anterior: " << stddev(erroresRbf) << endl;
+        vec salidaRed(patrones.n_rows);
+        for (unsigned int n = 0; n < patrones.n_rows; ++n) {
+            salidaRed(n) = as_scalar(ic::salidaMulticapa(pesos, salidasRadiales.row(n).t()).back());
+        }
 
-    mat datosParticion = datos.rows(particiones[1].first);
-    mat patrones = datosParticion.head_cols(5);
-    mat salidaDeseada = datosParticion.tail_cols(1);
+        gp << "set title 'Predicción de la red en la partición " << i + 1 << "' font ',12'" << endl
+           << "set xlabel 't'" << endl
+           << "set ylabel 'Valor del índice Merval'" << endl
+           << "set yrange [0:1200]" << endl
+           << "set grid" << endl
+           << "set key box opaque" << endl
+           << "plot " << gp.file1d(salidaDeseada) << "title 'Salida Deseada' with points pt 6 lt rgb 'red', "
+           << gp.file1d(salidaDeseada) << "title 'Salida Deseada' with impulses lt rgb 'red', "
+           << gp.file1d(salidaRed) << "title 'Salida de la Red' with points pt 6 lt rgb 'black', "
+           << gp.file1d(salidaRed) << "title 'Salida de la Red' with impulses lt rgb 'black'" << endl;
 
-    vector<rowvec> centroides;
-    vec sigmas;
-    tie(centroides, sigmas) = ic::entrenarRadialPorLotes(patrones,
-                                                         parametrosRbf.estructuraRed(0),
-                                                         ic::tipoInicializacion::patronesAlAzar);
+        getchar();
 
-    mat salidasRadiales(patrones.n_rows, centroides.size());
-    for (unsigned int j = 0; j < patrones.n_rows; ++j)
-        salidasRadiales.row(j) = ic::salidaRadial(patrones.row(j), centroides, sigmas);
-
-    mat datosParaCapaFinal = join_horiz(salidasRadiales, salidaDeseada);
-
-    vector<mat> pesos;
-    double errorEntrenamiento;
-    int epocas;
-    tie(pesos, errorEntrenamiento, epocas) = ic::entrenarMulticapa(vec{parametrosRbf.estructuraRed(1)},
-                                                                   datosParaCapaFinal,
-                                                                   parametrosRbf.nEpocas,
-                                                                   parametrosRbf.tasaAprendizaje,
-                                                                   parametrosRbf.inercia,
-                                                                   parametrosRbf.toleranciaError);
-
-    // Cálculo del error del RBF
-    datosParticion = datos.rows(particiones[1].second);
-    patrones = datosParticion.head_cols(5);
-    salidaDeseada = datosParticion.tail_cols(1);
-
-    salidasRadiales = mat(patrones.n_rows, centroides.size());
-    for (unsigned int j = 0; j < patrones.n_rows; ++j)
-        salidasRadiales.row(j) = ic::salidaRadial(patrones.row(j),
-                                                  centroides,
-                                                  sigmas);
-
-    const double errorPrueba = ic::errorRelativoPromedioMulticapa(pesos,
-                                                                  salidasRadiales,
-                                                                  salidaDeseada);
-
-    vec salidaRed(patrones.n_rows);
-    for (unsigned int n = 0; n < patrones.n_rows; ++n) {
-        salidaRed(n) = as_scalar(ic::salidaMulticapa(pesos, salidasRadiales.row(n).t()).back());
+        for (unsigned int j = 0; j < salidaRed.n_elem; ++j)
+            salidaOrdenada(particiones[i].second.at(j)) = salidaRed(j);
     }
 
-    cout << "Error relativo promedio prueba: " << errorPrueba << endl
-         << "Error relativo promedio entrenamiento: " << errorEntrenamiento << endl
-         << "Epocas: " << epocas << endl;
+    cout << "Merval RBF, 10 particiones" << endl
+         << "Promedio del error relativo promedio en pruebas: " << mean(erroresPrueba) << endl
+         << "Desvío de lo anterior: " << stddev(erroresPrueba) << endl;
 
-    Gnuplot gp;
-    gp << "plot " << gp.file1d(salidaDeseada) << "title 'Salida Deseada' with lines lt rgb 'red', "
-       << gp.file1d(salidaRed) << "title 'Salida de la Red' with lines lw 3 lt rgb 'black'" << endl;
+    const vec salidaDeseada = datos.tail_cols(1);
+    const vec x = linspace(0, datos.n_rows - 1, datos.n_rows);
+
+    gp << "set title 'Predicción de la red para el Indice Merval' font ',12'" << endl
+       << "set xlabel 't'" << endl
+       << "set ylabel 'Valor del índice Merval'" << endl
+       << "set xrange [0:" << datos.n_rows + 1 << "]" << endl
+       << "set yrange [0:1200]" << endl
+       << "set grid" << endl
+       << "set key box opaque" << endl
+       << "plot " << gp.file1d(join_horiz(x, salidaDeseada).eval()) << "title 'Salida Deseada' with lines lt rgb 'red', "
+       << gp.file1d(join_horiz(x, salidaOrdenada).eval()) << "title 'Salida de la Red' with lines lw 3 lt rgb 'black'" << endl;
+
+    getchar();
 
     return 0;
 }
