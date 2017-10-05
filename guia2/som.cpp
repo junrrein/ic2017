@@ -20,7 +20,7 @@ public:
     void etiquetar();
     int clasificar(const rowvec& patron) const;
     vec clasificar(const mat& patrones) const;
-    void graficar(Gnuplot& gp) const;
+    void graficar(Gnuplot& gp, bool graficarVecindades = true) const;
 
     // Acceso a miembros
     const field<rowvec>& mapa() const { return m_mapa; };
@@ -109,12 +109,12 @@ void SOM::etiquetar()
     if (m_salidaDeseada.empty())
         throw runtime_error("Este SOM no posee una salida deseada asociada a los patrones");
 
-    field<vec> mapaContador(m_mapa.n_rows, m_mapa.n_cols);
+    field<ivec> mapaContador(m_mapa.n_rows, m_mapa.n_cols);
 
     // Inicializar los contadores de clases
     for (unsigned int x = 0; x < m_mapa.n_rows; ++x) {
         for (unsigned int y = 0; y < m_mapa.n_cols; ++y) {
-            mapaContador(x, y) = zeros(2);
+            mapaContador(x, y) = zeros<ivec>(2);
         }
     }
 
@@ -161,7 +161,7 @@ vec SOM::clasificar(const mat& patrones) const
     return result;
 }
 
-void SOM::graficar(Gnuplot& gp) const
+void SOM::graficar(Gnuplot& gp, bool graficarVecindades) const
 {
     gp << "set key box opaque width 3" << endl
        << "set xlabel 'x_1' font ',11'" << endl
@@ -176,15 +176,17 @@ void SOM::graficar(Gnuplot& gp) const
             // Graficar la neurona
             gp << gp.file1d(m_mapa(x, y).eval()) << "notitle with points ps 2 pt 1 lt -1 lw 3, ";
 
-            // Graficar conexiones con las vecinas horizontales y verticales
-            if (x != 0)
-                gp << gp.file1d(join_vert(m_mapa(x, y), m_mapa(x - 1, y)).eval()) << "notitle with lines lt -1, ";
-            if (x != m_mapa.n_rows - 1)
-                gp << gp.file1d(join_vert(m_mapa(x, y), m_mapa(x + 1, y)).eval()) << "notitle with lines lt -1, ";
-            if (y != 0)
-                gp << gp.file1d(join_vert(m_mapa(x, y), m_mapa(x, y - 1)).eval()) << "notitle with lines lt -1, ";
-            if (y != m_mapa.n_cols - 1)
-                gp << gp.file1d(join_vert(m_mapa(x, y), m_mapa(x, y + 1)).eval()) << "notitle with lines lt -1, ";
+            if (graficarVecindades) {
+                // Graficar conexiones con las vecinas horizontales y verticales
+                if (x != 0)
+                    gp << gp.file1d(join_vert(m_mapa(x, y), m_mapa(x - 1, y)).eval()) << "notitle with lines lt -1, ";
+                if (x != m_mapa.n_rows - 1)
+                    gp << gp.file1d(join_vert(m_mapa(x, y), m_mapa(x + 1, y)).eval()) << "notitle with lines lt -1, ";
+                if (y != 0)
+                    gp << gp.file1d(join_vert(m_mapa(x, y), m_mapa(x, y - 1)).eval()) << "notitle with lines lt -1, ";
+                if (y != m_mapa.n_cols - 1)
+                    gp << gp.file1d(join_vert(m_mapa(x, y), m_mapa(x, y + 1)).eval()) << "notitle with lines lt -1, ";
+            }
         }
     }
 
