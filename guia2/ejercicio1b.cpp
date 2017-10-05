@@ -117,14 +117,15 @@ int main()
                                                         salidaDeseada);
     }
 
-    cout << "Iris MLP con inercia " << parametrosMlp.inercia << " (83 parámetros)" << endl
+    cout << setprecision(3)
+         << "Iris MLP con inercia " << parametrosMlp.inercia << " (83 parámetros)" << endl
          << "Tiempo que tarda en entrenar 10 particiones: " << tiempoMlp << " segundos." << endl
-         << "Error de clasificación promedio en pruebas: " << mean(erroresMlp) << endl
-         << "Desvío de lo anterior: " << stddev(erroresMlp) << endl
+         << "Error de clasificación promedio en pruebas: " << mean(erroresMlp) << " %" << endl
+         << "Desvío de lo anterior: " << stddev(erroresMlp) << " %" << endl
          << "\nIris RBF (83 parámetros)" << endl
          << "Tiempo que tarda en entrenar 10 particiones: " << tiempoRbf << " segundos." << endl
-         << "Error de clasificación promedio en pruebas: " << mean(erroresRbf) << endl
-         << "Desvío de lo anterior: " << stddev(erroresRbf) << endl;
+         << "Error de clasificación promedio en pruebas: " << mean(erroresRbf) << " %" << endl
+         << "Desvío de lo anterior: " << stddev(erroresRbf) << " %" << endl;
 
     // Graficar patrones y centroides proyectados en R^2
     // Separar patrones en clases
