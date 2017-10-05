@@ -1,4 +1,4 @@
-estructura: [40 1]
+estructura: [10 1]
 n_epocas: 1000
 tasa_entrenamiento: 0.05
 inercia: 0.3
