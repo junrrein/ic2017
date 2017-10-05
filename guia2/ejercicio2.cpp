@@ -76,6 +76,7 @@ int main()
         const vec x = linspace(1, salidaRed.n_elem, salidaRed.n_elem);
 
         gp << "set title 'Predicción de la red en la partición " << i + 1 << " (Prueba)' font ',12'" << endl
+           << "set xlabel 'N^{ro} de muestra en la partición'" << endl
            << "set ylabel 'Valor del índice Merval' font ',11'" << endl
            << "set xrange [0:" << salidaRed.n_elem + 1 << "]" << endl
            << "set yrange [0:1200]" << endl
