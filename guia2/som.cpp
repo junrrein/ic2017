@@ -134,10 +134,12 @@ void SOM::etiquetar()
     // Se asignan las etiquetas de clase
     for (unsigned int x = 0; x < m_mapa.n_rows; ++x) {
         for (unsigned int y = 0; y < m_mapa.n_cols; ++y) {
-            if (max(mapaContador(x, y)) == min(mapaContador(x, y)))
-                throw runtime_error("La neurona se activó el mismo nro de veces para las dos clases");
-
-            m_etiquetas(x, y) = index_max(mapaContador(x, y));
+            if (mapaContador(x, y)(0) == mapaContador(x, y)(1))
+                // Si la neurona ganó la misma cantidad de veces para ambas clases,
+                // se le asigna la clase al azar.
+                m_etiquetas(x, y) = as_scalar(randi(1, distr_param(0, 1)));
+            else
+                m_etiquetas(x, y) = index_max(mapaContador(x, y));
         }
     }
 }
