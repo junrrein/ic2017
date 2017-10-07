@@ -59,9 +59,15 @@ int main()
     const field<rowvec>& mapa = somClouds.mapa();
     const mat etiquetas = somClouds.etiquetas();
 
+    const double error = double(verdaderosPositivos.n_rows + verdaderosNegativos.n_rows)
+                         / (falsosPositivos.n_rows + falsosNegativos.n_rows);
+    ostringstream ost;
+    ost << setprecision(2) << error;
+
     // Graficar lo etiquetado y clasificado
     Gnuplot gp2;
-    gp2 << "set key box opaque width 3" << endl
+    gp2 << "set title 'SOM para clouds.csv - Clasificación - Error: " + ost.str() + " %' font ',12'" << endl
+        << "set key box opaque width 3" << endl
         << "set xlabel 'x_1' font ',11'" << endl
         << "set ylabel 'x_2' font ',11'" << endl
 
@@ -74,16 +80,6 @@ int main()
     // Graficar neuronas del mapa y las conexiones
     for (unsigned int x = 0; x < mapa.n_rows; ++x) {
         for (unsigned int y = 0; y < mapa.n_cols; ++y) {
-            // Graficar conexiones con las vecinas horizontales y verticales
-            if (x != 0)
-                gp2 << gp2.file1d(join_vert(mapa(x, y), mapa(x - 1, y)).eval()) << "notitle with lines lt rgb 'grey', ";
-            if (x != mapa.n_rows - 1)
-                gp2 << gp2.file1d(join_vert(mapa(x, y), mapa(x + 1, y)).eval()) << "notitle with lines lt rgb 'grey', ";
-            if (y != 0)
-                gp2 << gp2.file1d(join_vert(mapa(x, y), mapa(x, y - 1)).eval()) << "notitle with lines lt rgb 'grey', ";
-            if (y != mapa.n_cols - 1)
-                gp2 << gp2.file1d(join_vert(mapa(x, y), mapa(x, y + 1)).eval()) << "notitle with lines lt rgb 'grey', ";
-
             // Graficar la neurona
             if (etiquetas(x, y) == 0)
                 gp2 << gp2.file1d(mapa(x, y).eval()) << "notitle with points ps 2 pt 6 lw 3 lt rgb 'cyan', ";
