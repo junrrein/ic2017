@@ -15,7 +15,7 @@ int main()
                    {5, 1}};
 
     SistemaBorroso s1{N, tipoConjunto::gaussiano};
-    const vec membresias = s1.membresiasEntrada(0);
+    const vec membresias = s1.activacionesEntrada(0);
     cout << membresias << endl;
 
     Gnuplot gp;

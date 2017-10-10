@@ -53,13 +53,16 @@ public:
 	SistemaBorroso(const mat& matrizEntrada,
 	               tipoConjunto tipoEntrada,
 	               const mat& matrizSalida,
-	               tipoConjunto tipoSalida);
+	               tipoConjunto tipoSalida,
+	               const uvec& t_reglasMapeo = {});
 
 	void graficarConjuntos(Graficar cuales,
 	                       Gnuplot& gp,
 	                       vec membresias = {}) const;
-	vec membresiasEntrada(double x) const;
+	vec activacionesEntrada(double x) const;
+	vec mapeoEntradaSalida(const vec& activacionesEntrada) const;
 	double defuzzyficarSalida(vec activaciones) const;
+	double salidaSistema(double entrada) const;
 
 private:
 	void graficarConjuntos(const vector<unique_ptr<Conjunto> >& conjuntos,
@@ -68,6 +71,7 @@ private:
 
 	vector<unique_ptr<Conjunto> > conjuntosEntrada;
 	vector<unique_ptr<Conjunto> > conjuntosSalida;
+	const uvec reglasMapeo;
 };
 
 ConjuntoTrapezoidal::ConjuntoTrapezoidal(vec puntos)
@@ -234,7 +238,9 @@ SistemaBorroso::SistemaBorroso(const mat& matrizEntrada, tipoConjunto tipoEntrad
 SistemaBorroso::SistemaBorroso(const mat& matrizEntrada,
                                tipoConjunto tipoEntrada,
                                const mat& matrizSalida,
-                               tipoConjunto tipoSalida)
+                               tipoConjunto tipoSalida,
+                               const uvec& t_reglasMapeo)
+    : reglasMapeo{t_reglasMapeo}
 {
 	switch (tipoEntrada) {
 	case tipoConjunto::trapezoidal:
@@ -254,6 +260,23 @@ SistemaBorroso::SistemaBorroso(const mat& matrizEntrada,
 	case tipoConjunto::gaussiano:
 		conjuntosSalida = parsearGaussianas(matrizSalida);
 		break;
+	}
+
+	if (!t_reglasMapeo.empty()) {
+		if (t_reglasMapeo.n_elem != conjuntosEntrada.size())
+			throw runtime_error(
+		      "La cantidad de reglas tiene que ser la misma "
+		      "que la cantidad de conjuntos de entrada");
+
+		if (unique(t_reglasMapeo).eval().n_elem != t_reglasMapeo.n_elem)
+			throw runtime_error(
+		      "No puede haber reglas que mapeen al mismo "
+		      "conjunto de salida");
+
+		if (max(t_reglasMapeo) != conjuntosSalida.size()
+		    || min(t_reglasMapeo != 1))
+			throw runtime_error(
+		      "Los valores de las reglas están fuera de rango");
 	}
 }
 
@@ -275,7 +298,7 @@ void SistemaBorroso::graficarConjuntos(Graficar cuales,
 	}
 }
 
-vec SistemaBorroso::membresiasEntrada(double x) const
+vec SistemaBorroso::activacionesEntrada(double x) const
 {
 	vec result(conjuntosEntrada.size());
 
@@ -283,6 +306,20 @@ vec SistemaBorroso::membresiasEntrada(double x) const
 		result(i) = conjuntosEntrada[i]->membresia(x);
 
 	return result;
+}
+
+vec SistemaBorroso::mapeoEntradaSalida(const vec& activacionesEntrada) const
+{
+	if (reglasMapeo.empty())
+		throw runtime_error("No se tienen reglas de mapeo");
+
+	vec activacionesSalida(conjuntosSalida.size());
+
+	for (unsigned int i = 0; i < reglasMapeo.n_elem; ++i)
+		// El "- 1" es para pasar el vector de reglas de mapeo de base 1 a base 0
+		activacionesSalida(reglasMapeo(i) - 1) = activacionesEntrada(i);
+
+	return activacionesSalida;
 }
 
 double SistemaBorroso::defuzzyficarSalida(vec activaciones) const
@@ -301,4 +338,13 @@ double SistemaBorroso::defuzzyficarSalida(vec activaciones) const
 	}
 
 	return numerador / denominador;
+}
+
+double SistemaBorroso::salidaSistema(double entrada) const
+{
+	const vec actEntrada = activacionesEntrada(entrada);
+	const vec actSalida = mapeoEntradaSalida(actEntrada);
+	const double salida = defuzzyficarSalida(actSalida);
+
+	return salida;
 }
