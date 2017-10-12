@@ -1,8 +1,16 @@
 #include "borroso.cpp"
 
+void graficoLoco(const SistemaBorroso& s,
+                 Gnuplot& gp,
+                 const string& titulo,
+                 pair<double, double> limitesX,
+                 pair<double, double> limitesY);
+
 int main()
 {
+    // --------------------------------------------------
     // Sistema con los conjuntos triangulares originales
+    // --------------------------------------------------
 	mat M = {{-20, -20, -10, -5},
 	         {-10, -5, -5, -2},
 	         {-5, -2, -2, 0},
@@ -27,40 +35,17 @@ int main()
                             tipoConjunto::trapezoidal,
                             reglas};
 
-	vec entradas = linspace(-20, 20, 200);
-	vec salidas = zeros(200);
-
-	for (unsigned int i = 0; i < entradas.n_elem; ++i)
-		salidas(i) = s1.salidaSistema(entradas(i));
-
-	mat puntos = join_horiz(entradas, salidas);
-
-	Gnuplot gp;
-    gp << "set terminal qt size 760,760" << endl
-       << "set multiplot layout 3, 1" << endl
-       << "set title 'Mapeo entrada-salida - Conjuntos triangulares originales' font ', 12'" << endl
-       << "set xlabel 'Entrada' font ',11'" << endl
-       << "set ylabel 'Salida' font ',11'" << endl
-	   << "set xrange [-20:20]" << endl
-	   << "set yrange [-7:7]" << endl
-       << "set grid" << endl
-       << "plot " << gp.file1d(puntos) << "notitle with lines" << endl
-       << "set title 'Conjuntos de entrada'" << endl
-       << "set xlabel 'x'" << endl
-       << "set yrange [0:1.1]" << endl
-       << "set key box opaque" << endl;
-    s1.graficarConjuntos(Graficar::entrada, gp);
-    gp << "NaN notitle" << endl
-       << "set title 'Conjuntos de salida'" << endl
-       << "set xlabel 'y'" << endl
-       << "set xrange [-7:7]" << endl
-       << "set yrange [0:1.1]" << endl
-       << "set key box opaque" << endl;
-    s1.graficarConjuntos(Graficar::salida, gp);
-    gp << "NaN notitle" << endl;
+    Gnuplot gp1;
+    graficoLoco(s1,
+                gp1,
+                "Conjuntos triangulares originales",
+                {-20, 20},
+                {-7, 7});
 	getchar();
 
+    // ------------------------------------
     // Sistema con conjuntos trapezoidales
+    // ------------------------------------
     M = {{-20, -20, -10, -5},
          {-10, -7, -5, -2},
          {-5, -3, -2, 0},
@@ -83,25 +68,17 @@ int main()
                             tipoConjunto::trapezoidal,
                             reglas};
 
-    entradas = linspace(-20, 20, 200);
-    salidas = zeros(200);
-
-    for (unsigned int i = 0; i < entradas.n_elem; ++i)
-        salidas(i) = s2.salidaSistema(entradas(i));
-
-    puntos = join_horiz(entradas, salidas);
-
     Gnuplot gp2;
-    gp2 << "set title 'Mapeo entrada-salida - Conjuntos trapezoidales' font ', 12'" << endl
-        << "set xlabel 'Entrada' font ',11'" << endl
-        << "set ylabel 'Salida' font ',11'" << endl
-        << "set xrange [-20:20]" << endl
-        << "set yrange [-7:7]" << endl
-        << "set grid" << endl
-        << "plot " << gp2.file1d(puntos) << "notitle with lines" << endl;
+    graficoLoco(s2,
+                gp2,
+                "Conjuntos trapezoidales",
+                {-20, 20},
+                {-7, 7});
     getchar();
 
+    // ---------------------------------
     // Sistema con conjuntos gaussianos
+    // ---------------------------------
     M = {{-12.5, 3},
          {-6, 2},
          {-2.5, 1},
@@ -124,23 +101,54 @@ int main()
                             tipoConjunto::gaussiano,
                             reglas};
 
-    entradas = linspace(-20, 20, 200);
-    salidas = zeros(200);
-
-    for (unsigned int i = 0; i < entradas.n_elem; ++i)
-        salidas(i) = s3.salidaSistema(entradas(i));
-
-    puntos = join_horiz(entradas, salidas);
-
     Gnuplot gp3;
-    gp3 << "set title 'Mapeo entrada-salida - Conjuntos gaussianos' font ', 12'" << endl
-        << "set xlabel 'Entrada' font ',11'" << endl
-        << "set ylabel 'Salida' font ',11'" << endl
-        << "set xrange [-20:20]" << endl
-        << "set yrange [-7:7]" << endl
-        << "set grid" << endl
-        << "plot " << gp3.file1d(puntos) << "notitle with lines" << endl;
+    graficoLoco(s3,
+                gp3,
+                "Conjuntos gaussianos",
+                {-17, 17},
+                {-12, 12});
     getchar();
 
 	return 0;
+}
+
+void graficoLoco(const SistemaBorroso& s,
+                 Gnuplot& gp,
+                 const string& titulo,
+                 pair<double, double> limitesX,
+                 pair<double, double> limitesY)
+{
+    const vec entradas = linspace(limitesX.first, limitesX.second, 200);
+    vec salidas = zeros(200);
+
+    for (unsigned int i = 0; i < entradas.n_elem; ++i)
+        salidas(i) = s.salidaSistema(entradas(i));
+
+    const mat puntos = join_horiz(entradas, salidas);
+    const string rangoEntrada = "[" + to_string(limitesX.first) + ":" + to_string(limitesX.second) + "]";
+    const string rangoSalida = "[" + to_string(limitesY.first) + ":" + to_string(limitesY.second) + "]";
+
+    gp << "set terminal qt size 550,680" << endl
+       << "set multiplot layout 3, 1" << endl
+       << "set title 'Mapeo entrada-salida - " + titulo + "' font ', 12'" << endl
+       << "set xlabel 'Entrada' font ',11'" << endl
+       << "set ylabel 'Salida' font ',11'" << endl
+       << "set xrange " + rangoEntrada << endl
+       << "set yrange " + rangoSalida << endl
+       << "set grid" << endl
+       << "plot " << gp.file1d(puntos) << "notitle with lines" << endl
+       << "set title 'Conjuntos de entrada'" << endl
+       << "set xlabel 'x'" << endl
+       << "unset ylabel" << endl
+       << "set yrange [0:1.1]" << endl
+       << "set key box opaque" << endl;
+    graficarConjuntos(s.conjuntosEntrada(), gp);
+    gp << "NaN notitle" << endl
+       << "set title 'Conjuntos de salida'" << endl
+       << "set xlabel 'y'" << endl
+       << "set xrange " + rangoSalida << endl
+       << "set yrange [0:1.1]" << endl
+       << "set key box opaque" << endl;
+    graficarConjuntos(s.conjuntosSalida(), gp);
+    gp << "NaN notitle" << endl;
 }
