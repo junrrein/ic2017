@@ -15,7 +15,7 @@ int main()
 
     gp << "set yrange[0:1.2]" << endl
        << "set key box opaque width 3" << endl;
-    s1.graficarConjuntos(Graficar::entrada, gp);
+    graficarConjuntos(s1.conjuntosEntrada(), gp);
     gp << "NaN notitle" << endl;
     getchar();
 
@@ -25,7 +25,7 @@ int main()
                    {5, 1}};
     const SistemaBorroso s2{N, tipoConjunto::gaussiano};
 
-    s2.graficarConjuntos(Graficar::entrada, gp);
+    graficarConjuntos(s1.conjuntosEntrada(), gp);
     getchar();
 
     return 0;

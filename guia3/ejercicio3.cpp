@@ -19,7 +19,7 @@ int main()
     cout << membresias << endl;
 
     Gnuplot gp;
-    s1.graficarConjuntos(Graficar::entrada, gp, membresias);
+    graficarConjuntos(s1.conjuntosEntrada(), gp, membresias);
     gp << "NaN notitle" << endl;
 	getchar();
 

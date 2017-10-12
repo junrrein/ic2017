@@ -32,7 +32,7 @@ int main()
        << "set yrange [0:1.1]" << endl
        << "set grid" << endl
        << "set key box opaque width auto" << endl;
-    s2.graficarConjuntos(Graficar::salida, gp, activaciones);
+    graficarConjuntos(s2.conjuntosSalida(), gp, activaciones);
     gp << gp.file1d(puntoSalida) << "title 'Salida final' with points ps 2 lt rgb 'blue'" << endl;
     getchar();
 

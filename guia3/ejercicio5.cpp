@@ -43,7 +43,7 @@ int main()
        << "set yrange [0:1.1]" << endl
        << "set grid" << endl
        << "set key box opaque" << endl;
-    s.graficarConjuntos(Graficar::entrada, gp, actEntrada);
+    graficarConjuntos(s.conjuntosEntrada(), gp, actEntrada);
     gp << gp.file1d(puntoEntrada) << "title 'Entrada al sistema' with points ps 2 lt rgb 'blue'" << endl;
 
     gp << "set title 'Defuzzyficacion de la salida' font ', 12'" << endl
@@ -53,7 +53,7 @@ int main()
        << "set yrange [0:1.1]" << endl
        << "set grid" << endl
        << "set key box opaque" << endl;
-    s.graficarConjuntos(Graficar::salida, gp, actSalida);
+    graficarConjuntos(s.conjuntosSalida(), gp, actSalida);
     gp << gp.file1d(puntoSalida) << "title 'Salida del sistema' with points ps 2 lt rgb 'blue'" << endl;
 
     getchar();
