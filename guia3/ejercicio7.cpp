@@ -8,7 +8,7 @@ int main()
 {
     const mat m1 = {{-20, -20, -10, -5},
                     {-10, -5, -5, -2},
-                    {-5, -5, -2, 0},
+                    {-5, -2, -2, 0},
                     {-2, 0, 0, 2},
                     {0, 2, 2, 5},
                     {2, 5, 5, 10},
@@ -22,7 +22,7 @@ int main()
                     {2, 4, 5, 10},
                     {5, 10, 20, 20}};
 
-    const mat s1 = {{-7, -5, -5, 3},
+    const mat s1 = {{-7, -5, -5, -3},
                     {-5, -3, -3, -1},
                     {-3, -1, -1, 0},
                     {-1, 0, 0, 1},
@@ -30,7 +30,7 @@ int main()
                     {1, 3, 3, 5},
                     {3, 5, 5, 7}};
 
-    const mat s2 = {{-7, -5, -5, 4},
+    const mat s2 = {{-7, -5, -5, -4},
                     {-5, -4, -4, -3},
                     {-4, -3, -3, 0},
                     {-3, 0, 0, 3},
@@ -105,37 +105,50 @@ void graficosCopados(const SistemaBorroso& s,
     // ------------------------
     // Demasiados gráficos
     // ------------------------
-    //    gp << "set terminal qt size 1100, 600" << endl
-    //       << "set multiplot title 'Evolución del sistema " + titulo + "' font ', 12' layout 2, 2" << endl
-    //       // Graficar la salida del sistema
-    //       << "set title 'Salida del sistema' font ', 11'" << endl
+    gp << "set terminal qt size 1100, 600" << endl
+       << "set multiplot title 'Evolución del sistema " + titulo + "' font ', 12' layout 2, 2" << endl
+
+       // Graficar el error del sistema
+       << "set title 'Diferencia entre la salida del sistema y la de referencia' font ',11'" << endl
+       << "set xlabel 'Tiempo (segundos)' font ',10'" << endl
+       << "set ylabel 'error (°C)'" << endl
+       << "set xrange [0:199]" << endl
+       << "set yrange [-20:20]" << endl
+       << "set grid" << endl
+       << "plot " << gp.file1d(error) << "notitle with lines" << endl
+
+       // Graficar los conjuntos de entrada del controlador
+       << "set title 'Conjuntos de entrada'" << endl
+       << "set xlabel 'error (°C)' font ', 10'" << endl
+       << "set ylabel ''" << endl
+       << "set xrange [-20:20]" << endl
+       << "set yrange [0:1.1]" << endl;
+    graficarConjuntos(s.conjuntosEntrada(), gp);
+    gp << "NaN notitle" << endl;
+
+    // Graficar la salida del controlador
+    gp << "set title 'Salida del controlador'" << endl
+       << "set xlabel 'Tiempo (segundos)'" << endl
+       << "set ylabel 'q'" << endl
+       << "set xrange [0:199]" << endl
+       << "set yrange [-7:7]" << endl
+       << "plot " << gp.file1d(q) << "notitle with lines" << endl
+
+       // Graficar los conjuntos de salida del controlador
+       << "set title 'Conjuntos de salida'" << endl
+       << "set xlabel 'q'" << endl
+       << "set ylabel ''" << endl
+       << "set xrange [-7:7]" << endl
+       << "set yrange [0:1.1]" << endl;
+    graficarConjuntos(s.conjuntosSalida(), gp);
+    gp << "NaN notitle" << endl;
+
+    //    gp << "set title 'Evolución del sistema " + titulo + "' font ', 11'" << endl
     //       << "set xlabel 'tiempo (segundos)' font ', 10'" << endl
-    //       << "set ylabel 't_o (°C)' font ', 10'" << endl
+    //       << "set ylabel 't (°C)' font ', 10'" << endl
     //       << "set yrange [14:26]" << endl
     //       << "set grid" << endl
-    //       << "plot " << gp.file1d(t_o) << "notitle with lines" << endl
-    //       // Graficar el error del sistema
-    //       << "set title 'Diferencia entre la salida del sistema y la de referencia'" << endl
-    //       << "set ylabel 'error (°C)'" << endl
-    //       << "set yrange restore" << endl
-    //       << "plot " << gp.file1d(error) << "notitle with lines" << endl
-    //       // Graficar la temperatura de referencia del controlador
-    //       << "set title 'Temperatura de referencia'" << endl
-    //       << "set ylabel 't_ref (°C)' font ', 10'" << endl
-    //       << "set yrange [0:26]" << endl
-    //       << "plot " << gp.file1d(t_ref) << "notitle with lines" << endl
-    //       // Graficar la salida del controlador
-    //       << "set title 'Salida del controlador'" << endl
-    //       << "set ylabel 'q'" << endl
-    //       << "set yrange [-7.5:7.5]" << endl
-    //       << "plot " << gp.file1d(q) << "notitle with lines" << endl;
-
-    gp << "set title 'Evolución del sistema " + titulo + "' font ', 11'" << endl
-       << "set xlabel 'tiempo (segundos)' font ', 10'" << endl
-       << "set ylabel 't (°C)' font ', 10'" << endl
-       << "set yrange [14:26]" << endl
-       << "set grid" << endl
-       << "set key box opaque" << endl
-       << "plot " << gp.file1d(t_o(span(1, t_o.n_elem - 1)).eval()) << "title 'Salida del sistema' with lines lw 3, "
-       << gp.file1d(t_ref) << "title 'Salida de referencia' with lines lw 0.5" << endl;
+    //       << "set key box opaque" << endl
+    //       << "plot " << gp.file1d(t_o(span(1, t_o.n_elem - 1)).eval()) << "title 'Salida del sistema' with lines lw 3, "
+    //       << gp.file1d(t_ref) << "title 'Salida de referencia' with lines lw 0.5" << endl;
 }
