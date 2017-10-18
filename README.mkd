@@ -139,7 +139,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
     El proyecto será configurado, y una de las dependencias externas (Boost) será descargada.
 
-5. En el árbol de proyectos, desplegar `ic-template`, luego desplegar la carpeta `external`. Hacer click derecho en el objetivo `external` (los objetivos están simbolizados con un martillo 🔨) y seleccionar la opción `Build "external"`.
+5. En el árbol de proyectos, desplegar `inteligincia2017`, luego desplegar la carpeta `external`. Hacer click derecho en el objetivo `external` (los objetivos están simbolizados con un martillo 🔨) y seleccionar la opción `Build "external"`.
 
     **Nota**: En caso de que no aparezca ningún objetivo bajo la carpeta `external`, ejecutar el comando `cm external` en la caja de búsqueda de Qt Creator (`Ctrl + K`).
 
