@@ -123,7 +123,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
 ### De forma gráfica
 
-1. Abrir Qt Creator. Ir a `New Project` → `Import Project` → `Git Clone`. Hacer click en `Choose...`
+1. Abrir Qt Creator. Ir a `New Project` → `Import Project` → `Git Clone`. Hacer click en `Choose...`.
 
 2. Completar los campos:
 
@@ -131,7 +131,7 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
     * `Path`: Directorio padre de la plantilla
     * `Directory`: Nombre del directorio donde irá la plantilla
 
-    Seleccionar también la opción `Recursive`
+    Seleccionar también la opción `Recursive`.
 
 3. Hacer click en `Next`. Ahora la plantilla será descargada. Hacer click en `Finish` cuando finalice.
 
@@ -139,11 +139,13 @@ Gnuplot, como Matlab/Octave, permite construir gráficos interactivos (es decir,
 
     El proyecto será configurado, y una de las dependencias externas (Boost) será descargada.
 
-5. En el árbol de proyectos, desplegar `inteligencia2017`, luego desplegar la carpeta `external`. Hacer click derecho en el objetivo `external` (los objetivos están simbolizados con un martillo 🔨) y seleccionar la opción `Build "external"`.
+5. Hay dos maneras de completar este paso:
 
-    **Nota**: En caso de que no aparezca ningún objetivo bajo la carpeta `external`, ejecutar el comando `cm external` en la caja de búsqueda de Qt Creator (`Ctrl + K`).
+	1. En el árbol de proyectos, desplegar `ic-template`, luego desplegar la carpeta `external`. Hacer click derecho en el objetivo `external` (los objetivos están simbolizados con un martillo 🔨) y seleccionar la opción `Build "external"`.
+    
+    2. Ejecutar el comando `cm external` en la caja de búsqueda de Qt Creator (`Ctrl + K`).
 
-    Este paso descargará el resto de las dependencias externas, y una de ellas (OpenBLAS) será compilada. Esto tardará un buen rato. Puede verse el progreso en la parte inferior de la ventana, en el panel `4 Compile Output`.
+    Este paso descargará el resto de las dependencias externas, y una de ellas (OpenBLAS) será compilada. Esto tardará un buen rato. Puede verse el progreso en la parte inferior de la ventana, en el panel `4 - Compile Output`.
 
     En Windows, este paso compilará OpenBLAS en una nueva ventana llamada `MinGW x32`, que se cerrará automáticamente cuando la compilación termine.
 
