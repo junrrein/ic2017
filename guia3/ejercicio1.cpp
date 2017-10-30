@@ -11,7 +11,7 @@ int main()
         ConjuntoTrapezoidal c2{{1, 3, 1, 3}};
     }
     catch (runtime_error& e) {
-        cerr << e.what();
+        cerr << "El conjunto c2 no se pudo definir: " << e.what();
     }
 
     ConjuntoGaussiano c3{0, 1};

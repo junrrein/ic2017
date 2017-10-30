@@ -30,29 +30,24 @@ int main()
     const vec actEntrada = s.activacionesEntrada(entrada);
     const vec actSalida = s.mapeoEntradaSalida(actEntrada);
     const double salida = s.defuzzyficarSalida(actSalida);
-    const mat puntoEntrada = {{entrada, 0}};
     const mat puntoSalida = {{salida, 0}};
 
     Gnuplot gp;
-    gp << "set terminal qt size 700,700" << endl
+    mat puntosEntrada = join_horiz(ones(actEntrada.n_elem) * entrada, actEntrada);
+    gp << "set terminal qt size 600,600" << endl
        << "set multiplot layout 2, 1" << endl
-       << "set title 'Fuzzyficacion de la entrada' font ', 12'" << endl
-       << "set xlabel 'x' font ', 11'" << endl
-       << "set ylabel 'activacion' font ', 11'" << endl
-       << "set xrange [-21:21]" << endl
+       << "set title 'Fuzzyficacion de la entrada' font ', 11'" << endl
+       << "set xlabel 'x' font ', 10'" << endl
+       << "set ylabel 'activacion' font ', 10'" << endl
        << "set yrange [0:1.1]" << endl
        << "set grid" << endl
-       << "set key box opaque" << endl;
-    graficarConjuntos(s.conjuntosEntrada(), gp, actEntrada);
-    gp << gp.file1d(puntoEntrada) << "title 'Entrada al sistema' with points ps 2 lt rgb 'blue'" << endl;
+       << "set key box opaque top left" << endl;
+    graficarConjuntos(s.conjuntosEntrada(), gp);
+    gp << gp.file1d(puntosEntrada) << "title 'Activaciones' with points ps 2 lt rgb 'blue'" << endl;
 
-    gp << "set title 'Defuzzyficacion de la salida' font ', 12'" << endl
-       << "set xlabel 'y' font ', 11'" << endl
-       << "set ylabel 'activacion' font ', 11'" << endl
-       << "set xrange [-8:8]" << endl
-       << "set yrange [0:1.1]" << endl
-       << "set grid" << endl
-       << "set key box opaque" << endl;
+    gp << "set title 'Defuzzyficacion de la salida'" << endl
+       << "set xlabel 'y'" << endl
+       << "set ylabel 'activacion'" << endl;
     graficarConjuntos(s.conjuntosSalida(), gp, actSalida);
     gp << gp.file1d(puntoSalida) << "title 'Salida del sistema' with points ps 2 lt rgb 'blue'" << endl;
 

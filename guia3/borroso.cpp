@@ -90,7 +90,7 @@ double ConjuntoTrapezoidal::membresia(double x) const
 	else if (c < x and x <= d)
 		return 1 - (x - c) / (d - c);
 	else
-		throw runtime_error("estamos en la caca");
+        throw runtime_error("Nunca se debería llegar acá (en ConjuntoTrapezoidal::membresia)");
 }
 
 void ConjuntoTrapezoidal::graficar(Gnuplot& gp, double escala) const
