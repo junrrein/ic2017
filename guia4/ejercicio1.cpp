@@ -10,10 +10,10 @@ public:
 
     IndividuoF1()
     {
-        m_cromosoma = bitset<16>{unsigned(randi(1, distr_param(m_limites.first, m_limites.second))(0))};
+        m_cromosoma = bitset<16>{unsigned(randi(1, distr_param(0.0, pow(2, m_cromosoma.size()) - 1))(0))};
     }
 
-    array<double, 1> fenotipo() override
+    array<double, 1> fenotipo() const override
     {
         return {{funcionDecodificacion<16>(m_cromosoma, m_limites)}};
     }
@@ -29,17 +29,11 @@ int main()
 {
     arma_rng::set_seed_random();
 
-    IndividuoF1 i1{-512};
-    IndividuoF1 i2{512};
-
-    cout << i1.genotipo() << endl
-         << i2.genotipo() << endl;
-
-    cout << i1.fenotipo().at(0) << endl
-         << i2.fenotipo().at(0) << endl;
-
     Poblacion<IndividuoF1, 16, 1> p{[](IndividuoF1) { return 0; },
                                     100};
+
+    for (const auto& ind : p.individuos())
+        cout << ind.fenotipo().at(0) << endl;
 
     return 0;
 }

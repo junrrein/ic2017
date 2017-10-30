@@ -65,7 +65,7 @@ array<double, nVariables> funcionDecodificacion(bitset<nBits * nVariables> genot
 template <unsigned int nBits, unsigned int nVariables>
 class Individuo {
 public:
-    virtual array<double, nVariables> fenotipo() = 0;
+    virtual array<double, nVariables> fenotipo() const = 0;
     bitset<nBits * nVariables>& genotipo() { return m_cromosoma; };
 
 protected:
@@ -81,6 +81,8 @@ class Poblacion {
 public:
     Poblacion(std::function<double(I)> funcionFitness,
               int nIndividuos);
+
+    const vector<I>& individuos() const { return m_individuos; };
 
 private:
     std::function<double(I)> m_funcionFitness;
