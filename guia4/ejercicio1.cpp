@@ -25,15 +25,16 @@ private:
 
 pair<double, double> IndividuoF1::m_limites = {-512, 512};
 
+double fitness1(IndividuoF1 ind)
+{
+    double x = ind.fenotipo().at(0);
+
+    return x * sin(sqrt(abs(x)));
+}
+
 int main()
 {
     arma_rng::set_seed_random();
-
-    auto fitness1 = [](IndividuoF1 ind) {
-        double x = ind.fenotipo().at(0);
-
-        return x * sin(sqrt(abs(x)));
-    };
 
     Poblacion<IndividuoF1, 16, 1> p{fitness1, 100, 500, 50};
 
@@ -42,6 +43,8 @@ int main()
 
     p.evaluarPoblacion();
     cout << "Individuo con mejor fitness: " << p.mejorFitness();
+
+    auto padres = p.seleccionarPadres();
 
     return 0;
 }

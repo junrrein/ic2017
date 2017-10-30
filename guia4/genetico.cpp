@@ -86,6 +86,8 @@ public:
               int umbral);
 
     bool evaluarPoblacion();
+    void evolucionar();
+    vector<I> seleccionarPadres();
 
     const vector<I>& individuos() const { return m_individuos; };
     double mejorFitness() const { return m_mejorFitness; };
@@ -98,6 +100,7 @@ private:
     const int m_umbral;
     int m_generacion;
     double m_mejorFitness = numeric_limits<double>::min();
+    I m_mejorIndividuo;
     int m_generacionesSinMejora;
 };
 
@@ -126,14 +129,62 @@ bool Poblacion<I, nBits, nVariables>::evaluarPoblacion()
 
         if (fitness > m_mejorFitness) {
             m_mejorFitness = fitness;
+            m_mejorIndividuo = ind;
             m_generacionesSinMejora = 0;
         }
     }
 
     if (m_generacionesSinMejora == m_umbral)
-        return true;
+        return false;
     else {
         ++m_generacionesSinMejora;
-        return false;
+        return true;
     }
+}
+
+template <typename I, unsigned int nBits, unsigned int nVariables>
+void Poblacion<I, nBits, nVariables>::evolucionar()
+{
+    evaluarPoblacion();
+
+    for (int i = 0; i < m_nGeneraciones; ++i) {
+
+        vector<I> nuevaGeneracion;
+        // 1 - Rescatar el mejor individuo y meterlo en la siguiente generacion
+        nuevaGeneracion.push_back(m_mejorIndividuo);
+
+        // 2 - Seleccionar los padres
+
+        // 3 - Hacer cruzas
+
+        // 4 - Hacer mutaciones
+
+        // 5 - Evaluar la poblacion y ver si se dio el criterio de parada
+        if (!evaluarPoblacion())
+            break;
+    }
+}
+
+template <typename I, unsigned int nBits, unsigned int nVariables>
+vector<I> Poblacion<I, nBits, nVariables>::seleccionarPadres()
+{
+    vector<I> result;
+    const int nPadres = 0.3 * m_nIndividuos;
+    const int k = 3;
+
+    for (int i = 0; i < nPadres; ++i) {
+        const uvec indices = shuffle(linspace<uvec>(0, m_nIndividuos - 1, m_nIndividuos));
+
+        vector<I> candidatos;
+        vec fitnesses(k);
+        for (int j = 0; j < k; ++j) {
+            candidatos.push_back(m_individuos.at(indices(j)));
+            fitnesses(j) = m_funcionFitness(candidatos.at(j));
+        }
+
+        I mejor = m_individuos.at(indices(fitnesses.index_max()));
+        result.push_back(mejor);
+    }
+
+    return result;
 }
