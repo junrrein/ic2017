@@ -68,8 +68,9 @@ public:
     virtual array<double, nVariables> fenotipo() const = 0;
     bitset<nBits * nVariables>& genotipo() { return m_cromosoma; };
 
-protected:
     bitset<nBits * nVariables> m_cromosoma;
+
+protected:
 };
 
 template <typename I,
@@ -80,24 +81,59 @@ class Poblacion {
 
 public:
     Poblacion(std::function<double(I)> funcionFitness,
-              int nIndividuos);
+              int nIndividuos,
+              int nGeneraciones,
+              int umbral);
+
+    bool evaluarPoblacion();
 
     const vector<I>& individuos() const { return m_individuos; };
+    double mejorFitness() const { return m_mejorFitness; };
 
 private:
     std::function<double(I)> m_funcionFitness;
     const int m_nIndividuos;
     vector<I> m_individuos;
+    const int m_nGeneraciones;
+    const int m_umbral;
+    int m_generacion;
+    double m_mejorFitness = numeric_limits<double>::min();
+    int m_generacionesSinMejora;
 };
 
 template <typename I,
           unsigned int nBits,
           unsigned int nVariables>
 Poblacion<I, nBits, nVariables>::Poblacion(std::function<double(I)> funcionFitness,
-                                           int nIndividuos)
+                                           int nIndividuos,
+                                           int nGeneraciones,
+                                           int umbral)
     : m_funcionFitness{funcionFitness}
     , m_nIndividuos{nIndividuos}
+    , m_nGeneraciones{nGeneraciones}
+    , m_umbral{umbral}
 {
     for (int i = 0; i < nIndividuos; ++i)
         m_individuos.push_back(I{});
+}
+
+// Devuelve true si se cumple la condición de parada por no mejorar fitness
+template <typename I, unsigned int nBits, unsigned int nVariables>
+bool Poblacion<I, nBits, nVariables>::evaluarPoblacion()
+{
+    for (const auto& ind : m_individuos) {
+        double fitness = m_funcionFitness(ind);
+
+        if (fitness > m_mejorFitness) {
+            m_mejorFitness = fitness;
+            m_generacionesSinMejora = 0;
+        }
+    }
+
+    if (m_generacionesSinMejora == m_umbral)
+        return true;
+    else {
+        ++m_generacionesSinMejora;
+        return false;
+    }
 }
