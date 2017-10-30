@@ -69,8 +69,6 @@ public:
     bitset<nBits * nVariables>& genotipo() { return m_cromosoma; };
 
     bitset<nBits * nVariables> m_cromosoma;
-
-protected:
 };
 
 template <typename I,
@@ -88,6 +86,7 @@ public:
     bool evaluarPoblacion();
     void evolucionar();
     vector<I> seleccionarPadres();
+    vector<I> hacerCruzas(const vector<I>& padres, int nHijos);
 
     const vector<I>& individuos() const { return m_individuos; };
     double mejorFitness() const { return m_mejorFitness; };
@@ -154,6 +153,7 @@ void Poblacion<I, nBits, nVariables>::evolucionar()
         nuevaGeneracion.push_back(m_mejorIndividuo);
 
         // 2 - Seleccionar los padres
+        vector<I> padres = seleccionarPadres();
 
         // 3 - Hacer cruzas
 
@@ -187,4 +187,28 @@ vector<I> Poblacion<I, nBits, nVariables>::seleccionarPadres()
     }
 
     return result;
+}
+
+template <typename I, unsigned int nBits, unsigned int nVariables>
+pair<I, I> cruzar(const I& padre1, const I& padre2, int puntoCruza)
+{
+}
+
+template <typename I, unsigned int nBits, unsigned int nVariables>
+vector<I> Poblacion<I, nBits, nVariables>::hacerCruzas(const vector<I>& padres, int nHijos)
+{
+    vector<I> padresAux;
+
+    for (int i = 0; i < nHijos; i += 2) {
+        if (padresAux.empty())
+            padresAux = random_shuffle(padres.begin(), padres.end());
+
+        I padre1 = padresAux.back();
+        padresAux.pop_back();
+        I padre2 = padresAux.back();
+        padresAux.pop_back();
+
+        int puntoCruza = randi(1, distr_param(1, nBits - 1))(0);
+        // Cruzar padres
+    }
 }
