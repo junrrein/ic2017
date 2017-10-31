@@ -5,49 +5,51 @@
 using namespace arma;
 using namespace std;
 
+//template <unsigned int nBits>
+//bitset<nBits> codificar(double fenotipo,
+//                        pair<double, double> limites)
+//{
+//    double rango = limites.second - limites.first;
+//    double factorConversion = (pow(2, nBits) - 1) / rango;
+
+//    unsigned int convertido = round((fenotipo - limites.first) * factorConversion);
+
+//    return bitset<nBits>{convertido};
+//}
+
+//template <unsigned int nBits, unsigned int nVariables>
+//bitset<nBits * nVariables> codificar(array<double, nVariables> fenotipos,
+//                                     array<pair<double, double>, nVariables> limites)
+//{
+//    ostringstream ost;
+//    for (unsigned int i = 0; i < fenotipos.size(); ++i) {
+//        ost << codificar<nBits>(fenotipos.at(i), limites.at(i));
+//    }
+
+//    bitset<nBits * limites.size()> result;
+//    istringstream ist{ost.str()};
+//    ist >> result;
+
+//    return result;
+//}
+
 template <unsigned int nBits>
-bitset<nBits> funcionCodificacion(double fenotipo,
-                                  pair<double, double> limites)
+double decodificar(bitset<nBits> genotipo,
+                   double minimoFenotipo,
+                   double maximoFenotipo)
 {
-    double rango = limites.second - limites.first;
-    double factorConversion = (pow(2, nBits) - 1) / rango;
-
-    unsigned int convertido = round((fenotipo - limites.first) * factorConversion);
-
-    return bitset<nBits>{convertido};
-}
-
-template <unsigned int nBits, unsigned int nVariables>
-bitset<nBits * nVariables> funcionCodificacion(array<double, nVariables> fenotipos,
-                                               array<pair<double, double>, nVariables> limites)
-{
-    ostringstream ost;
-    for (unsigned int i = 0; i < fenotipos.size(); ++i) {
-        ost << funcionCodificacion<nBits>(fenotipos.at(i), limites.at(i));
-    }
-
-    bitset<nBits * limites.size()> result;
-    istringstream ist{ost.str()};
-    ist >> result;
-
-    return result;
-}
-
-template <unsigned int nBits>
-double funcionDecodificacion(bitset<nBits> genotipo,
-                             pair<double, double> limites)
-{
-    double rango = limites.second - limites.first;
+    double rango = maximoFenotipo - minimoFenotipo;
     double factorConversion = rango / (pow(2, nBits) - 1);
 
-    double convertido = genotipo.to_ulong() * factorConversion + limites.first;
+    double convertido = genotipo.to_ulong() * factorConversion + minimoFenotipo;
 
     return convertido;
 }
 
-template <unsigned int nBits, unsigned int nVariables>
-array<double, nVariables> funcionDecodificacion(bitset<nBits * nVariables> genotipo,
-                                                array<pair<double, double>, nVariables> limites)
+template <unsigned int nBits,
+          unsigned int nVariables,
+          const array<double, nVariables * 2>& limites>
+array<double, nVariables> decodificar(bitset<nBits * nVariables> genotipo)
 {
     istringstream ist{genotipo.to_string()};
     array<double, nVariables> result;
@@ -55,31 +57,53 @@ array<double, nVariables> funcionDecodificacion(bitset<nBits * nVariables> genot
     for (unsigned int i = 0; i < result.size(); ++i) {
         bitset<nBits> trozoGenotipo;
         ist >> trozoGenotipo;
-        result.at(i) = funcionDecodificacion<nBits>(trozoGenotipo, limites.at(i));
+        result.at(i) = decodificar<nBits>(trozoGenotipo,
+                                          limites.at(2 * i),
+                                          limites.at(2 * i + 1));
     }
 
     return result;
 }
 
 // Genotipo con un único cromosoma
-template <unsigned int nBits, unsigned int nVariables>
+template <unsigned int nBits,
+          unsigned int nVariables,
+          const array<double, nVariables * 2>& limites,
+          std::function<double(array<double, nVariables>)>& fitness>
 class Individuo {
 public:
-    virtual array<double, nVariables> fenotipo() const = 0;
-    bitset<nBits * nVariables>& genotipo() { return m_cromosoma; };
+    // Individuo inicializado al azar
+    Individuo()
+        : m_genotipo{unsigned(randi(1, distr_param(0.0, pow(2, nBits * nVariables) - 1))(0))}
+    {
+    }
 
-    bitset<nBits * nVariables> m_cromosoma;
+    array<double, nVariables> fenotipo() const
+    {
+        return decodificar<nBits, nVariables, limites>(m_genotipo);
+    }
+
+    double aptitud() const
+    {
+        return fitness(decodificar<nBits, nVariables, limites>(m_genotipo));
+    }
+
+    bitset<nBits * nVariables> m_genotipo;
 };
 
-template <typename I,
-          unsigned int nBits,
-          unsigned int nVariables>
+// ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧
+// Cuidado al seguir leyendo debajo!
+// ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧
+
+template <unsigned int nBits,
+          unsigned int nVariables,
+          const array<double, nVariables * 2>& limites,
+          std::function<double(array<double, nVariables>)>& fitness>
 class Poblacion {
-    typedef typename std::enable_if<std::is_base_of<Individuo<nBits, nVariables>, I>::value>::type check;
+    using I = Individuo<nBits, nVariables, limites, fitness>;
 
 public:
-    Poblacion(std::function<double(I)> funcionFitness,
-              int nIndividuos,
+    Poblacion(int nIndividuos,
               int nGeneraciones,
               int umbral);
 
@@ -89,29 +113,31 @@ public:
     vector<I> hacerCruzas(const vector<I>& padres, int nHijos);
 
     const vector<I>& individuos() const { return m_individuos; };
-    double mejorFitness() const { return m_mejorFitness; };
+    double mejorFitness() const { return m_mejorAptitud; };
 
 private:
-    std::function<double(I)> m_funcionFitness;
     const int m_nIndividuos;
     vector<I> m_individuos;
     const int m_nGeneraciones;
     const int m_umbral;
     int m_generacion;
-    double m_mejorFitness = numeric_limits<double>::min();
+    double m_mejorAptitud = numeric_limits<double>::min();
     I m_mejorIndividuo;
     int m_generacionesSinMejora;
 };
 
-template <typename I,
-          unsigned int nBits,
-          unsigned int nVariables>
-Poblacion<I, nBits, nVariables>::Poblacion(std::function<double(I)> funcionFitness,
-                                           int nIndividuos,
-                                           int nGeneraciones,
-                                           int umbral)
-    : m_funcionFitness{funcionFitness}
-    , m_nIndividuos{nIndividuos}
+template <unsigned int nBits,
+          unsigned int nVariables,
+          const array<double, nVariables * 2>& limites,
+          std::function<double(array<double, nVariables>)>& fitness>
+Poblacion<nBits,
+          nVariables,
+          limites,
+          fitness>::
+    Poblacion(int nIndividuos,
+              int nGeneraciones,
+              int umbral)
+    : m_nIndividuos{nIndividuos}
     , m_nGeneraciones{nGeneraciones}
     , m_umbral{umbral}
 {
@@ -120,14 +146,21 @@ Poblacion<I, nBits, nVariables>::Poblacion(std::function<double(I)> funcionFitne
 }
 
 // Devuelve true si se cumple la condición de parada por no mejorar fitness
-template <typename I, unsigned int nBits, unsigned int nVariables>
-bool Poblacion<I, nBits, nVariables>::evaluarPoblacion()
+template <unsigned int nBits,
+          unsigned int nVariables,
+          const array<double, nVariables * 2>& limites,
+          std::function<double(array<double, nVariables>)>& fitness>
+bool Poblacion<nBits,
+               nVariables,
+               limites,
+               fitness>::
+    evaluarPoblacion()
 {
     for (const auto& ind : m_individuos) {
-        double fitness = m_funcionFitness(ind);
+        double aptitud = ind.aptitud();
 
-        if (fitness > m_mejorFitness) {
-            m_mejorFitness = fitness;
+        if (aptitud > m_mejorAptitud) {
+            m_mejorAptitud = aptitud;
             m_mejorIndividuo = ind;
             m_generacionesSinMejora = 0;
         }
@@ -141,8 +174,15 @@ bool Poblacion<I, nBits, nVariables>::evaluarPoblacion()
     }
 }
 
-template <typename I, unsigned int nBits, unsigned int nVariables>
-void Poblacion<I, nBits, nVariables>::evolucionar()
+template <unsigned int nBits,
+          unsigned int nVariables,
+          const array<double, nVariables * 2>& limites,
+          std::function<double(array<double, nVariables>)>& fitness>
+void Poblacion<nBits,
+               nVariables,
+               limites,
+               fitness>::
+    evolucionar()
 {
     evaluarPoblacion();
 
@@ -165,8 +205,15 @@ void Poblacion<I, nBits, nVariables>::evolucionar()
     }
 }
 
-template <typename I, unsigned int nBits, unsigned int nVariables>
-vector<I> Poblacion<I, nBits, nVariables>::seleccionarPadres()
+template <unsigned int nBits,
+          unsigned int nVariables,
+          const array<double, nVariables * 2>& limites,
+          std::function<double(array<double, nVariables>)>& fitness>
+auto Poblacion<nBits,
+               nVariables,
+               limites,
+               fitness>::
+    seleccionarPadres() -> vector<I>
 {
     vector<I> result;
     const int nPadres = 0.3 * m_nIndividuos;
@@ -176,13 +223,13 @@ vector<I> Poblacion<I, nBits, nVariables>::seleccionarPadres()
         const uvec indices = shuffle(linspace<uvec>(0, m_nIndividuos - 1, m_nIndividuos));
 
         vector<I> candidatos;
-        vec fitnesses(k);
+        vec aptitudes(k);
         for (int j = 0; j < k; ++j) {
             candidatos.push_back(m_individuos.at(indices(j)));
-            fitnesses(j) = m_funcionFitness(candidatos.at(j));
+            aptitudes(j) = candidatos.at(j).aptitud();
         }
 
-        I mejor = m_individuos.at(indices(fitnesses.index_max()));
+        I mejor = m_individuos.at(indices(aptitudes.index_max()));
         result.push_back(mejor);
     }
 
@@ -190,12 +237,19 @@ vector<I> Poblacion<I, nBits, nVariables>::seleccionarPadres()
 }
 
 template <typename I, unsigned int nBits, unsigned int nVariables>
-pair<I, I> cruzar(const I& padre1, const I& padre2, int puntoCruza)
+auto cruzar(const I& padre1, const I& padre2, int puntoCruza) -> pair<I, I>
 {
 }
 
-template <typename I, unsigned int nBits, unsigned int nVariables>
-vector<I> Poblacion<I, nBits, nVariables>::hacerCruzas(const vector<I>& padres, int nHijos)
+template <unsigned int nBits,
+          unsigned int nVariables,
+          const array<double, nVariables * 2>& limites,
+          std::function<double(array<double, nVariables>)>& fitness>
+auto Poblacion<nBits,
+               nVariables,
+               limites,
+               fitness>::
+    hacerCruzas(const vector<I>& padres, int nHijos) -> vector<I>
 {
     vector<I> padresAux;
 
