@@ -1,6 +1,7 @@
 #include "genetico.cpp"
 
 array<double, 2> limitesF1 = {{-512, 512}};
+
 std::function<double(array<double, 1>)> fitness1
     = [](array<double, 1> fenotipo) -> double {
     double x = fenotipo.at(0);
@@ -12,17 +13,21 @@ int main()
 {
     arma_rng::set_seed_random();
 
-    Poblacion<16, 1, limitesF1, fitness1> p{/*individuos =*/100,
-                                            /*generaciones =*/500,
-                                            /*umbral =*/50};
+    Poblacion<16, 1, limitesF1, fitness1> p1{/*individuos =*/40,
+                                             /*generaciones =*/500,
+                                             /*umbral =*/50};
 
-    for (const auto& ind : p.individuos())
-        cout << ind.fenotipo().at(0) << endl;
+    p1.evaluarPoblacion();
+    cout << "Función x * sin(sqrt(abs(x)))" << endl
+         << "Antes de iniciar el entrenamiento" << endl
+         << "Mejor fitness: " << p1.mejorFitness() << endl
+         << "Fitness promedio: " << p1.fitnessPromdedio() << endl;
 
-    p.evaluarPoblacion();
-    cout << "Individuo con mejor fitness: " << p.mejorFitness();
-
-    auto padres = p.seleccionarPadres();
+    int generacion = p1.evolucionar();
+    cout << "Luego de finalizar el entrenamiento" << endl
+         << "Mejor fitness: " << p1.mejorFitness() << endl
+         << "Fitness promedio: " << p1.fitnessPromdedio() << endl
+         << "Generaciones evolucionadas: " << generacion;
 
     return 0;
 }
