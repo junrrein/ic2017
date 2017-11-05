@@ -107,13 +107,14 @@ public:
               int umbral);
 
     bool evaluarPoblacion();
-    int evolucionar(int nGeneraciones);
+    void evolucionar(int nGeneraciones);
     vector<I> seleccionarPadres();
     vector<I> hacerCruzas(const vector<I>& padres, int nHijos);
 
     const vector<I>& individuos() const { return m_individuos; };
     double mejorFitness() const { return m_mejorAptitud; };
     const I& mejorIndividuo() const { return m_mejorIndividuo; }
+    bool termino() const { return m_termino; }
     double fitnessPromdedio() const;
 
     static pair<I, I> cruzar(const I& padre1,
@@ -132,6 +133,7 @@ private:
     double m_mejorAptitud = numeric_limits<double>::min();
     I m_mejorIndividuo;
     int m_generacionesSinMejora;
+    bool m_termino = false;
 };
 
 template <unsigned int nBits, unsigned int nVariables>
@@ -174,7 +176,7 @@ bool Poblacion<nBits, nVariables>::
 }
 
 template <unsigned int nBits, unsigned int nVariables>
-int Poblacion<nBits, nVariables>::
+void Poblacion<nBits, nVariables>::
     evolucionar(int nGeneraciones)
 {
     // Si nunca se evaluó la población, hacerlo ahora
@@ -196,7 +198,7 @@ int Poblacion<nBits, nVariables>::
 
         // 4 - Hacer mutaciones
         for (I& h : hijos)
-            if (randu(1).at(0, 0) <= 0.01)
+            if (randu(1).at(0, 0) <= 0.2)
                 h.mutar();
 
         copy(hijos.begin(), hijos.end(), back_inserter(nuevaGeneracion));
@@ -206,14 +208,14 @@ int Poblacion<nBits, nVariables>::
         if (evaluarPoblacion())
             m_generacionesSinMejora = 0;
         else {
-            if (m_generacionesSinMejora == m_umbral)
+            if (m_generacionesSinMejora == m_umbral) {
+                m_termino = true;
                 break;
+            }
 
             ++m_generacionesSinMejora;
         }
     }
-
-    return generacion;
 }
 
 template <unsigned int nBits, unsigned int nVariables>
@@ -222,7 +224,7 @@ auto Poblacion<nBits, nVariables>::
 {
     vector<I> result;
     const int nPadres = 0.3 * m_nIndividuos - 1;
-    const int k = 3;
+    const int k = 2;
 
     for (int i = 0; i < nPadres; ++i) {
         const uvec indices = shuffle(linspace<uvec>(0, m_nIndividuos - 1, m_nIndividuos));
