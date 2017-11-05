@@ -298,9 +298,13 @@ auto Poblacion<nBits,
             padresAux = padres;
             random_shuffle(padresAux.begin(), padresAux.end());
         }
-
         I padre1 = padresAux.back();
         padresAux.pop_back();
+
+        if (padresAux.empty()) {
+            padresAux = padres;
+            random_shuffle(padresAux.begin(), padresAux.end());
+        }
         I padre2 = padresAux.back();
         padresAux.pop_back();
 
