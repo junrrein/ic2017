@@ -267,7 +267,7 @@ auto Poblacion<nBits,
         // Nota: El operador de acceso ([]) a un bitset los accede desde
         // el bit menos significativo al más significativo.
 
-        if (i < puntoCruza - 1) { // Parte izquierda del cromosoma
+        if (i < puntoCruza) { // Parte izquierda del cromosoma
             hijo1.genotipo[i] = padre1.genotipo[i];
             hijo2.genotipo[i] = padre2.genotipo[i];
         }
