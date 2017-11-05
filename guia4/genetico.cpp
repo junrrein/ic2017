@@ -115,6 +115,7 @@ public:
 
     const vector<I>& individuos() const { return m_individuos; };
     double mejorFitness() const { return m_mejorAptitud; };
+    const I& mejorIndividuo() const { return m_mejorIndividuo; }
     double fitnessPromdedio() const;
 
     static pair<I, I> cruzar(const I& padre1, const I& padre2, int puntoCruza);
@@ -160,22 +161,19 @@ bool Poblacion<nBits,
                fitness>::
     evaluarPoblacion()
 {
+    bool mejoro = false;
+
     for (const I& ind : m_individuos) {
         double aptitud = fitness(ind.fenotipo());
 
         if (aptitud > m_mejorAptitud) {
             m_mejorAptitud = aptitud;
             m_mejorIndividuo = ind;
-            m_generacionesSinMejora = 0;
+            mejoro = true;
         }
     }
 
-    if (m_generacionesSinMejora == m_umbral)
-        return false;
-    else {
-        ++m_generacionesSinMejora;
-        return true;
-    }
+    return mejoro;
 }
 
 template <unsigned int nBits,
@@ -212,8 +210,14 @@ int Poblacion<nBits,
         m_individuos = nuevaGeneracion;
 
         // 5 - Evaluar la poblacion y ver si se dio el criterio de parada
-        if (!evaluarPoblacion())
-            break;
+        if (evaluarPoblacion())
+            m_generacionesSinMejora = 0;
+        else {
+            if (m_generacionesSinMejora == m_umbral)
+                break;
+
+            ++m_generacionesSinMejora;
+        }
     }
 
     return generacion;
@@ -308,7 +312,7 @@ auto Poblacion<nBits,
         I padre2 = padresAux.back();
         padresAux.pop_back();
 
-        int puntoCruza = randi(1, distr_param(1, nBits - 1))(0);
+        int puntoCruza = randi(1, distr_param(1, nBits - 1)).at(0);
 
         I hijo1, hijo2;
 

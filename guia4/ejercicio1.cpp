@@ -20,11 +20,13 @@ int main()
     p1.evaluarPoblacion();
     cout << "Función x * sin(sqrt(abs(x)))" << endl
          << "Antes de iniciar el entrenamiento" << endl
+         << "Mejor individuo: x = " << p1.mejorIndividuo().fenotipo().at(0) << endl
          << "Mejor fitness: " << p1.mejorFitness() << endl
          << "Fitness promedio: " << p1.fitnessPromdedio() << endl;
 
     int generacion = p1.evolucionar();
     cout << "Luego de finalizar el entrenamiento" << endl
+         << "Mejor individuo: x = " << p1.mejorIndividuo().fenotipo().at(0) << endl
          << "Mejor fitness: " << p1.mejorFitness() << endl
          << "Fitness promedio: " << p1.fitnessPromdedio() << endl
          << "Generaciones evolucionadas: " << generacion;
