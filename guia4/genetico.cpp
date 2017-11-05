@@ -47,9 +47,9 @@ double decodificar(bitset<nBits> genotipo,
 }
 
 template <unsigned int nBits,
-          unsigned int nVariables,
-          const array<double, nVariables * 2>& limites>
-array<double, nVariables> decodificar(bitset<nBits * nVariables> genotipo)
+          unsigned int nVariables>
+array<double, nVariables> decodificar(const bitset<nBits * nVariables>& genotipo,
+                                      const array<double, nVariables * 2>& limites)
 {
     istringstream ist{genotipo.to_string()};
     array<double, nVariables> result;
@@ -81,7 +81,7 @@ struct Individuo {
 
     array<double, nVariables> fenotipo() const
     {
-        return decodificar<nBits, nVariables, limites>(genotipo);
+        return decodificar<nBits, nVariables>(genotipo, limites);
     }
 
     void mutar()
@@ -91,10 +91,6 @@ struct Individuo {
 
     bitset<nBits * nVariables> genotipo;
 };
-
-// ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧
-// Cuidado al seguir leyendo debajo!
-// ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧
 
 template <unsigned int nBits,
           unsigned int nVariables,
