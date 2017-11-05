@@ -107,7 +107,7 @@ public:
               int umbral);
 
     bool evaluarPoblacion();
-    int evolucionar();
+    int evolucionar(int nGeneraciones);
     vector<I> seleccionarPadres();
     vector<I> hacerCruzas(const vector<I>& padres, int nHijos);
 
@@ -147,6 +147,7 @@ Poblacion<nBits, nVariables>::
     , m_nGeneraciones{nGeneraciones}
     , m_umbral{umbral}
     , m_mejorIndividuo{limites}
+    , m_generacionesSinMejora{0}
 {
     for (int i = 0; i < nIndividuos; ++i)
         m_individuos.push_back(I{m_limites});
@@ -174,12 +175,14 @@ bool Poblacion<nBits, nVariables>::
 
 template <unsigned int nBits, unsigned int nVariables>
 int Poblacion<nBits, nVariables>::
-    evolucionar()
+    evolucionar(int nGeneraciones)
 {
-    evaluarPoblacion();
+    // Si nunca se evaluó la población, hacerlo ahora
+    if (m_mejorAptitud == numeric_limits<double>::min())
+        evaluarPoblacion();
 
     int generacion;
-    for (generacion = 0; generacion < m_nGeneraciones; ++generacion) {
+    for (generacion = 0; generacion < nGeneraciones; ++generacion) {
         vector<I> nuevaGeneracion;
         // 1 - Rescatar el mejor individuo y meterlo en la siguiente generacion
         nuevaGeneracion.push_back(m_mejorIndividuo);
