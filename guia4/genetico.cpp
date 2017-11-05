@@ -67,17 +67,21 @@ array<double, nVariables> decodificar(const bitset<nBits * nVariables>& genotipo
 
 // Genotipo con un único cromosoma
 template <unsigned int nBits,
-          unsigned int nVariables,
-          const array<double, nVariables * 2>& limites>
+          unsigned int nVariables>
 struct Individuo {
     // Individuo inicializado al azar
-    Individuo()
+    Individuo(const array<double, nVariables * 2>& t_limites)
         : genotipo{unsigned(randi(1, distr_param(0.0, pow(2, nBits * nVariables) - 1)).at(0))}
+        , limites{t_limites}
     {
     }
 
-    Individuo(bitset<nBits * nVariables> t_genotipo)
-        : genotipo{t_genotipo} {};
+    Individuo(bitset<nBits * nVariables> t_genotipo,
+              const array<double, nVariables * 2>& t_limites)
+        : genotipo{t_genotipo}
+        , limites{t_limites}
+    {
+    }
 
     array<double, nVariables> fenotipo() const
     {
@@ -90,17 +94,18 @@ struct Individuo {
     }
 
     bitset<nBits * nVariables> genotipo;
+    array<double, nVariables * 2> limites;
 };
 
 template <unsigned int nBits,
           unsigned int nVariables,
-          const array<double, nVariables * 2>& limites,
           std::function<double(array<double, nVariables>)>& fitness>
 class Poblacion {
-    using I = Individuo<nBits, nVariables, limites>;
+    using I = Individuo<nBits, nVariables>;
 
 public:
-    Poblacion(int nIndividuos,
+    Poblacion(const array<double, nVariables * 2>& limites,
+              int nIndividuos,
               int nGeneraciones,
               int umbral);
 
@@ -114,9 +119,13 @@ public:
     const I& mejorIndividuo() const { return m_mejorIndividuo; }
     double fitnessPromdedio() const;
 
-    static pair<I, I> cruzar(const I& padre1, const I& padre2, int puntoCruza);
+    static pair<I, I> cruzar(const I& padre1,
+                             const I& padre2,
+                             int puntoCruza,
+                             const array<double, nVariables * 2>& limites);
 
 private:
+    const array<double, nVariables * 2> m_limites;
     const int m_nIndividuos;
     vector<I> m_individuos;
     const int m_nGeneraciones;
@@ -129,31 +138,30 @@ private:
 
 template <unsigned int nBits,
           unsigned int nVariables,
-          const array<double, nVariables * 2>& limites,
           std::function<double(array<double, nVariables>)>& fitness>
 Poblacion<nBits,
           nVariables,
-          limites,
           fitness>::
-    Poblacion(int nIndividuos,
+    Poblacion(const array<double, nVariables * 2>& limites,
+              int nIndividuos,
               int nGeneraciones,
               int umbral)
-    : m_nIndividuos{nIndividuos}
+    : m_limites{limites}
+    , m_nIndividuos{nIndividuos}
     , m_nGeneraciones{nGeneraciones}
     , m_umbral{umbral}
+    , m_mejorIndividuo{limites}
 {
     for (int i = 0; i < nIndividuos; ++i)
-        m_individuos.push_back(I{});
+        m_individuos.push_back(I{m_limites});
 }
 
 // Devuelve true si se cumple la condición de parada por no mejorar fitness
 template <unsigned int nBits,
           unsigned int nVariables,
-          const array<double, nVariables * 2>& limites,
           std::function<double(array<double, nVariables>)>& fitness>
 bool Poblacion<nBits,
                nVariables,
-               limites,
                fitness>::
     evaluarPoblacion()
 {
@@ -174,11 +182,9 @@ bool Poblacion<nBits,
 
 template <unsigned int nBits,
           unsigned int nVariables,
-          const array<double, nVariables * 2>& limites,
           std::function<double(array<double, nVariables>)>& fitness>
 int Poblacion<nBits,
               nVariables,
-              limites,
               fitness>::
     evolucionar()
 {
@@ -221,11 +227,9 @@ int Poblacion<nBits,
 
 template <unsigned int nBits,
           unsigned int nVariables,
-          const array<double, nVariables * 2>& limites,
           std::function<double(array<double, nVariables>)>& fitness>
 auto Poblacion<nBits,
                nVariables,
-               limites,
                fitness>::
     seleccionarPadres() -> vector<I>
 {
@@ -252,16 +256,17 @@ auto Poblacion<nBits,
 
 template <unsigned int nBits,
           unsigned int nVariables,
-          const array<double, nVariables * 2>& limites,
           std::function<double(array<double, nVariables>)>& fitness>
 auto Poblacion<nBits,
                nVariables,
-               limites,
                fitness>::
-    cruzar(const I& padre1, const I& padre2, int puntoCruza)
+    cruzar(const I& padre1,
+           const I& padre2,
+           int puntoCruza,
+           const array<double, nVariables * 2>& limites)
         -> pair<I, I>
 {
-    I hijo1, hijo2;
+    I hijo1{limites}, hijo2{limites};
 
     for (int i = 0; i < int(padre1.genotipo.size()); ++i) {
         // Nota: El operador de acceso ([]) a un bitset los accede desde
@@ -282,11 +287,9 @@ auto Poblacion<nBits,
 
 template <unsigned int nBits,
           unsigned int nVariables,
-          const array<double, nVariables * 2>& limites,
           std::function<double(array<double, nVariables>)>& fitness>
 auto Poblacion<nBits,
                nVariables,
-               limites,
                fitness>::
     hacerCruzas(const vector<I>& padres, int nHijos) -> vector<I>
 {
@@ -310,10 +313,10 @@ auto Poblacion<nBits,
 
         int puntoCruza = randi(1, distr_param(1, nBits - 1)).at(0);
 
-        I hijo1, hijo2;
+        I hijo1{m_limites}, hijo2{m_limites};
 
         if (randu(1).at(0, 0) <= 0.9) // 90% de probabilidad de cruza
-            tie(hijo1, hijo2) = cruzar(padre1, padre2, puntoCruza);
+            tie(hijo1, hijo2) = cruzar(padre1, padre2, puntoCruza, m_limites);
         else {
             hijo1 = padre1;
             hijo2 = padre2;
@@ -327,11 +330,9 @@ auto Poblacion<nBits,
 }
 template <unsigned int nBits,
           unsigned int nVariables,
-          const array<double, nVariables * 2>& limites,
           std::function<double(array<double, nVariables>)>& fitness>
 double Poblacion<nBits,
                  nVariables,
-                 limites,
                  fitness>::
     fitnessPromdedio() const
 {

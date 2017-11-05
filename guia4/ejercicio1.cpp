@@ -13,9 +13,10 @@ int main()
 {
     arma_rng::set_seed_random();
 
-    Poblacion<16, 1, limitesF1, fitness1> p1{/*individuos =*/40,
-                                             /*generaciones =*/500,
-                                             /*umbral =*/50};
+    Poblacion<16, 1, fitness1> p1{limitesF1,
+                                  /*individuos =*/40,
+                                  /*generaciones =*/500,
+                                  /*umbral =*/50};
 
     p1.evaluarPoblacion();
     cout << "Función x * sin(sqrt(abs(x)))" << endl
