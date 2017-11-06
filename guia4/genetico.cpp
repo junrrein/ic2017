@@ -5,33 +5,36 @@
 using namespace arma;
 using namespace std;
 
-//template <unsigned int nBits>
-//bitset<nBits> codificar(double fenotipo,
-//                        pair<double, double> limites)
-//{
-//    double rango = limites.second - limites.first;
-//    double factorConversion = (pow(2, nBits) - 1) / rango;
+template <unsigned int nBits>
+bitset<nBits> codificar(double fenotipo,
+                        double minimoFenotipo,
+                        double maximoFenotipo)
+{
+    double rango = maximoFenotipo - minimoFenotipo;
+    double factorConversion = (pow(2, nBits) - 1) / rango;
 
-//    unsigned int convertido = round((fenotipo - limites.first) * factorConversion);
+    unsigned int convertido = round((fenotipo - minimoFenotipo) * factorConversion);
 
-//    return bitset<nBits>{convertido};
-//}
+    return bitset<nBits>{convertido};
+}
 
-//template <unsigned int nBits, unsigned int nVariables>
-//bitset<nBits * nVariables> codificar(array<double, nVariables> fenotipos,
-//                                     array<pair<double, double>, nVariables> limites)
-//{
-//    ostringstream ost;
-//    for (unsigned int i = 0; i < fenotipos.size(); ++i) {
-//        ost << codificar<nBits>(fenotipos.at(i), limites.at(i));
-//    }
+template <unsigned int nBits, unsigned int nVariables>
+bitset<nBits * nVariables> codificar(array<double, nVariables> fenotipo,
+                                     const array<double, nVariables * 2>& limites)
+{
+    ostringstream ost;
+    for (unsigned int i = 0; i < nVariables; ++i) {
+        ost << codificar<nBits>(fenotipo.at(i),
+                                limites.at(2 * i),
+                                limites.at(2 * i + 1));
+    }
 
-//    bitset<nBits * limites.size()> result;
-//    istringstream ist{ost.str()};
-//    ist >> result;
+    bitset<nBits * nVariables> result;
+    istringstream ist{ost.str()};
+    ist >> result;
 
-//    return result;
-//}
+    return result;
+}
 
 template <unsigned int nBits>
 double decodificar(bitset<nBits> genotipo,
@@ -53,7 +56,7 @@ array<double, nVariables> decodificar(const bitset<nBits * nVariables>& genotipo
     istringstream ist{genotipo.to_string()};
     array<double, nVariables> result;
 
-    for (unsigned int i = 0; i < result.size(); ++i) {
+    for (unsigned int i = 0; i < nVariables; ++i) {
         bitset<nBits> trozoGenotipo;
         ist >> trozoGenotipo;
         result.at(i) = decodificar<nBits>(trozoGenotipo,
@@ -88,7 +91,7 @@ struct Individuo {
 
     void mutar()
     {
-        genotipo.flip(randi(1, distr_param(0.0, nBits - 1)).at(0));
+        genotipo.flip(randi(1, distr_param(0.0, nBits * nVariables - 1)).at(0));
     }
 
     bitset<nBits * nVariables> genotipo;
@@ -130,10 +133,10 @@ private:
     const int m_nGeneraciones;
     const int m_umbral;
     int m_generacion;
-    double m_mejorAptitud = numeric_limits<double>::min();
+    double m_mejorAptitud;
     I m_mejorIndividuo;
     int m_generacionesSinMejora;
-    bool m_termino = false;
+    bool m_termino;
 };
 
 template <unsigned int nBits, unsigned int nVariables>
@@ -148,8 +151,10 @@ Poblacion<nBits, nVariables>::
     , m_nIndividuos{nIndividuos}
     , m_nGeneraciones{nGeneraciones}
     , m_umbral{umbral}
+    , m_mejorAptitud{-numeric_limits<double>::max()}
     , m_mejorIndividuo{limites}
     , m_generacionesSinMejora{0}
+    , m_termino{false}
 {
     for (int i = 0; i < nIndividuos; ++i)
         m_individuos.push_back(I{m_limites});
@@ -198,7 +203,7 @@ void Poblacion<nBits, nVariables>::
 
         // 4 - Hacer mutaciones
         for (I& h : hijos)
-            if (randu(1).at(0, 0) <= 0.2)
+            if (randu(1).at(0, 0) <= 0.1)
                 h.mutar();
 
         copy(hijos.begin(), hijos.end(), back_inserter(nuevaGeneracion));
@@ -309,6 +314,7 @@ auto Poblacion<nBits, nVariables>::
 
     return hijos;
 }
+
 template <unsigned int nBits, unsigned int nVariables>
 double Poblacion<nBits, nVariables>::
     fitnessPromdedio() const
