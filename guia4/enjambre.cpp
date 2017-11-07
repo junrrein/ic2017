@@ -71,9 +71,12 @@ void Individuo::setMejorLocal(const vec& value)
 class Enjambre {
     Enjambre(function<double(Individuo)> fitness,
              const vector<pair<double, double>>& limites,
-             unsigned int nIndividuos);
+             unsigned int nIndividuos,
+             int umbral);
 
-    void evaluarFitness();
+    bool evaluarFitness();
+    void epoca();
+    const Individuo& mejorGlobal() const { return m_mejorGlobal; }
 
 private:
     const unsigned int m_nIndividuos;
@@ -81,26 +84,33 @@ private:
     Individuo m_mejorGlobal;
     double m_mejorAptitud;
     function<double(Individuo)> m_fitness;
+    int m_umbral;
     int m_epocasSinMejora;
+    bool m_termino;
 };
 
 Enjambre::Enjambre(function<double(Individuo)> fitness,
                    const vector<pair<double, double>>& limites,
-                   unsigned int nIndividuos)
+                   unsigned int nIndividuos,
+                   int umbral)
     : m_nIndividuos{nIndividuos}
     , m_mejorGlobal{limites}
     , m_fitness{fitness}
+    , m_umbral{umbral}
     , m_epocasSinMejora{0}
+    , m_termino{false}
 {
     for (unsigned int i = 0; i < m_nIndividuos; ++i) {
         m_individuos.push_back(Individuo{limites});
 
-        // TODO Evaluar individuos
+        evaluarFitness();
     }
 }
 
-void Enjambre::evaluarFitness()
+bool Enjambre::evaluarFitness()
 {
+    bool mejoro = false;
+
     for (Individuo& ind : m_individuos) {
         double aptitud = m_fitness(ind);
 
@@ -111,7 +121,45 @@ void Enjambre::evaluarFitness()
             if (aptitud > m_mejorAptitud) {
                 m_mejorGlobal = ind;
                 m_mejorAptitud = aptitud;
+                mejoro = true;
             }
         }
+    }
+
+    return mejoro;
+}
+
+void Enjambre::epoca()
+{
+    const int nVariables = m_individuos.front().getPosicion().n_elem;
+
+    for (Individuo& ind : m_individuos) {
+        // Cálculo de la nueva velocidad
+        // Componente cognitiva
+        const double c1 = 1;
+        const vec r1 = randu(nVariables);
+        const vec distanciaMejorLocal = ind.getMejorLocal() - ind.getPosicion();
+
+        const vec compCognitiva = c1 * r1 % distanciaMejorLocal;
+
+        // Componente social
+        const double c2 = 1;
+        const vec r2 = randu(nVariables);
+        const vec distanciaMejorGlobal = m_mejorGlobal.getPosicion() - ind.getPosicion();
+
+        const vec compSocial = c2 * r2 % distanciaMejorGlobal;
+
+        // Actualización
+        ind.setVelocidad(ind.getVelocidad() + compCognitiva + compSocial);
+        ind.setPosicion(ind.getPosicion() + ind.getVelocidad());
+    }
+
+    if (evaluarFitness())
+        m_epocasSinMejora = 0;
+    else {
+        if (m_epocasSinMejora == m_umbral)
+            m_termino = true;
+
+        ++m_epocasSinMejora;
     }
 }
