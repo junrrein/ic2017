@@ -5,8 +5,7 @@ using namespace arma;
 
 class Individuo {
 public:
-    Individuo(unsigned int t_nVariables,
-              const vector<pair<double, double>>& t_limites);
+    Individuo(const vector<pair<double, double>>& limites);
 
     vec getPosicion() const { return posicion; }
     void setPosicion(const vec& value);
@@ -19,23 +18,17 @@ public:
 
     double aptitudMejorLocal;
 
-    Individuo& operator=(const Individuo& other);
-
 private:
     vec posicion;
-    const vector<pair<double, double>> limites;
     vec velocidad;
     vec mejorLocal;
-
-    const unsigned int nVariables;
 };
 
-Individuo::Individuo(unsigned int t_nVariables,
-                     const vector<pair<double, double>>& t_limites)
+Individuo::Individuo(const vector<pair<double, double>>& limites)
     : aptitudMejorLocal{-numeric_limits<double>::max()}
-    , limites{t_limites}
-    , nVariables{t_nVariables}
 {
+    const unsigned int nVariables = limites.size();
+
     posicion = randu(nVariables);
 
     if (limites.size() != nVariables)
@@ -53,7 +46,7 @@ Individuo::Individuo(unsigned int t_nVariables,
 
 void Individuo::setPosicion(const vec& value)
 {
-    if (value.n_elem != nVariables)
+    if (value.n_elem != this->posicion.n_elem)
         throw runtime_error("La dimensión del vector es incorrecta");
 
     posicion = value;
@@ -61,7 +54,7 @@ void Individuo::setPosicion(const vec& value)
 
 void Individuo::setVelocidad(const vec& value)
 {
-    if (value.n_elem != nVariables)
+    if (value.n_elem != this->velocidad.n_elem)
         throw runtime_error("La dimensión del vector es incorrecta");
 
     velocidad = value;
@@ -69,28 +62,14 @@ void Individuo::setVelocidad(const vec& value)
 
 void Individuo::setMejorLocal(const vec& value)
 {
-    if (value.n_elem != nVariables)
+    if (value.n_elem != this->posicion.n_elem)
         throw runtime_error("La dimensión del vector es incorrecta");
 
     mejorLocal = value;
 }
 
-Individuo& Individuo::operator=(const Individuo& other)
-{
-    if (this->nVariables != other.nVariables)
-        throw runtime_error("Los individuos tienen distinta cantidad de variables");
-
-    this->posicion = other.posicion;
-    this->velocidad = other.velocidad;
-    this->mejorLocal = other.mejorLocal;
-    this->aptitudMejorLocal = other.aptitudMejorLocal;
-
-    return *this;
-}
-
 class Enjambre {
-    Enjambre(unsigned int nVariables,
-             function<double(Individuo)> fitness,
+    Enjambre(function<double(Individuo)> fitness,
              const vector<pair<double, double>>& limites,
              unsigned int nIndividuos);
 
@@ -102,20 +81,19 @@ private:
     Individuo m_mejorGlobal;
     double m_mejorAptitud;
     function<double(Individuo)> m_fitness;
-    int m_generacionesSinMejora;
+    int m_epocasSinMejora;
 };
 
-Enjambre::Enjambre(unsigned int nVariables,
-                   function<double(Individuo)> fitness,
+Enjambre::Enjambre(function<double(Individuo)> fitness,
                    const vector<pair<double, double>>& limites,
                    unsigned int nIndividuos)
     : m_nIndividuos{nIndividuos}
-    , m_mejorGlobal{nVariables, limites}
+    , m_mejorGlobal{limites}
     , m_fitness{fitness}
-    , m_generacionesSinMejora{0}
+    , m_epocasSinMejora{0}
 {
     for (unsigned int i = 0; i < m_nIndividuos; ++i) {
-        m_individuos.push_back(Individuo{nVariables, limites});
+        m_individuos.push_back(Individuo{limites});
 
         // TODO Evaluar individuos
     }
