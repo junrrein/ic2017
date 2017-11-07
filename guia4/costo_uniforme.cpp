@@ -1,7 +1,7 @@
 #include <armadillo>
 #include <vector>
 #include <set>
-#include <boost/algorithm/cxx11/any_of.hpp>
+#include <boost/algorithm/cxx11/none_of.hpp>
 
 using namespace arma;
 using namespace std;
@@ -16,7 +16,7 @@ using namespace std;
 //  * El costo de ese camino
 struct Camino {
     int ciudadFinal;
-    vector<int> camino;
+    vector<int> recorrido;
     double costoCamino;
 };
 
@@ -48,7 +48,7 @@ ArbolBusqueda::ArbolBusqueda(string rutaArchivoDistancias)
 
     Camino nodoInicial;
     nodoInicial.ciudadFinal = randi(1, distr_param(1, cantidadCiudades)).at(0);
-    nodoInicial.camino.push_back(nodoInicial.ciudadFinal);
+    nodoInicial.recorrido.push_back(nodoInicial.ciudadFinal);
     nodoInicial.costoCamino = 0;
 
     listaCaminos.insert(nodoInicial);
@@ -57,7 +57,6 @@ ArbolBusqueda::ArbolBusqueda(string rutaArchivoDistancias)
 vector<int> ArbolBusqueda::hacerBusqueda()
 {
     while (!listaCaminos.empty()) {
-        // bucle:
         //  1 - Saco el primer elemento de la lista
         //      Si no hay elementos, no encontré una solución
         Camino camino = *listaCaminos.begin();
@@ -67,26 +66,32 @@ vector<int> ArbolBusqueda::hacerBusqueda()
         //      Si es un estado objetivo, encontré la solución
         // El camino va a ser la solución si la cantidad de nodos es igual
         // a la cantidad de ciudades.
-        if (camino.camino.size() == cantidadCiudades)
-            return camino.camino;
+        if (camino.recorrido.size() == cantidadCiudades)
+            return camino.recorrido;
 
-        //  3 - Expando los vecinos a los que puede ir y los meto en ListaNodos Arbol
-        //      Los nuevos Nodos son insertados para que lista quede ordenada por
-        //      el costo de cada camino
-        //      Si no hay nodos a expandir, no inserto nada
-        vector<int> ciudadesCandidatas;
-        for (unsigned int i = 1; i <= cantidadCiudades; ++i) {
-            if (!boost::algorithm::any_of_equal(camino.camino, i))
-                ciudadesCandidatas.push_back(i);
-        }
+        //  3 - Expando los vecinos a los que puede ir y los meto en listaCaminos.
+        //      Los nuevos Caminos son insertados para que lista quede ordenada por
+        //      el costo de cada camino.
+        //      Si no hay vecinos a expandir, no inserto nada.
+        for (unsigned int ciudad = 1; ciudad <= cantidadCiudades; ++ciudad) {
 
-        // Generar caminos nuevos
-        for (int ciudad : ciudadesCandidatas) {
-            Camino nuevoCamino{camino};
-            nuevoCamino.ciudadFinal = ciudad;
-            nuevoCamino.camino.push_back(ciudad);
-            nuevoCamino.costoCamino += distancias.at(camino.ciudadFinal,
-                                                     nuevoCamino.ciudadFinal);
+            // Si la ciudad no está en el recorrido hecho, entonces puedo viajar
+            // a esa ciudad.
+            if (boost::algorithm::none_of_equal(camino.recorrido, ciudad)) {
+
+                // Creo un nuevo camino en base al actual
+                Camino nuevoCamino{camino};
+
+                // Actualizo el nuevo camino con la información sobre la
+                // nueva ciudad a la que se viajó.
+                nuevoCamino.ciudadFinal = ciudad;
+                nuevoCamino.recorrido.push_back(ciudad);
+                nuevoCamino.costoCamino += distancias.at(camino.ciudadFinal - 1,
+                                                         nuevoCamino.ciudadFinal - 1);
+
+                // Inserto el nuevo camino
+                listaCaminos.insert(nuevoCamino);
+            }
         }
     }
 
