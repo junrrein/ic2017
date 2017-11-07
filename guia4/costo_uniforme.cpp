@@ -18,12 +18,12 @@ struct Camino {
     int ciudadFinal;
     vector<int> camino;
     double costoCamino;
-
-    bool operator<(const Camino& other)
-    {
-        return this->costoCamino < other.costoCamino;
-    }
 };
+
+bool operator<(const Camino& lhs, const Camino& rhs)
+{
+    return lhs.costoCamino < rhs.costoCamino;
+}
 
 class ArbolBusqueda {
 public:
@@ -89,4 +89,7 @@ vector<int> ArbolBusqueda::hacerBusqueda()
                                                      nuevoCamino.ciudadFinal);
         }
     }
+
+    // Si se llegó hasta acá, es porque no se encontró una solución
+    throw runtime_error("No se encontró una solución");
 }
