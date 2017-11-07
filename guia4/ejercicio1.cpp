@@ -161,8 +161,7 @@ int main()
     {
         const array<double, 4> limites = {{-100, 100, -100, 100}};
 
-        auto fitness
-            = [](array<double, 2> fenotipo) -> double {
+        auto fitness = [](array<double, 2> fenotipo) -> double {
             double x = fenotipo.at(0);
             double y = fenotipo.at(1);
 
