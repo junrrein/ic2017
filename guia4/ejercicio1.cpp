@@ -22,7 +22,7 @@ int main()
                           fitness,
                           /*individuos =*/40,
                           /*generaciones =*/500,
-                          /*umbral =*/50};
+                          /*umbral =*/100};
 
         p.evaluarPoblacion();
         cout << "Función x * sin(sqrt(abs(x)))" << endl
@@ -33,7 +33,7 @@ int main()
              << "Fitness promedio: " << p.fitnessPromdedio() << endl;
 
         {
-            const vector<Individuo<8, 1>> individuos = p.individuos();
+            const auto& individuos = p.individuos();
             mat puntos(individuos.size(), 2);
 
             for (unsigned int i = 0; i < puntos.n_rows; ++i) {
@@ -57,7 +57,7 @@ int main()
             p.evolucionar(1);
 
             if (stopChar != "s" || p.termino()) {
-                const vector<Individuo<8, 1>> individuos = p.individuos();
+                const auto& individuos = p.individuos();
                 mat puntos(individuos.size(), 2);
 
                 for (unsigned int i = 0; i < puntos.n_rows; ++i) {
@@ -65,9 +65,7 @@ int main()
                     puntos.at(i, 1) = fitness(individuos.at(i).fenotipo());
                 }
 
-                gp << "set xrange [-512:512]" << endl
-                   << "set grid" << endl
-                   << "plot x * sin(sqrt(abs(x))) notitle, "
+                gp << "plot x * sin(sqrt(abs(x))) notitle, "
                    << gp.file1d(puntos) << " notitle with points lw 1.5" << endl;
 
                 if (!p.termino())
@@ -110,7 +108,7 @@ int main()
              << "Fitness promedio: " << p.fitnessPromdedio() << endl;
 
         {
-            const vector<Individuo<8, 1>> individuos = p.individuos();
+            const auto& individuos = p.individuos();
             mat puntos(individuos.size(), 2);
 
             for (unsigned int i = 0; i < puntos.n_rows; ++i) {
@@ -133,7 +131,7 @@ int main()
             p.evolucionar(1);
 
             if (stopChar != "s" || p.termino()) {
-                const vector<Individuo<8, 1>> individuos = p.individuos();
+                const auto& individuos = p.individuos();
                 mat puntos(individuos.size(), 2);
 
                 for (unsigned int i = 0; i < puntos.n_rows; ++i) {
@@ -141,9 +139,7 @@ int main()
                     puntos.at(i, 1) = fitness(individuos.at(i).fenotipo());
                 }
 
-                gp << "set xrange [0:20]" << endl
-                   << "set grid" << endl
-                   << "plot -x - 5 * sin(3 * x) - 8 * cos(5 * x) notitle, "
+                gp << "plot -x - 5 * sin(3 * x) - 8 * cos(5 * x) notitle, "
                    << gp.file1d(puntos) << " notitle with points lw 1.5" << endl;
 
                 if (!p.termino())
@@ -156,6 +152,7 @@ int main()
              << "Mejor fitness: " << p.mejorFitness() << endl
              << "Fitness promedio: " << p.fitnessPromdedio() << endl
              << "Generaciones evolucionadas: " << generacion << endl;
+        getchar();
     }
 
     // -------------------------------
@@ -175,11 +172,11 @@ int main()
             return -parte1 * parte2;
         };
 
-        Poblacion<10, 2> p{limites,
+        Poblacion<14, 2> p{limites,
                            fitness,
-                           /*individuos =*/100,
+                           /*individuos =*/300,
                            /*generaciones =*/1000,
-                           /*umbral =*/100};
+                           /*umbral =*/200};
 
         p.evaluarPoblacion();
         cout << "\n-(pow(x * x + y * y, 0.25) * (pow(sin(50 * pow(x * x + y * y, 0.1)), 2)) + 1)" << endl
@@ -192,7 +189,7 @@ int main()
              << "Fitness promedio: " << p.fitnessPromdedio() << endl;
 
         {
-            const vector<Individuo<10, 2>> individuos = p.individuos();
+            const auto& individuos = p.individuos();
             mat puntos(individuos.size(), 3);
 
             for (unsigned int i = 0; i < puntos.n_rows; ++i) {
@@ -205,10 +202,10 @@ int main()
                << "set ylabel 'y' font ',10'" << endl
                << "set xrange [-100:100]" << endl
                << "set yrange [-100:100]" << endl
-               << "set grid" << endl
+               << "set grid lw 2" << endl
                << "set samples 60" << endl
                << "set isosamples 60" << endl
-               << "set hidden3d" << endl
+               << "set pm3d depthorder hidden3d" << endl
                << "splot (-((x * x + y * y)**(0.25) * (sin(50 * (x * x + y * y)**(0.1))**2 + 1))) palette notitle, "
                << gp.file1d(puntos) << " notitle with points lw 1.5" << endl;
 
@@ -222,7 +219,7 @@ int main()
             p.evolucionar(1);
 
             if (stopChar != "s" || p.termino()) {
-                const vector<Individuo<10, 2>> individuos = p.individuos();
+                const auto& individuos = p.individuos();
                 mat puntos(individuos.size(), 3);
 
                 for (unsigned int i = 0; i < puntos.n_rows; ++i) {
@@ -231,12 +228,7 @@ int main()
                     puntos.at(i, 2) = fitness(individuos.at(i).fenotipo());
                 }
 
-                gp << "set xrange [-100:100]" << endl
-                   << "set yrange [-100:100]" << endl
-                   << "set grid" << endl
-                   << "set samples 60" << endl
-                   << "set isosamples 60" << endl
-                   << "splot (-((x * x + y * y)**(0.25) * (sin(50 * (x * x + y * y)**(0.1))**2 + 1))) palette notitle, "
+                gp << "splot (-((x * x + y * y)**(0.25) * (sin(50 * (x * x + y * y)**(0.1))**2 + 1))) palette notitle, "
                    << gp.file1d(puntos) << " notitle with points lw 1.5" << endl;
 
                 if (!p.termino())
