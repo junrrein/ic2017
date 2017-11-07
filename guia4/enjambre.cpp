@@ -3,6 +3,8 @@
 using namespace std;
 using namespace arma;
 
+namespace enjambre {
+
 class Individuo {
 public:
     Individuo(const vector<pair<double, double>>& limites);
@@ -200,3 +202,4 @@ void Enjambre::epoca()
         ++m_epocasSinMejora;
     }
 }
+} // namespace enjambre

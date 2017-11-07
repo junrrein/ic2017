@@ -1,6 +1,8 @@
 #include "genetico.cpp"
 #include <gnuplot-iostream.h>
 
+using namespace genetico;
+
 int main()
 {
     arma_rng::set_seed_random();

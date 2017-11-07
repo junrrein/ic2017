@@ -1,6 +1,8 @@
 #include "enjambre.cpp"
 #include <gnuplot-iostream.h>
 
+using namespace enjambre;
+
 int main()
 {
     arma_rng::set_seed_random();

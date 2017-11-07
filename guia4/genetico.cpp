@@ -5,6 +5,8 @@
 using namespace arma;
 using namespace std;
 
+namespace genetico {
+
 template <unsigned int nBits>
 bitset<nBits> codificar(double fenotipo,
                         double minimoFenotipo,
@@ -328,3 +330,4 @@ double Poblacion<nBits, nVariables>::
 
     return suma / m_individuos.size();
 }
+} // namespace genetico
