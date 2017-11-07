@@ -1,3 +1,4 @@
 agregar_ejercicio(ejercicio1)
 agregar_ejercicio(ejercicio2)
 agregar_ejercicio(comparaciongeneticoenjambre)
+agregar_ejercicio(ejercicio3)
