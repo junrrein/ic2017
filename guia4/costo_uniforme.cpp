@@ -6,14 +6,6 @@
 using namespace arma;
 using namespace std;
 
-// matriz distancias
-
-// nodoArbolInicial = rand()
-// ListaNodosArbol = {nodoArbolInicial}
-
-// Un NodoArbol sabe:
-//  * El camino recorrido (vector<int>)
-//  * El costo de ese camino
 struct Camino {
     int ciudadFinal;
     vector<int> recorrido;
@@ -48,7 +40,7 @@ ArbolBusqueda::ArbolBusqueda(string rutaArchivoDistancias)
 
     Camino nodoInicial;
     nodoInicial.ciudadFinal = randi(1, distr_param(1, cantidadCiudades)).at(0);
-    nodoInicial.recorrido.push_back(nodoInicial.ciudadFinal);
+    nodoInicial.recorrido = {nodoInicial.ciudadFinal};
     nodoInicial.costoCamino = 0;
 
     listaCaminos.insert(nodoInicial);
