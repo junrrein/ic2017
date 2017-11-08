@@ -75,7 +75,7 @@ ColoniaHormigas::ColoniaHormigas(string rutaArchivoDistancias,
         throw runtime_error("La matriz leída no es cuadrada");
 
     m_nCiudades = m_distancias.n_rows;
-    m_nodoOrigen = randi(1, distr_param(1, m_nCiudades)).at(0);
+    m_nodoOrigen = randi(1, distr_param(1, m_nCiudades))(0);
     m_feromonas = randu(m_distancias.n_rows, m_distancias.n_cols) * sigma_cero;
 }
 
@@ -87,8 +87,7 @@ double ColoniaHormigas::calcularCosto(const vector<int>& camino)
         const int ciudad1 = camino.at(i);
         const int ciudad2 = camino.at(i + 1);
 
-        costo += m_distancias.at(ciudad1 - 1,
-                                 ciudad2 - 1);
+        costo += m_distancias(ciudad1 - 1, ciudad2 - 1);
     }
 
     return costo;
@@ -138,7 +137,7 @@ int ColoniaHormigas::seleccionarVecino(int ciudadActual,
 
     // Ahora que tengo las probabilidades normalizadas,
     // selecciono un vecino
-    const double moneda = randu(1).at(0, 0);
+    const double moneda = randu(1).eval()(0);
     double probAcumulada = 0;
 
     for (const auto& p : probabilidadVecino) {
@@ -201,8 +200,7 @@ void ColoniaHormigas::actualizarFeromonas()
             const int ciudad1 = hormiga.camino.at(i);
             const int ciudad2 = hormiga.camino.at(i + 1);
 
-            m_feromonas.at(ciudad1 - 1,
-                           ciudad2 - 1)
+            m_feromonas(ciudad1 - 1, ciudad2 - 1)
                 += m_Q / hormiga.costoCamino;
         }
     }
