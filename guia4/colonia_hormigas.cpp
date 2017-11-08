@@ -8,54 +8,66 @@ using namespace arma;
 
 struct Hormiga {
     vector<int> camino;
-
-    double costoCamino(const mat& matrizCostos);
+    double costoCamino;
 };
 
-double Hormiga::costoCamino(const mat& distancias)
+ostream& operator<<(ostream& os, const Hormiga& hormiga)
 {
-    double costo = 0;
+    os << "Recorrido: ";
 
-    for (unsigned int i = 0; i < camino.size() - 1; ++i)
-        costo += distancias.at(camino.at(i), camino.at(i + 1));
+    for (int ciudad : hormiga.camino)
+        os << ciudad << ' ';
 
-    return costo;
+    os << "\nCosto del camino: " << hormiga.costoCamino << endl;
+
+    return os;
 }
 
 class ColoniaHormigas {
 public:
     ColoniaHormigas(string rutaArchivoDistancias,
                     int nHormigas,
+                    int nEpocas,
                     double sigma_cero,
                     double alpha,
                     double beta,
+                    double tasaEvaporacion,
                     double Q);
 
+    double calcularCosto(const vector<int>& camino);
     Hormiga buscarCamino();
     int seleccionarVecino(int ciudadActual, set<int> vecinos);
+    Hormiga encontrarSolucion();
+    void actualizarFeromonas();
 
 private:
     vector<Hormiga> m_hormiguero;
     mat m_distancias;
     mat m_feromonas;
     const int m_nHormigas;
+    const int m_nEpocas;
     const double m_alpha;
     const double m_beta;
     const double m_Q;
-    int m_nCiudades;
+    const double m_tasaEvaporacion;
+    unsigned int m_nCiudades;
     int m_nodoOrigen;
 };
 
 ColoniaHormigas::ColoniaHormigas(string rutaArchivoDistancias,
                                  int nHormigas,
+                                 int nEpocas,
                                  double sigma_cero,
                                  double alpha,
                                  double beta,
+                                 double tasaEvaporacion,
                                  double Q)
     : m_nHormigas{nHormigas}
+    , m_nEpocas{nEpocas}
     , m_alpha{alpha}
     , m_beta{beta}
     , m_Q{Q}
+    , m_tasaEvaporacion{tasaEvaporacion}
 {
     m_distancias.load(rutaArchivoDistancias);
 
@@ -67,21 +79,41 @@ ColoniaHormigas::ColoniaHormigas(string rutaArchivoDistancias,
     m_feromonas = randu(m_distancias.n_rows, m_distancias.n_cols) * sigma_cero;
 }
 
+double ColoniaHormigas::calcularCosto(const vector<int>& camino)
+{
+    double costo = 0;
+
+    for (unsigned int i = 0; i < camino.size() - 1; ++i) {
+        const int ciudad1 = camino.at(i);
+        const int ciudad2 = camino.at(i + 1);
+
+        costo += m_distancias.at(ciudad1 - 1,
+                                 ciudad2 - 1);
+    }
+
+    return costo;
+}
+
 Hormiga ColoniaHormigas::buscarCamino()
 {
     Hormiga hormiga;
     hormiga.camino = {m_nodoOrigen};
 
     set<int> vecinos;
-    for (int i = 1; i <= m_nCiudades; ++i)
+    for (unsigned int i = 1; i <= m_nCiudades; ++i)
         vecinos.insert(i);
 
     vecinos.erase(m_nodoOrigen);
 
-    // seleccionar nodo
+    while (hormiga.camino.size() < m_nCiudades) {
+        const int ciudad = seleccionarVecino(hormiga.camino.back(), vecinos);
+        hormiga.camino.push_back(ciudad);
+        vecinos.erase(ciudad);
+    }
 
-    //meterlo en la lista
-    // remover de vecinos
+    // Cuando salgo del bucle, pasé por todas las ciudas.
+    // Solo falta volver a la ciudad inicial.
+    hormiga.camino.push_back(m_nodoOrigen);
 
     return hormiga;
 }
@@ -117,4 +149,61 @@ int ColoniaHormigas::seleccionarVecino(int ciudadActual,
     }
 
     throw runtime_error("Nunca se debería llegar hasta acá");
+}
+
+Hormiga ColoniaHormigas::encontrarSolucion()
+{
+    for (int epoca = 0; epoca < m_nEpocas; ++epoca) {
+        m_hormiguero.clear();
+
+        // Para cada hormiga, busco un camino que recorra todas
+        // las ciudades.
+        for (int i = 0; i < m_nHormigas; ++i)
+            m_hormiguero.push_back(buscarCamino());
+
+        // Me fijo si todas las hormigas tienen el mismo camino
+        bool todosIguales = true;
+        for (const Hormiga& hormiga : m_hormiguero) {
+            if (hormiga.camino != m_hormiguero.front().camino) {
+                todosIguales = false;
+                break;
+            }
+        }
+
+        if (todosIguales) {
+            Hormiga solucion = m_hormiguero.front();
+            solucion.costoCamino = calcularCosto(solucion.camino);
+
+            return solucion;
+        }
+
+        // Evaporar feromonas
+        m_feromonas *= (1 - m_tasaEvaporacion);
+
+        // Actualizar feromonas
+        actualizarFeromonas();
+    }
+
+    // Si se llega hasta acá las hormigas no convergieron
+    // a un único camino.
+    throw runtime_error("No se encontró una solución");
+}
+
+void ColoniaHormigas::actualizarFeromonas()
+{
+    if (m_hormiguero.empty())
+        throw runtime_error("El hormiguero está vacío");
+
+    for (Hormiga& hormiga : m_hormiguero) {
+        hormiga.costoCamino = calcularCosto(hormiga.camino);
+
+        for (unsigned int i = 0; i < hormiga.camino.size() - 1; ++i) {
+            const int ciudad1 = hormiga.camino.at(i);
+            const int ciudad2 = hormiga.camino.at(i + 1);
+
+            m_feromonas.at(ciudad1 - 1,
+                           ciudad2 - 1)
+                += m_Q / hormiga.costoCamino;
+        }
+    }
 }
