@@ -53,18 +53,12 @@ ArbolBusqueda::ArbolBusqueda(string rutaArchivoDistancias)
 
     // Insertar caminos iniciales que empiecen en las distintas ciudades
     // Los insertamos de forma desordenada
-    vector<int> ciudades(cantidadCiudades);
-    iota(ciudades.begin(), ciudades.end(), 1);
-    random_shuffle(ciudades.begin(), ciudades.end());
+    Camino puntoPartida;
+    puntoPartida.ciudadFinal = randi(1, distr_param(1, cantidadCiudades)).at(0);
+    puntoPartida.recorrido = {puntoPartida.ciudadFinal};
+    puntoPartida.costoCamino = 0;
 
-    for (int i : ciudades) {
-        Camino puntoPartida;
-        puntoPartida.ciudadFinal = i;
-        puntoPartida.recorrido = {puntoPartida.ciudadFinal};
-        puntoPartida.costoCamino = 0;
-
-        listaCaminos.insert(puntoPartida);
-    }
+    listaCaminos.insert(puntoPartida);
 }
 
 Camino ArbolBusqueda::hacerBusqueda()
