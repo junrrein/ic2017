@@ -23,9 +23,9 @@ int main()
         reloj.tic();
 
         for (int i = 0; i < 20; ++i) {
-            genetico::Poblacion<12, 2> p{limites,
+            genetico::Poblacion<14, 2> p{limites,
                                          fitness,
-                                         /*individuos =*/150,
+                                         /*individuos =*/40,
                                          /*generaciones =*/500,
                                          /*umbral =*/100};
 

@@ -198,17 +198,19 @@ void Poblacion<nBits, nVariables>::
 
         // 2 - Seleccionar los padres
         vector<I> padres = seleccionarPadres();
-        copy(padres.begin(), padres.end(), back_inserter(nuevaGeneracion));
+        //        copy(padres.begin(), padres.end(), back_inserter(nuevaGeneracion));
 
         // 3 - Hacer cruzas
-        vector<I> hijos = hacerCruzas(padres, m_nIndividuos * 0.7);
+        //		vector<I> hijos = hacerCruzas(padres, m_nIndividuos * 0.7);
+        vector<I> hijos = hacerCruzas(padres, m_nIndividuos);
 
         // 4 - Hacer mutaciones
         for (I& h : hijos)
             if (randu(1).at(0, 0) <= 0.1)
                 h.mutar();
 
-        copy(hijos.begin(), hijos.end(), back_inserter(nuevaGeneracion));
+        //        copy(hijos.begin(), hijos.end(), back_inserter(nuevaGeneracion));
+        copy(hijos.begin(), hijos.end() - 1, back_inserter(nuevaGeneracion));
         m_individuos = nuevaGeneracion;
 
         // 5 - Evaluar la poblacion y ver si se dio el criterio de parada

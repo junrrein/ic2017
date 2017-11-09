@@ -23,7 +23,7 @@ int main()
 
         Poblacion<8, 1> p{limites,
                           fitness,
-                          /*individuos =*/40,
+                          /*individuos =*/20,
                           /*generaciones =*/500,
                           /*umbral =*/100};
 
@@ -107,7 +107,7 @@ int main()
 
         Poblacion<8, 1> p{limites,
                           fitness,
-                          /*individuos =*/40,
+                          /*individuos =*/20,
                           /*generaciones =*/500,
                           /*umbral =*/100};
 
@@ -194,7 +194,7 @@ int main()
 
         Poblacion<12, 2> p{limites,
                            fitness,
-                           /*individuos =*/150,
+                           /*individuos =*/25,
                            /*generaciones =*/1000,
                            /*umbral =*/200};
 
