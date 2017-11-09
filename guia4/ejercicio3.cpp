@@ -23,7 +23,7 @@ int main()
                        /*alpha =*/4,
                        /*beta =*/4,
                        /*tasaEvaporacion =*/0.1,
-                       /*Q =*/4);
+                       /*Q =*/2);
 
     cout << c7.encontrarSolucion() << endl;
 

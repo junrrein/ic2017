@@ -38,7 +38,7 @@ public:
     Hormiga buscarCamino();
     int seleccionarVecino(int ciudadActual, set<int> vecinos);
     Hormiga encontrarSolucion();
-    void actualizarFeromonas();
+    void depositarFeromonas();
 
 private:
     vector<Hormiga> m_hormiguero;
@@ -104,13 +104,13 @@ Hormiga ColoniaHormigas::buscarCamino()
 
     vecinos.erase(m_nodoOrigen);
 
-    while (hormiga.camino.size() < m_nCiudades) {
+    while (!vecinos.empty()) {
         const int ciudad = seleccionarVecino(hormiga.camino.back(), vecinos);
         hormiga.camino.push_back(ciudad);
         vecinos.erase(ciudad);
     }
 
-    // Cuando salgo del bucle, pasé por todas las ciudas.
+    // Cuando salgo del bucle, pasé por todas las ciudades.
     // Solo falta volver a la ciudad inicial.
     hormiga.camino.push_back(m_nodoOrigen);
 
@@ -179,8 +179,8 @@ Hormiga ColoniaHormigas::encontrarSolucion()
         // Evaporar feromonas
         m_feromonas *= (1 - m_tasaEvaporacion);
 
-        // Actualizar feromonas
-        actualizarFeromonas();
+        // Depositar feromonas
+        depositarFeromonas();
     }
 
     // Si se llega hasta acá las hormigas no convergieron
@@ -188,20 +188,20 @@ Hormiga ColoniaHormigas::encontrarSolucion()
     throw runtime_error("No se encontró una solución");
 }
 
-void ColoniaHormigas::actualizarFeromonas()
+void ColoniaHormigas::depositarFeromonas()
 {
     if (m_hormiguero.empty())
         throw runtime_error("El hormiguero está vacío");
 
     for (Hormiga& hormiga : m_hormiguero) {
         hormiga.costoCamino = calcularCosto(hormiga.camino);
+        const double deltaFeromonas = m_Q / hormiga.costoCamino;
 
         for (unsigned int i = 0; i < hormiga.camino.size() - 1; ++i) {
             const int ciudad1 = hormiga.camino.at(i);
             const int ciudad2 = hormiga.camino.at(i + 1);
 
-            m_feromonas(ciudad1 - 1, ciudad2 - 1)
-                += m_Q / hormiga.costoCamino;
+            m_feromonas(ciudad1 - 1, ciudad2 - 1) += deltaFeromonas;
         }
     }
 }
