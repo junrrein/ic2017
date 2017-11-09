@@ -76,7 +76,10 @@ ColoniaHormigas::ColoniaHormigas(string rutaArchivoDistancias,
 
     m_nCiudades = m_distancias.n_rows;
     m_nodoOrigen = randi(1, distr_param(1, m_nCiudades))(0);
+
     m_feromonas = randu(m_distancias.n_rows, m_distancias.n_cols) * sigma_cero;
+    //    m_feromonas = mat(m_nCiudades, m_nCiudades);
+    //    m_feromonas.fill(sigma_cero);
 }
 
 double ColoniaHormigas::calcularCosto(const vector<int>& camino)
@@ -86,6 +89,9 @@ double ColoniaHormigas::calcularCosto(const vector<int>& camino)
     for (unsigned int i = 0; i < camino.size() - 1; ++i) {
         const int ciudad1 = camino.at(i);
         const int ciudad2 = camino.at(i + 1);
+
+        if (ciudad1 == ciudad2)
+            throw runtime_error("Las ciudades son iguales");
 
         costo += m_distancias(ciudad1 - 1, ciudad2 - 1);
     }
@@ -127,6 +133,7 @@ int ColoniaHormigas::seleccionarVecino(int ciudadActual,
     for (int vecino : vecinos) {
         const double probabilidad = pow(m_feromonas(ciudadActual - 1, vecino - 1), m_alpha)
                                     / pow(m_distancias(ciudadActual - 1, vecino - 1), m_beta);
+        //        const double probabilidad = pow(m_feromonas(ciudadActual - 1, vecino - 1), m_alpha);
         probabilidadVecino[vecino] = probabilidad;
         sumaProbabilidades += probabilidad;
     }
@@ -148,11 +155,20 @@ int ColoniaHormigas::seleccionarVecino(int ciudadActual,
     }
 
     throw runtime_error("Nunca se debería llegar hasta acá");
+
+    //    pair<int, double> mejor{0, 0};
+
+    //    for (const auto& p : probabilidadVecino) {
+    //        if (p.second > mejor.second)
+    //            mejor = p;
+    //    }
+
+    //    return mejor.first;
 }
 
 Hormiga ColoniaHormigas::encontrarSolucion()
 {
-    for (int epoca = 0; epoca < m_nEpocas; ++epoca) {
+    for (int epoca = 1; epoca <= m_nEpocas; ++epoca) {
         m_hormiguero.clear();
 
         // Para cada hormiga, busco un camino que recorra todas
@@ -201,7 +217,11 @@ void ColoniaHormigas::depositarFeromonas()
             const int ciudad1 = hormiga.camino.at(i);
             const int ciudad2 = hormiga.camino.at(i + 1);
 
+            if (ciudad1 == ciudad2)
+                throw runtime_error("Las ciudades son iguales");
+
             m_feromonas(ciudad1 - 1, ciudad2 - 1) += deltaFeromonas;
+            //			m_feromonas(ciudad2 - 1, ciudad1 - 1) += deltaFeromonas;
         }
     }
 }
