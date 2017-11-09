@@ -1,4 +1,5 @@
 #include "genetico.cpp"
+#include "metodo_newton.cpp"
 #include <gnuplot-iostream.h>
 
 using namespace genetico;
@@ -84,6 +85,11 @@ int main()
              << "Mejor fitness: " << p.mejorFitness() << endl
              << "Fitness promedio: " << p.fitnessPromdedio() << endl
              << "Generaciones evolucionadas: " << generacion << endl;
+
+        // Gradiente desdendente
+        const double solucion = gradienteDescendente(f1_x, {-512, 512}, 0.1);
+        cout << "\nSolución usando gradiente descendiente: x = " << solucion << endl;
+
         getchar();
     }
 
@@ -162,6 +168,11 @@ int main()
              << "Mejor fitness: " << p.mejorFitness() << endl
              << "Fitness promedio: " << p.fitnessPromdedio() << endl
              << "Generaciones evolucionadas: " << generacion << endl;
+
+        // Gradiente desdendente
+        const double solucion = gradienteDescendente(f2_x, {0, 20}, 0.01);
+        cout << "\nSolución usando gradiente descendiente: x = " << solucion << endl;
+
         getchar();
     }
 
@@ -255,6 +266,19 @@ int main()
              << "Mejor fitness: " << p.mejorFitness() << endl
              << "Fitness promedio: " << p.fitnessPromdedio() << endl
              << "Cantidad de generaciones evolucionadas: " << generacion << endl;
+
+        // Gradiente desdendente
+        array<pair<double, double>, 2> lim = {{make_pair(-100.0, 100.0),
+                                               make_pair(-100.0, 100.0)}};
+        double x, y;
+        tie(x, y) = gradienteDescendente(f3_x,
+                                         f3_y,
+                                         lim,
+                                         0.01);
+        cout << "\nSolución usando gradiente descendiente: " << endl
+             << "x = " << x << endl
+             << "y = " << y << endl;
+
         getchar();
     }
 
