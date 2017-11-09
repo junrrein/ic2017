@@ -122,7 +122,7 @@ int main()
                 puntos.at(i, 1) = fitness(individuos.at(i).fenotipo());
             }
 
-            gp << "set title 'Algoritmo genético - inciso (a)' font ',11'" << endl
+            gp << "set title 'Algoritmo genético - inciso (b)' font ',11'" << endl
                << "set xlabel 'x' font ',10'" << endl
                << "set ylabel 'aptitud' font ',10'" << endl
                << "set xrange [0:20]" << endl
