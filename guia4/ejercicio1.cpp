@@ -43,11 +43,15 @@ int main()
                 puntos.at(i, 1) = fitness(individuos.at(i).fenotipo());
             }
 
-            gp << "set xrange [-512:512]" << endl
+            gp << "set title 'Algoritmo genético - inciso (a)' font ',11'" << endl
+               << "set xlabel 'x' font ',10'" << endl
+               << "set ylabel 'aptitud' font ',10'" << endl
+               << "set xrange [-512:512]" << endl
                << "set grid" << endl
+               << "set key box opaque center top" << endl
                << "set samples 500" << endl
-               << "plot x * sin(sqrt(abs(x))) notitle, "
-               << gp.file1d(puntos) << " notitle with points lw 1.5" << endl;
+               << "plot x * sin(sqrt(abs(x))) title 'Función de aptitud', "
+               << gp.file1d(puntos) << " title 'Individuos' with points lw 1.5" << endl;
 
             getchar();
         }
@@ -67,8 +71,8 @@ int main()
                     puntos.at(i, 1) = fitness(individuos.at(i).fenotipo());
                 }
 
-                gp << "plot x * sin(sqrt(abs(x))) notitle, "
-                   << gp.file1d(puntos) << " notitle with points lw 1.5" << endl;
+                gp << "plot x * sin(sqrt(abs(x))) title 'Función de aptitud', "
+                   << gp.file1d(puntos) << " title 'Individuos' with points lw 1.5" << endl;
 
                 if (!p.termino())
                     getline(cin, stopChar);
@@ -118,10 +122,14 @@ int main()
                 puntos.at(i, 1) = fitness(individuos.at(i).fenotipo());
             }
 
-            gp << "set xrange [0:20]" << endl
+            gp << "set title 'Algoritmo genético - inciso (a)' font ',11'" << endl
+               << "set xlabel 'x' font ',10'" << endl
+               << "set ylabel 'aptitud' font ',10'" << endl
+               << "set xrange [0:20]" << endl
                << "set grid" << endl
-               << "plot -x - 5 * sin(3 * x) - 8 * cos(5 * x) notitle, "
-               << gp.file1d(puntos) << " notitle with points lw 1.5" << endl;
+               << "set key box opaque center top" << endl
+               << "plot -x - 5 * sin(3 * x) - 8 * cos(5 * x) title 'Función de aptitud', "
+               << gp.file1d(puntos) << " title 'Individuos' with points lw 1.5" << endl;
 
             getchar();
         }
@@ -141,8 +149,8 @@ int main()
                     puntos.at(i, 1) = fitness(individuos.at(i).fenotipo());
                 }
 
-                gp << "plot -x - 5 * sin(3 * x) - 8 * cos(5 * x) notitle, "
-                   << gp.file1d(puntos) << " notitle with points lw 1.5" << endl;
+                gp << "plot -x - 5 * sin(3 * x) - 8 * cos(5 * x) title 'Función de aptitud', "
+                   << gp.file1d(puntos) << " title 'Individuos' with points lw 1.5" << endl;
 
                 if (!p.termino())
                     getline(cin, stopChar);
@@ -173,9 +181,9 @@ int main()
             return -parte1 * parte2;
         };
 
-        Poblacion<14, 2> p{limites,
+        Poblacion<12, 2> p{limites,
                            fitness,
-                           /*individuos =*/300,
+                           /*individuos =*/150,
                            /*generaciones =*/1000,
                            /*umbral =*/200};
 
@@ -199,16 +207,19 @@ int main()
                 puntos.at(i, 2) = fitness(individuos.at(i).fenotipo());
             }
 
-            gp << "set xlabel 'x' font ',10'" << endl
+            gp << "set title 'Algoritmo genético - inciso (c)' font ',11'" << endl
+               << "set xlabel 'x' font ',10'" << endl
                << "set ylabel 'y' font ',10'" << endl
+               << "set zlabel 'aptitud' font ',10'" << endl
                << "set xrange [-100:100]" << endl
                << "set yrange [-100:100]" << endl
                << "set grid lw 2" << endl
+               << "set key box opaque center top" << endl
                << "set samples 60" << endl
                << "set isosamples 60" << endl
                << "set pm3d depthorder hidden3d" << endl
-               << "splot (-((x * x + y * y)**(0.25) * (sin(50 * (x * x + y * y)**(0.1))**2 + 1))) palette notitle, "
-               << gp.file1d(puntos) << " notitle with points lw 1.5" << endl;
+               << "splot (-((x * x + y * y)**(0.25) * (sin(50 * (x * x + y * y)**(0.1))**2 + 1))) palette title 'Función de aptitud', "
+               << gp.file1d(puntos) << " title 'Individuos' with points lw 1.5" << endl;
 
             getchar();
         }
@@ -229,8 +240,8 @@ int main()
                     puntos.at(i, 2) = fitness(individuos.at(i).fenotipo());
                 }
 
-                gp << "splot (-((x * x + y * y)**(0.25) * (sin(50 * (x * x + y * y)**(0.1))**2 + 1))) palette notitle, "
-                   << gp.file1d(puntos) << " notitle with points lw 1.5" << endl;
+                gp << "splot (-((x * x + y * y)**(0.25) * (sin(50 * (x * x + y * y)**(0.1))**2 + 1))) palette title 'Función de aptitud', "
+                   << gp.file1d(puntos) << " title 'Individuos' with points lw 1.5" << endl;
 
                 if (!p.termino())
                     getline(cin, stopChar);
