@@ -48,18 +48,27 @@ double errorCuadraticoMulticapa(const vector<mat>& pesos,
 
 double errorRelativoPromedioMulticapa(const vector<mat>& pesos,
                                       const mat& patrones,
-                                      const vec& salidaDeseada)
+                                      const mat& salidaDeseada)
 {
     double sumaErroresRelativos = 0;
 
     for (unsigned int n = 0; n < patrones.n_rows; ++n) {
         vector<vec> ySalidas = salidaMulticapa(pesos, patrones.row(n).t());
-        const double salidaRed = as_scalar(ySalidas.back());
+        const vec salidaRed = ySalidas.back();
 
-        const double errorRelativoPatron = abs(salidaRed - salidaDeseada(n)) / salidaDeseada(n);
-        sumaErroresRelativos += errorRelativoPatron;
+        double sumaParcial = 0;
+
+        for (unsigned int i = 0; i < salidaDeseada.n_cols; ++i) {
+            const double errorRelativoPatron = abs(salidaRed(i) - salidaDeseada(n, i)) / abs(salidaDeseada(n, i));
+            sumaParcial += errorRelativoPatron;
+        }
+
+        // Promedio del error absoluto a lo largo de todas las salidas
+        // de este patrón.
+        sumaErroresRelativos += sumaParcial / salidaDeseada.n_cols;
     }
 
+    // Promedio del error a lo largo de todos los patrones
     return sumaErroresRelativos / patrones.n_rows * 100;
 }
 
@@ -90,22 +99,22 @@ vector<mat> epocaMulticapa(const mat& patrones,
         // Delta de ultima capa
         delta[delta.size() - 1] = error;
         // Deltas de las capas anteriores
-        //        for (int i = ySalidas.size() - 2; i >= 0; --i) {
-        //            // No participan los pesos correspondientes al sesgo en el cálculo de los deltas
-        //            const mat pesosAux = pesos[i + 1].tail_cols(pesos[i + 1].n_cols - 1);
-        //            delta[i] = pesosAux.t() * delta[i + 1];
-        //        }
+        for (int i = ySalidas.size() - 2; i >= 0; --i) {
+            // No participan los pesos correspondientes al sesgo en el cálculo de los deltas
+            const mat pesosAux = pesos[i + 1].tail_cols(pesos[i + 1].n_cols - 1);
+            delta[i] = pesosAux.t() * delta[i + 1];
+        }
 
         // Actualizacion de pesos de todas las capas menos la primera.
         // Si la red tiene una sola capa, no se entra acá.
-        //        for (int i = pesos.size() - 1; i >= 1; --i) {
-        //            const mat deltaWnuevo = tasaAprendizaje
-        //                                        * delta[i]
-        //                                        * join_horiz(vec{-1}, ySalidas[i - 1].t())
-        //                                    + inercia * deltaWOld[i];
-        //            pesos[i] += deltaWnuevo;
-        //            deltaWOld[i] = deltaWnuevo;
-        //        }
+        for (int i = pesos.size() - 1; i >= 1; --i) {
+            const mat deltaWnuevo = tasaAprendizaje
+                                        * delta[i]
+                                        * join_horiz(vec{-1}, ySalidas[i - 1].t())
+                                    + inercia * deltaWOld[i];
+            pesos[i] += deltaWnuevo;
+            deltaWOld[i] = deltaWnuevo;
+        }
 
         // Actualización de pesos de la primer capa
         const mat deltaW = tasaAprendizaje
