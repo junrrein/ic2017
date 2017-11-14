@@ -5,3 +5,6 @@ external/openblas
 utilidades/__pycache__/
 CMakeLists.txt.user
 config.hpp
+TP_Final/datos/*tuplas*
+.~lock*
+

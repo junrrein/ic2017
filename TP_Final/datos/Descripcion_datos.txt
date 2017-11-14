@@ -1,0 +1,3 @@
+Cada archivo tiene una sola serie de tiempo mensual. 
+El título de la misma es el nombre del archivo.
+El período de tiempo abarca desde enero del 2007 hasta febrero del 2017 (122 puntos de datos).
