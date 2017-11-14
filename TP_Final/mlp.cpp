@@ -61,8 +61,9 @@ int main()
 
     Gnuplot gp;
     gp << "plot " << gp.file1d(salidaDeseada) << " with lines title 'Salida original', "
-       << gp.file1d(salidaRed) << " with lines title 'Salida de la red'" << endl
-       << "La media de la salida original es: " << mean(salidaDeseada) << endl;
+       << gp.file1d(salidaRed) << " with lines title 'Salida de la red'" << endl;
+
+    cout << "La media de la salida original es: " << mean(salidaDeseada) << endl;
 
     getchar();
 
