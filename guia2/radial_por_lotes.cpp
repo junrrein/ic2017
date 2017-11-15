@@ -133,7 +133,7 @@ entrenarRadialPorLotes(const mat& patrones,
 
 			//            sigmas[i] = 1; // Para el Iris
 			//            sigmas[i] = 100; // Para el Merval
-			sigmas(i) = 100;
+			sigmas(i) = 0.3;
 		}
 	}
 

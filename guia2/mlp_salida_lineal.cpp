@@ -8,22 +8,38 @@ using namespace arma;
 
 namespace ic {
 
+vec sigmoid(const vec& v)
+{
+	return 2 / (1 + exp(-0.5 * v)) - 1;
+}
+
 vector<vec> salidaMulticapa(const vector<mat>& pesos,
                             const vec& patron)
 {
+	// Este multicapa va a tener salida lineal sólo en la capa de salida.
+	// En las demás capas se va a usar salida sigmoidea.
 	vector<vec> ySalidas;
 
 	// Calculo de la salida para la primer capa
 	{
-		const vec v = pesos[0] * join_vert(vec{-1}, patron); // agrega entrada correspondiente al sesgo
+		vec v = pesos[0] * join_vert(vec{-1}, patron); // agrega entrada correspondiente al sesgo
+
+		if (pesos.size() != 1) { // Si hay más de una capa, a la salida de la primera
+			v = sigmoid(v);      // hay que aplicarle sigmoidea.
+		}
+
 		ySalidas.push_back(v);
 	}
 
 	// Calculo de las salidas para las demas capas
 	for (unsigned int i = 1; i < pesos.size(); ++i) {
-		const vec v = pesos[i] * join_vert(vec{-1}, ySalidas[i - 1]); // agrega entrada correspondiente al sesgo
-		ySalidas.push_back(v);                                        // TODO: ver qué valor le pasamos como parámetro
-		                                                              // a la sigmoidea
+		vec v = pesos[i] * join_vert(vec{-1}, ySalidas[i - 1]); // agrega entrada correspondiente al sesgo
+
+		if (i != pesos.size() - 1) { // Para todas las capas menos la última, usar salida sigmoidea.
+			v = sigmoid(v);
+		}
+
+		ySalidas.push_back(v);
 	}
 
 	return ySalidas;
@@ -173,6 +189,7 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 		                       pesos);
 
 		errorRelativoPromedio = errorRelativoPromedioMulticapa(pesos, patrones, salidaDeseada);
+		cout << "Error cuadratico: " << errorCuadraticoMulticapa(pesos, patrones, salidaDeseada) << endl;
 
 		if (errorRelativoPromedio <= tolErrorRelativoPromedio)
 			break;

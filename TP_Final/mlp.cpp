@@ -11,25 +11,27 @@ int main()
 	const string rutaVentas = rutaBase + "Ventas_limpias.csv";
 	const string rutaVentasTuplas = rutaBase + "Ventas_limpias_tuplas.csv";
 
-    const int nEntradas = 6;
-	const int nSalidas = 1;
+    const int nEntradas = 12;
+    const int nSalidas = 1;
 	crearTuplas(rutaVentas, nEntradas, nSalidas, rutaVentasTuplas);
 
 	mat ventasTuplas;
-	ventasTuplas.load(rutaVentasTuplas);
-	mat patrones = ventasTuplas.head_cols(nEntradas);
+    ventasTuplas.load(rutaVentasTuplas);
+    ventasTuplas.shed_row(0);
+    //    ventasTuplas = shuffle(ventasTuplas);
+    mat patrones = ventasTuplas.head_cols(nEntradas);
 	mat salidaDeseada = ventasTuplas.tail_cols(nSalidas);
 
-    vec estructura = {6, 1};
+    vec estructura = {7, 1};
 
 	vector<mat> pesos;
 	double errorEntrenamiento;
 	int epocas;
 	tie(pesos, errorEntrenamiento, epocas) = ic::entrenarMulticapa(estructura,
 	                                                               ventasTuplas,
-	                                                               500,
-	                                                               0.1,
-	                                                               0.3,
+                                                                   1000,
+                                                                   0.0015,
+                                                                   0.2,
 	                                                               15);
 
 	cout << "El MLP se entrenó en " << epocas << " epocas." << endl

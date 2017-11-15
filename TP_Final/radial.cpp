@@ -9,10 +9,10 @@ int main()
     arma_rng::set_seed_random();
 
     const string rutaBase = config::sourceDir + "/TP_Final/datos/";
-    const string rutaVentas = rutaBase + "Diferencias_relativas.csv";
-    const string rutaVentasTuplas = rutaBase + "Diferencias_relativas_tuplas.csv";
+    const string rutaVentas = rutaBase + "Ventas_limpias.csv";
+    const string rutaVentasTuplas = rutaBase + "Ventas_limpias_tuplas.csv";
 
-    const int nEntradas = 18;
+    const int nEntradas = 12;
     const int nSalidas = 1;
     crearTuplas(rutaVentas, nEntradas, nSalidas, rutaVentasTuplas);
 
@@ -21,7 +21,7 @@ int main()
     mat patrones = ventasTuplas.head_cols(nEntradas);
     mat salidaDeseada = ventasTuplas.tail_cols(nSalidas);
 
-    vec estructura = {12, 1};
+    vec estructura = {30, 1};
 
     vector<rowvec> centroides;
     vec sigmas;
