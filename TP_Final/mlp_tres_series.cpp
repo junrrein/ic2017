@@ -37,10 +37,11 @@ int main()
 	int epocas;
 	tie(pesos, errorEntrenamiento, epocas) = ic::entrenarMulticapa(estructura,
                                                                    partEntrenamiento,
-                                                                   1000,
-                                                                   0.0025,
+                                                                   3000,
+                                                                   0.0008,
                                                                    0.2,
-	                                                               15);
+                                                                   15,
+                                                                   true);
 
 	cout << "El MLP se entrenó en " << epocas << " epocas." << endl
 	     << "Error relativo promedio: " << errorEntrenamiento << endl;
@@ -53,11 +54,11 @@ int main()
 	for (unsigned int n = 0; n < patrones.n_rows; ++n) {
         salidaRed(n) = ic::salidaMulticapa(pesos,
                                            patrones.row(n).t())
-                           .back()(1);
+                           .back()(0);
 	}
 
 	Gnuplot gp;
-    gp << "plot " << gp.file1d(salidaDeseada.col(1).eval()) << " with lines title 'Salida original', "
+    gp << "plot " << gp.file1d(salidaDeseada.col(0).eval()) << " with lines title 'Salida original', "
 	   << gp.file1d(salidaRed) << " with lines title 'Salida de la red' lw 2" << endl;
 
 	getchar();

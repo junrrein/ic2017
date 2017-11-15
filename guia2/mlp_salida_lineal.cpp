@@ -149,16 +149,29 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
                                                   int nEpocas,
                                                   double tasaAprendizaje,
                                                   double inercia,
-                                                  double tolErrorRelativoPromedio)
+                                                  double tolErrorRelativoPromedio,
+                                                  bool monitoreo = false)
 {
+    mat partEntrenamiento;
+    mat partMonitoreo;
+
+    if (monitoreo) {
+        const int nEntrenamiento = datos.n_rows * 0.9;
+        partEntrenamiento = datos.head_rows(nEntrenamiento);
+        partMonitoreo = datos.tail_rows(datos.n_rows - nEntrenamiento);
+    }
+    else {
+        partEntrenamiento = datos;
+    }
+
 	const int nSalidas = estructura(estructura.n_elem - 1);
-	const int nEntradas = datos.n_cols - nSalidas;
+    const int nEntradas = partEntrenamiento.n_cols - nSalidas;
 	const int nCapas = estructura.n_elem;
 	// Vamos a tener tantas columnas en salidaDeseada
 	// como neuronas en la capa de salida
-	const mat salidaDeseada = datos.tail_cols(nSalidas);
+    const mat salidaDeseada = partEntrenamiento.tail_cols(nSalidas);
 	// Extender la matriz de patrones con la entrada correspondiente al umbral
-	const mat patrones = datos.head_cols(nEntradas);
+    const mat patrones = partEntrenamiento.head_cols(nEntradas);
 
 	// Inicializar pesos y tasa de error
 	vector<mat> pesos;
@@ -177,6 +190,9 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 	}
 
 	double errorRelativoPromedio;
+    double menorErrorMonitoreo = numeric_limits<double>::max();
+    vector<mat> mejoresPesos = pesos;
+    int mejorEpoca = 0;
 
 	// Ciclo de las epocas
 	int epoca = 1;
@@ -189,19 +205,38 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 		                       pesos);
 
 		errorRelativoPromedio = errorRelativoPromedioMulticapa(pesos, patrones, salidaDeseada);
-		cout << "Error cuadratico: " << errorCuadraticoMulticapa(pesos, patrones, salidaDeseada) << endl;
+        cout << epoca << " Error cuadratico entrenamiento: "
+             << errorCuadraticoMulticapa(pesos, patrones, salidaDeseada) << endl;
 
-		if (errorRelativoPromedio <= tolErrorRelativoPromedio)
-			break;
-	}
-	// Fin ciclo (epocas)
+        if (monitoreo) {
+            const double errorMonitoreo = errorCuadraticoMulticapa(pesos,
+                                                                   partMonitoreo.head_cols(nEntradas),
+                                                                   partMonitoreo.tail_cols(nSalidas));
+            cout << "Error cuadratico monitoreo: " << errorMonitoreo << endl;
 
-	// Si el bucle anterior no cortó por tolerancia de error,
-	// el for va a incrementar la variable una vez de más.
-	if (epoca > nEpocas)
-		epoca = nEpocas;
+            if (errorMonitoreo < menorErrorMonitoreo) {
+                menorErrorMonitoreo = errorMonitoreo;
+                mejoresPesos = pesos;
+                mejorEpoca = epoca;
+            }
+        }
 
-	return make_tuple(pesos, errorRelativoPromedio, epoca);
+        if (errorRelativoPromedio <= tolErrorRelativoPromedio)
+            break;
+    }
+    // Fin ciclo (epocas)
+
+    // Si el bucle anterior no cortó por tolerancia de error,
+    // el for va a incrementar la variable una vez de más.
+    if (epoca > nEpocas)
+        epoca = nEpocas;
+
+    cout << "Mejor epoca: " << mejorEpoca << endl;
+
+    if (monitoreo)
+        return make_tuple(mejoresPesos, errorRelativoPromedio, epoca);
+    else
+        return make_tuple(pesos, errorRelativoPromedio, epoca);
 }
 
 struct ParametrosMulticapa {
