@@ -36,29 +36,30 @@ void crearTuplas(string rutaArchivo1,
                  string rutaNuevoArchivo)
 {
 
-	//	mat datos1;
-	vec datos1;
+	mat datos1;
 	vec datos2;
 	vec datos3;
 	datos1.load(rutaArchivo1);
 	datos2.load(rutaArchivo2);
 	datos3.load(rutaArchivo3);
 
-	//	const vec meses = datos1.col(0);
-	//	vec datos1 = datos1.col(1);
+	const vec meses = datos1.col(0);
+	vec ventas = datos1.col(1);
 
 	// Normalizar datos de exportaciones e importacioes
-	datos1 = (datos1 - min(datos1)) / (max(datos1) - min(datos1));
+	ventas = (ventas - min(ventas)) / (max(ventas) - min(ventas));
 	datos2 = (datos2 - min(datos2)) / (max(datos2) - min(datos2));
 	datos3 = (datos3 - min(datos3)) / (max(datos3) - min(datos3));
 
-	const int longitudTupla = nEntradas * 3 + nSalidas;
+	const int longitudTupla = 1 + nEntradas * 3 + nSalidas;
 
-	mat tuplas(datos1.n_elem - nEntradas - nSalidas - 1, longitudTupla);
+	mat tuplas(ventas.n_elem - nEntradas - nSalidas - 1, longitudTupla);
 
 	for (unsigned int i = 0; i < tuplas.n_rows; ++i) {
-		tuplas(i, span(0, tuplas.n_cols - nSalidas - 1))
-		    = join_vert(join_vert(datos1.rows(span(i, i + nEntradas - 1)),
+		tuplas(i, 0) = meses(i);
+
+		tuplas(i, span(1, tuplas.n_cols - nSalidas - 1))
+		    = join_vert(join_vert(ventas.rows(span(i, i + nEntradas - 1)),
 		                          datos2.rows(span(i, i + nEntradas - 1))),
 		                datos3.rows(span(i, i + nEntradas - 1)))
 		          .t();
@@ -66,7 +67,7 @@ void crearTuplas(string rutaArchivo1,
 		tuplas(i,
 		       span(tuplas.n_cols - nSalidas,
 		            tuplas.n_cols - 1))
-		    = datos1(span(i + nEntradas,
+		    = ventas(span(i + nEntradas,
 		                  i + nEntradas + nSalidas - 1))
 		          .t();
 	}

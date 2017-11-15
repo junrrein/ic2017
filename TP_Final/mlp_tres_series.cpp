@@ -47,17 +47,17 @@ int main()
 
     // Pruebas
 
-    mat patrones = partPrueba.head_cols(nEntradas * 3);
+    mat patrones = partPrueba.head_cols(1 + nEntradas * 3);
     mat salidaDeseada = partPrueba.tail_cols(nSalidas);
     vec salidaRed(patrones.n_rows);
 	for (unsigned int n = 0; n < patrones.n_rows; ++n) {
         salidaRed(n) = ic::salidaMulticapa(pesos,
                                            patrones.row(n).t())
-                           .back()(5);
+                           .back()(1);
 	}
 
 	Gnuplot gp;
-    gp << "plot " << gp.file1d(salidaDeseada.col(5).eval()) << " with lines title 'Salida original', "
+    gp << "plot " << gp.file1d(salidaDeseada.col(1).eval()) << " with lines title 'Salida original', "
 	   << gp.file1d(salidaRed) << " with lines title 'Salida de la red' lw 2" << endl;
 
 	getchar();
