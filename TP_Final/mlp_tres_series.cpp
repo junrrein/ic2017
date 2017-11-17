@@ -50,16 +50,30 @@ int main()
 
     mat patrones = partPrueba.head_cols(1 + nEntradas * 3);
     mat salidaDeseada = partPrueba.tail_cols(nSalidas);
-    vec salidaRed(patrones.n_rows);
+    vector<vec> salidaRed(nSalidas, vec(patrones.n_rows));
+
 	for (unsigned int n = 0; n < patrones.n_rows; ++n) {
-        salidaRed(n) = ic::salidaMulticapa(pesos,
-                                           patrones.row(n).t())
-                           .back()(0);
+        vec salidas = ic::salidaMulticapa(pesos,
+                                          patrones.row(n).t())
+                          .back();
+
+        for (int j = 0; j < nSalidas; ++j)
+            salidaRed.at(j)(n) = salidas(j);
 	}
 
 	Gnuplot gp;
-    gp << "plot " << gp.file1d(salidaDeseada.col(0).eval()) << " with lines title 'Salida original', "
-	   << gp.file1d(salidaRed) << " with lines title 'Salida de la red' lw 2" << endl;
+    gp << "set terminal qt size 750,700" << endl
+       << "set multiplot layout 3,2 title 'Predicción usando Ventas + Exportaciones + Importaciones' font ',12'" << endl
+       << "set xlabel 'Mes'" << endl
+       << "set ylabel 'Ventas normalizadas'" << endl
+       << "set yrange [0:1]" << endl
+       << "set grid" << endl;
+
+    for (unsigned int i = 0; i < salidaRed.size(); ++i) {
+        gp << "set title 'Predicción - " << i + 1 << " meses hacia adelante'" << endl
+           << "plot " << gp.file1d(salidaDeseada.col(i).eval()) << " with linespoints title 'Salida original', "
+           << gp.file1d(salidaRed.at(i)) << " with linespoints title 'Salida de la red' lw 2" << endl;
+    }
 
 	getchar();
 

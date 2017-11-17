@@ -12,43 +12,63 @@ int main()
 	const string rutaVentasTuplas = rutaBase + "Ventas_limpias_tuplas.csv";
 
     const int nEntradas = 12;
-    const int nSalidas = 1;
+    const int nSalidas = 6;
 	crearTuplas(rutaVentas, nEntradas, nSalidas, rutaVentasTuplas);
 
-	mat ventasTuplas;
+    mat ventasTuplas;
     ventasTuplas.load(rutaVentasTuplas);
     ventasTuplas.shed_row(0);
     //    ventasTuplas = shuffle(ventasTuplas);
-    mat patrones = ventasTuplas.head_cols(nEntradas);
-	mat salidaDeseada = ventasTuplas.tail_cols(nSalidas);
+    const int nEntrenamiento = ventasTuplas.n_rows * 0.9;
+    const mat partEntrenamiento = ventasTuplas.head_rows(nEntrenamiento);
+    const mat partPrueba = ventasTuplas.tail_rows(ventasTuplas.n_rows - nEntrenamiento);
 
-    vec estructura = {7, 1};
+    vec estructura = {17, nSalidas};
 
 	vector<mat> pesos;
 	double errorEntrenamiento;
 	int epocas;
 	tie(pesos, errorEntrenamiento, epocas) = ic::entrenarMulticapa(estructura,
-	                                                               ventasTuplas,
-                                                                   1000,
-                                                                   0.0015,
-                                                                   0.2,
-	                                                               15);
+                                                                   partEntrenamiento,
+                                                                   2000,
+                                                                   0.00075,
+                                                                   0.25,
+                                                                   15,
+                                                                   false);
 
 	cout << "El MLP se entrenó en " << epocas << " epocas." << endl
 	     << "Error relativo promedio: " << errorEntrenamiento << endl;
 
-	vec salidaRed(patrones.n_rows);
-	for (unsigned int n = 0; n < patrones.n_rows; ++n) {
-		salidaRed(n) = as_scalar(ic::salidaMulticapa(pesos,
-		                                             patrones.row(n).t())
-		                             .back());
-	}
+    // Pruebas
 
-	Gnuplot gp;
-	gp << "plot " << gp.file1d(salidaDeseada) << " with lines title 'Salida original', "
-	   << gp.file1d(salidaRed) << " with lines title 'Salida de la red' lw 2" << endl;
+    mat patrones = partPrueba.head_cols(1 + nEntradas);
+    mat salidaDeseada = partPrueba.tail_cols(nSalidas);
+    vector<vec> salidaRed(nSalidas, vec(patrones.n_rows));
 
-	getchar();
+    for (unsigned int n = 0; n < patrones.n_rows; ++n) {
+        vec salidas = ic::salidaMulticapa(pesos,
+                                          patrones.row(n).t())
+                          .back();
+
+        for (int j = 0; j < nSalidas; ++j)
+            salidaRed.at(j)(n) = salidas(j);
+    }
+
+    Gnuplot gp;
+    gp << "set terminal qt size 750,700" << endl
+       << "set multiplot layout 3,2 title 'Predicción usando Ventas' font ',12'" << endl
+       << "set xlabel 'Mes'" << endl
+       << "set ylabel 'Ventas normalizadas'" << endl
+       << "set yrange [0:1]" << endl
+       << "set grid" << endl;
+
+    for (unsigned int i = 0; i < salidaRed.size(); ++i) {
+        gp << "set title 'Predicción - " << i + 1 << " meses hacia adelante'" << endl
+           << "plot " << gp.file1d(salidaDeseada.col(i).eval()) << " with linespoints title 'Salida original', "
+           << gp.file1d(salidaRed.at(i)) << " with linespoints title 'Salida de la red' lw 2" << endl;
+    }
+
+    getchar();
 
 	return 0;
 }

@@ -9,19 +9,24 @@ void crearTuplas(string rutaArchivo,
                  string rutaNuevoArchivo)
 {
 
-	vec datos;
-	datos.load(rutaArchivo);
+    mat datos;
+    datos.load(rutaArchivo);
 
-	datos = (datos - min(datos)) / (max(datos) - min(datos));
+    vec meses = datos.col(0);
+    vec ventas = datos.col(1);
 
-	const int longitudTupla = nEntradas + nSalidas;
+    meses = (meses - min(meses)) / (max(meses) - min(meses));
+    ventas = (ventas - min(ventas)) / (max(ventas) - min(ventas));
+
+    const int longitudTupla = 1 + nEntradas + nSalidas;
 
 	// FIXME: Cuando la cantidad de salidas es mayor a 1
 	// no se calcula bien la cantidad de tuplas
-	mat tuplas(datos.n_elem - nEntradas, longitudTupla);
+    mat tuplas(ventas.n_elem - nEntradas - nSalidas, longitudTupla);
 
 	for (unsigned int i = 0; i < tuplas.n_rows; ++i) {
-		const rowvec tupla = datos(span(i, i + longitudTupla - 1)).t();
+        const rowvec tupla = join_horiz(rowvec{meses(i)},
+                                        ventas(span(i, i + longitudTupla - 2)).t());
 		tuplas.row(i) = tupla;
 	}
 
@@ -43,10 +48,11 @@ void crearTuplas(string rutaArchivo1,
 	datos2.load(rutaArchivo2);
 	datos3.load(rutaArchivo3);
 
-	const vec meses = datos1.col(0);
+    vec meses = datos1.col(0);
 	vec ventas = datos1.col(1);
 
-	// Normalizar datos de exportaciones e importacioes
+    // Normalizar datos de exportaciones e importacioes
+    meses = (meses - min(meses)) / (max(meses) - min(meses));
 	ventas = (ventas - min(ventas)) / (max(ventas) - min(ventas));
 	datos2 = (datos2 - min(datos2)) / (max(datos2) - min(datos2));
 	datos3 = (datos3 - min(datos3)) / (max(datos3) - min(datos3));

@@ -15,7 +15,7 @@ int main()
 	const string rutaTuplas = rutaBase + "Tuplas.csv";
 
 	const int nEntradas = 12;
-	const int nSalidas = 1;
+    const int nSalidas = 6;
 	crearTuplas(rutaVentas,
 	            rutaExportaciones,
 	            rutaImportaciones,
@@ -26,10 +26,10 @@ int main()
 	mat ventasTuplas;
 	ventasTuplas.load(rutaTuplas);
     ventasTuplas.shed_row(0);
-    mat patrones = ventasTuplas.head_cols(nEntradas * 3);
+    mat patrones = ventasTuplas.head_cols(1 + nEntradas * 3);
 	mat salidaDeseada = ventasTuplas.tail_cols(nSalidas);
 
-    vec estructura = {25, 1};
+    vec estructura = {40, nSalidas};
 
     vector<rowvec> centroides;
     vec sigmas;
@@ -64,13 +64,13 @@ int main()
 
     vec salidaRed(patrones.n_rows);
     for (unsigned int n = 0; n < patrones.n_rows; ++n) {
-        salidaRed(n) = as_scalar(ic::salidaMulticapa(pesos,
-                                                     salidasRadiales.row(n).t())
-                                     .back());
+        salidaRed(n) = ic::salidaMulticapa(pesos,
+                                           salidasRadiales.row(n).t())
+                           .back()(0);
     }
 
     Gnuplot gp;
-    gp << "plot " << gp.file1d(salidaDeseada) << " with lines title 'Salida original', "
+    gp << "plot " << gp.file1d(salidaDeseada.col(0).eval()) << " with lines title 'Salida original', "
        << gp.file1d(salidaRed) << " with lines title 'Salida de la red' lw 2" << endl;
 
     getchar();
