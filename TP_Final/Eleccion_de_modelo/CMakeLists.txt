@@ -1,0 +1,1 @@
+agregar_ejercicio(construir_tuplas_prueba)
