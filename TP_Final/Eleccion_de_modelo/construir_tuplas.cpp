@@ -80,3 +80,11 @@ mat cargarTuplas(const vector<string>& rutasSeriesEntrada,
                                      retrasosEntrada,
                                      nSalidas);
 }
+
+mat agregarIndiceTemporal(const mat& tuplas)
+{
+    vec indice = linspace(1, tuplas.n_rows - 1, tuplas.n_rows);
+    indice = (indice - min(indice)) / (max(indice) - min(indice));
+
+    return join_horiz(indice, tuplas);
+}

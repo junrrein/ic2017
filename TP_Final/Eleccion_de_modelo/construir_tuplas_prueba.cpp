@@ -12,6 +12,7 @@ int main()
                               rutaVentas,
                               12,
                               6);
+    mat tuplasConIndice = agregarIndiceTemporal(tuplas);
 
     return 0;
 }
