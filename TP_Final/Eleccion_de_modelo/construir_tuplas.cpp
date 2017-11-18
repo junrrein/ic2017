@@ -39,31 +39,33 @@ mat agruparEntradas(vector<vec> seriesDatos,
     return result;
 }
 
-mat agruparEntradasConSalidas(const vector<vec>& seriesEntrada,
-                              vec serieSalida,
-                              unsigned int retrasosEntrada,
-                              unsigned int nSalidas)
+pair<mat, mat> agruparEntradasConSalidas(const vector<vec>& seriesEntrada,
+                                         vec serieSalida,
+                                         unsigned int retrasosEntrada,
+                                         unsigned int nSalidas)
 {
     for (const vec& entrada : seriesEntrada)
         if (entrada.n_elem != serieSalida.n_elem)
             throw runtime_error("Las series de datos deben tener la misma longitud");
 
-    mat result = agruparEntradas(seriesEntrada, retrasosEntrada, nSalidas);
+    mat entradasTuplas = agruparEntradas(seriesEntrada, retrasosEntrada, nSalidas);
 
     // Los primeros retrasosEntrada elementos de serieSalida no pueden usarse como
     // salida deseada, ya que no va a haber retrasosEntrada elementos anteriores
     // para hacer la predicción.
     serieSalida = serieSalida(span(retrasosEntrada, serieSalida.n_elem - 1));
     const mat salidaTuplas = crearTuplas(serieSalida, nSalidas);
-    result.insert_cols(result.n_cols, salidaTuplas);
 
-    return result;
+    if (entradasTuplas.n_rows != salidaTuplas.n_rows)
+        throw runtime_error("Esto no debería pasar");
+
+    return make_pair(entradasTuplas, salidaTuplas);
 }
 
-mat cargarTuplas(const vector<string>& rutasSeriesEntrada,
-                 const string& rutaSerieSalida,
-                 unsigned int retrasosEntrada,
-                 unsigned int nSalidas)
+pair<mat, mat> cargarTuplas(const vector<string>& rutasSeriesEntrada,
+                            const string& rutaSerieSalida,
+                            unsigned int retrasosEntrada,
+                            unsigned int nSalidas)
 {
     vector<vec> seriesEntrada;
 

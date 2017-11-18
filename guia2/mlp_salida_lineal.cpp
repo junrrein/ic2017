@@ -192,7 +192,7 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 	double errorRelativoPromedio;
     double menorErrorMonitoreo = numeric_limits<double>::max();
     vector<mat> mejoresPesos = pesos;
-    int mejorEpoca = 0;
+    //    int mejorEpoca = 0;
 
 	// Ciclo de las epocas
 	int epoca = 1;
@@ -205,19 +205,19 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
 		                       pesos);
 
 		errorRelativoPromedio = errorRelativoPromedioMulticapa(pesos, patrones, salidaDeseada);
-        cout << epoca << " Error cuadratico entrenamiento: "
-             << errorCuadraticoMulticapa(pesos, patrones, salidaDeseada) << endl;
+        //        cout << epoca << " Error cuadratico entrenamiento: "
+        //             << errorCuadraticoMulticapa(pesos, patrones, salidaDeseada) << endl;
 
         if (monitoreo) {
             const double errorMonitoreo = errorCuadraticoMulticapa(pesos,
                                                                    partMonitoreo.head_cols(nEntradas),
                                                                    partMonitoreo.tail_cols(nSalidas));
-            cout << "Error cuadratico monitoreo: " << errorMonitoreo << endl;
+            //            cout << "Error cuadratico monitoreo: " << errorMonitoreo << endl;
 
             if (errorMonitoreo < menorErrorMonitoreo) {
                 menorErrorMonitoreo = errorMonitoreo;
                 mejoresPesos = pesos;
-                mejorEpoca = epoca;
+                //                mejorEpoca = epoca;
             }
         }
 
@@ -231,7 +231,7 @@ tuple<vector<mat>, double, int> entrenarMulticapa(const EstructuraCapasRed& estr
     if (epoca > nEpocas)
         epoca = nEpocas;
 
-    cout << "Mejor epoca: " << mejorEpoca << endl;
+    //    cout << "Mejor epoca: " << mejorEpoca << endl;
 
     if (monitoreo)
         return make_tuple(mejoresPesos, errorRelativoPromedio, epoca);

@@ -8,11 +8,12 @@ int main()
     const string rutaExportaciones = rutaBase + "Exportaciones.csv";
     const string rutaImportaciones = rutaBase + "Importaciones.csv";
 
-    mat tuplas = cargarTuplas({rutaVentas, rutaExportaciones, rutaImportaciones},
-                              rutaVentas,
-                              12,
-                              6);
-    mat tuplasConIndice = agregarIndiceTemporal(tuplas);
+    mat entradaTuplas, salidaTuplas;
+    tie(entradaTuplas, salidaTuplas) = cargarTuplas({rutaVentas, rutaExportaciones, rutaImportaciones},
+                                                    rutaVentas,
+                                                    12,
+                                                    6);
+    mat tuplasConIndice = agregarIndiceTemporal(entradaTuplas);
 
     return 0;
 }

@@ -1,1 +1,2 @@
 agregar_ejercicio(construir_tuplas_prueba)
+agregar_ejercicio(evaluar_mlp)
