@@ -8,20 +8,10 @@ int main()
     const string rutaExportaciones = rutaBase + "Exportaciones.csv";
     const string rutaImportaciones = rutaBase + "Importaciones.csv";
 
-    vec ventas;
-    vec exportaciones;
-    vec importaciones;
-    ventas.load(rutaVentas);
-    exportaciones.load(rutaExportaciones);
-    importaciones.load(rutaImportaciones);
-
-    mat tuplas = agruparEntradas(6,
-                                 ventas,
-                                 12,
-                                 exportaciones,
-                                 12,
-                                 importaciones,
-                                 12);
+    mat tuplas = cargarTuplas({rutaVentas, rutaExportaciones, rutaImportaciones},
+                              rutaVentas,
+                              12,
+                              6);
 
     return 0;
 }
