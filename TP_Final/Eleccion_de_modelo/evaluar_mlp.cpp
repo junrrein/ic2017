@@ -17,21 +17,56 @@ double evaluarMLP(const ParametrosMulticapa& parametros,
 
 int main()
 {
+    arma_rng::set_seed_random();
+
     const string rutaBase = config::sourceDir + "/TP_Final/datos/";
     const string rutaVentas = rutaBase + "Ventas.csv";
     const string rutaExportaciones = rutaBase + "Exportaciones.csv";
     const string rutaImportaciones = rutaBase + "Importaciones.csv";
+    const vector<string> rutas = {rutaVentas,
+                                  rutaExportaciones,
+                                  rutaImportaciones};
+    const vector<vector<string>> subconjuntosRutas = {{rutaVentas},
+                                                      {rutaExportaciones},
+                                                      {rutaImportaciones},
+                                                      {rutaVentas, rutaExportaciones},
+                                                      {rutaVentas, rutaImportaciones},
+                                                      {rutaImportaciones, rutaExportaciones},
+                                                      rutas};
+    const vector<int> neuronasPrimerCapa = {7, 9, 11, 14, 17, 20, 24};
 
     ParametrosMulticapa parametros;
     parametros.estructuraRed = {7, 6};
     parametros.nEpocas = 3000;
     parametros.tasaAprendizaje = 0.00075;
     parametros.inercia = 0.2;
-    parametros.toleranciaError = 0.1;
+    parametros.toleranciaError = 10;
+    ParametrosMulticapa mejoresParametros = parametros;
+    double mejorError = numeric_limits<double>::max();
+    vector<string> mejorSubconjunto;
 
-    double errorPromedio = evaluarMLP(parametros, {rutaVentas}, rutaVentas);
+    for (const vector<string>& rutasEntradas : subconjuntosRutas) {
+        for (int cantidadNeuronas : neuronasPrimerCapa) {
+            parametros.estructuraRed = {double(cantidadNeuronas), 6};
 
-    cout << "El promedio del error cuadrático promedio es: " << errorPromedio << endl;
+            double promedioErrorPromedio = evaluarMLP(parametros, rutasEntradas, rutaVentas);
+
+            cout << "El promedio del error cuadrático promedio es: " << promedioErrorPromedio << endl;
+
+            if (promedioErrorPromedio < mejorError) {
+                mejoresParametros = parametros;
+                mejorError = promedioErrorPromedio;
+                mejorSubconjunto = rutasEntradas;
+            }
+        }
+    }
+
+    cout << "Mejor subconjunto: " << endl;
+    for (const string& ruta : mejorSubconjunto)
+        cout << ruta << endl;
+    cout << "Mejor estructura:\n"
+         << mejoresParametros.estructuraRed
+         << "Mejor error: " << mejorError << endl;
 
     return 0;
 }
@@ -41,24 +76,18 @@ double evaluarMLP(const ParametrosMulticapa& parametros,
                   const string& rutaSerieSalida,
                   bool agregarIndice)
 {
-    mat tuplasEntrada, tuplasSalida;
-    tie(tuplasEntrada, tuplasSalida) = cargarTuplas(rutasSeriesEntrada,
-                                                    rutaSerieSalida,
-                                                    parametros.estructuraRed(0),
-                                                    parametros.estructuraRed(1));
+    Particion particion = cargarTuplas(rutasSeriesEntrada,
+                                       rutaSerieSalida,
+                                       parametros.estructuraRed(0),
+                                       parametros.estructuraRed(1));
 
-    tuplasEntrada = tuplasEntrada.rows(0, tuplasEntrada.n_rows * 0.9);
-    tuplasSalida = tuplasSalida.rows(0, tuplasSalida.n_rows * 0.9);
+    if (agregarIndice) {
+        particion.entrenamiento.tuplasEntrada = agregarIndiceTemporal(particion.entrenamiento.tuplasEntrada);
+        particion.evaluacion.tuplasEntrada = agregarIndiceTemporal(particion.evaluacion.tuplasEntrada);
+    }
 
-    if (agregarIndice)
-        tuplasEntrada = agregarIndiceTemporal(tuplasEntrada);
-
-    const int nDatosEntrenamiento = tuplasEntrada.n_rows * 0.8;
-    const int nDatosPrueba = tuplasEntrada.n_rows - nDatosEntrenamiento;
-
-    const mat datosEntrenamiento = join_horiz(tuplasEntrada.head_rows(nDatosEntrenamiento),
-                                              tuplasSalida.head_rows(nDatosEntrenamiento));
-
+    const mat datosEntrenamiento = join_horiz(particion.entrenamiento.tuplasEntrada,
+                                              particion.entrenamiento.tuplasSalida);
     vec erroresPromedio(10);
 
 #pragma omp parallel for
@@ -73,9 +102,9 @@ double evaluarMLP(const ParametrosMulticapa& parametros,
                                                        true);
 
         double errorTotal = errorCuadraticoMulticapa(pesos,
-                                                     tuplasEntrada.tail_rows(nDatosPrueba),
-                                                     tuplasSalida.tail_rows(nDatosPrueba));
-        double errorPromedio = errorTotal / nDatosPrueba;
+                                                     particion.evaluacion.tuplasEntrada,
+                                                     particion.evaluacion.tuplasSalida);
+        double errorPromedio = errorTotal / particion.evaluacion.tuplasEntrada.n_rows;
         erroresPromedio(i) = errorPromedio;
     }
 

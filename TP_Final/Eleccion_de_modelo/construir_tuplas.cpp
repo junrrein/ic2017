@@ -1,4 +1,4 @@
-#include <armadillo>
+﻿#include <armadillo>
 
 using namespace arma;
 using namespace std;
@@ -39,33 +39,76 @@ mat agruparEntradas(vector<vec> seriesDatos,
     return result;
 }
 
-pair<mat, mat> agruparEntradasConSalidas(const vector<vec>& seriesEntrada,
-                                         vec serieSalida,
-                                         unsigned int retrasosEntrada,
-                                         unsigned int nSalidas)
+struct ConjuntoDatos {
+    mat tuplasEntrada;
+    mat tuplasSalida;
+};
+
+struct Particion {
+    ConjuntoDatos entrenamiento;
+    ConjuntoDatos evaluacion;
+    ConjuntoDatos prueba;
+};
+
+ConjuntoDatos
+agruparEntradasConSalidas(const vector<vec>& seriesEntrada,
+                          vec serieSalida,
+                          unsigned int retrasosEntrada,
+                          unsigned int nSalidas)
 {
     for (const vec& entrada : seriesEntrada)
         if (entrada.n_elem != serieSalida.n_elem)
             throw runtime_error("Las series de datos deben tener la misma longitud");
 
-    mat entradasTuplas = agruparEntradas(seriesEntrada, retrasosEntrada, nSalidas);
+    mat tuplasEntrada = agruparEntradas(seriesEntrada, retrasosEntrada, nSalidas);
 
     // Los primeros retrasosEntrada elementos de serieSalida no pueden usarse como
     // salida deseada, ya que no va a haber retrasosEntrada elementos anteriores
     // para hacer la predicción.
     serieSalida = serieSalida(span(retrasosEntrada, serieSalida.n_elem - 1));
-    const mat salidaTuplas = crearTuplas(serieSalida, nSalidas);
+    const mat tuplasSalida = crearTuplas(serieSalida, nSalidas);
 
-    if (entradasTuplas.n_rows != salidaTuplas.n_rows)
+    if (tuplasEntrada.n_rows != tuplasSalida.n_rows)
         throw runtime_error("Esto no debería pasar");
 
-    return make_pair(entradasTuplas, salidaTuplas);
+    return {tuplasEntrada, tuplasSalida};
 }
 
-pair<mat, mat> cargarTuplas(const vector<string>& rutasSeriesEntrada,
-                            const string& rutaSerieSalida,
-                            unsigned int retrasosEntrada,
-                            unsigned int nSalidas)
+Particion
+armarParticiones(const ConjuntoDatos& datos)
+{
+    const int nTuplas = datos.tuplasEntrada.n_rows;
+    const int nDatosPrueba = nTuplas * 0.1;
+    const int nDatosEvaluacion = nTuplas * 0.2;
+    const int nDatosEntrenamiento = nTuplas - nDatosPrueba - nDatosEvaluacion;
+
+    Particion particion;
+    particion.entrenamiento.tuplasEntrada = datos.tuplasEntrada.head_rows(nDatosEntrenamiento);
+    particion.entrenamiento.tuplasSalida = datos.tuplasSalida.head_rows(nDatosEntrenamiento);
+
+    particion.evaluacion.tuplasEntrada = datos.tuplasEntrada.rows(nDatosEntrenamiento,
+                                                                  nDatosEntrenamiento + nDatosEvaluacion - 1);
+    particion.evaluacion.tuplasSalida = datos.tuplasSalida.rows(nDatosEntrenamiento,
+                                                                nDatosEntrenamiento + nDatosEvaluacion - 1);
+
+    particion.prueba.tuplasEntrada = datos.tuplasEntrada.tail_rows(nDatosPrueba);
+    particion.prueba.tuplasSalida = datos.tuplasSalida.tail_rows(nDatosPrueba);
+
+    const int N = particion.entrenamiento.tuplasEntrada.n_rows
+                  + particion.evaluacion.tuplasEntrada.n_rows
+                  + particion.prueba.tuplasEntrada.n_rows;
+
+    if (N != nTuplas)
+        throw runtime_error("Esto no tendría que pasar");
+
+    return particion;
+}
+
+Particion
+cargarTuplas(const vector<string>& rutasSeriesEntrada,
+             const string& rutaSerieSalida,
+             unsigned int retrasosEntrada,
+             unsigned int nSalidas)
 {
     vector<vec> seriesEntrada;
 
@@ -77,10 +120,12 @@ pair<mat, mat> cargarTuplas(const vector<string>& rutasSeriesEntrada,
     vec serieSalida;
     serieSalida.load(rutaSerieSalida);
 
-    return agruparEntradasConSalidas(seriesEntrada,
-                                     serieSalida,
-                                     retrasosEntrada,
-                                     nSalidas);
+    ConjuntoDatos datos = agruparEntradasConSalidas(seriesEntrada,
+                                                    serieSalida,
+                                                    retrasosEntrada,
+                                                    nSalidas);
+
+    return armarParticiones(datos);
 }
 
 mat agregarIndiceTemporal(const mat& tuplas)
@@ -90,3 +135,23 @@ mat agregarIndiceTemporal(const mat& tuplas)
 
     return join_horiz(indice, tuplas);
 }
+
+//vector<vector<string>>
+//subconjuntos(const vector<string>& conjunto)
+//{
+//    vector<vector<string>> result;
+
+//    for (unsigned int r = 1; r < conjunto.size(); ++r) {
+//        vector<string> subconjunto;
+
+//        for (unsigned int i = 0; i < conjunto.size(); ++i) {
+//            for (unsigned int j = i; j < i + r; ++j) {
+//                subconjunto.push_back(conjunto.at(j));
+//            }
+//        }
+
+//        result.push_back(subconjunto);
+//    }
+
+//    return result;
+//}
