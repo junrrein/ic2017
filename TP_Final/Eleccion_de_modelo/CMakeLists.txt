@@ -1,3 +1,5 @@
 agregar_ejercicio(construir_tuplas_prueba)
 agregar_ejercicio(evaluar_mlp)
 agregar_ejercicio(evaluar_rbf)
+agregar_ejercicio(probar_mlp)
+agregar_ejercicio(probar_mlp_diferencias_relativas)

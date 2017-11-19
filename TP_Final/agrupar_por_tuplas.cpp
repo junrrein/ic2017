@@ -8,7 +8,6 @@ void crearTuplas(string rutaArchivo,
                  int nSalidas,
                  string rutaNuevoArchivo)
 {
-
     mat datos;
     datos.load(rutaArchivo);
 

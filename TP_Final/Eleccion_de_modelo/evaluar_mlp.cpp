@@ -51,7 +51,7 @@ int main()
         for (int retrasos : retrasosAProbar) {
             for (bool conIndice : {true, false}) {
                 const Particion particion = cargarTuplas(rutasEntradas,
-                                                         rutaVentas,
+                                                         rutaDiferencias,
                                                          retrasos,
                                                          6,
                                                          conIndice);
