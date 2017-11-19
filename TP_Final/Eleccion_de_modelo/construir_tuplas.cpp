@@ -1,4 +1,5 @@
 ﻿#include <armadillo>
+#include <bitset>
 
 using namespace arma;
 using namespace std;
@@ -50,11 +51,20 @@ struct Particion {
     ConjuntoDatos prueba;
 };
 
+mat agregarIndiceTemporal(const mat& tuplas)
+{
+    vec indice = linspace(1, tuplas.n_rows - 1, tuplas.n_rows);
+    indice = (indice - min(indice)) / (max(indice) - min(indice));
+
+    return join_horiz(indice, tuplas);
+}
+
 ConjuntoDatos
 agruparEntradasConSalidas(const vector<vec>& seriesEntrada,
                           vec serieSalida,
                           unsigned int retrasosEntrada,
-                          unsigned int nSalidas)
+                          unsigned int nSalidas,
+                          bool agregarIndice = false)
 {
     for (const vec& entrada : seriesEntrada)
         if (entrada.n_elem != serieSalida.n_elem)
@@ -70,6 +80,9 @@ agruparEntradasConSalidas(const vector<vec>& seriesEntrada,
 
     if (tuplasEntrada.n_rows != tuplasSalida.n_rows)
         throw runtime_error("Esto no debería pasar");
+
+    if (agregarIndice)
+        tuplasEntrada = agregarIndiceTemporal(tuplasEntrada);
 
     return {tuplasEntrada, tuplasSalida};
 }
@@ -108,7 +121,8 @@ Particion
 cargarTuplas(const vector<string>& rutasSeriesEntrada,
              const string& rutaSerieSalida,
              unsigned int retrasosEntrada,
-             unsigned int nSalidas)
+             unsigned int nSalidas,
+             bool agregarIndice = false)
 {
     vector<vec> seriesEntrada;
 
@@ -123,35 +137,37 @@ cargarTuplas(const vector<string>& rutasSeriesEntrada,
     ConjuntoDatos datos = agruparEntradasConSalidas(seriesEntrada,
                                                     serieSalida,
                                                     retrasosEntrada,
-                                                    nSalidas);
+                                                    nSalidas,
+                                                    agregarIndice);
 
     return armarParticiones(datos);
 }
 
-mat agregarIndiceTemporal(const mat& tuplas)
+template <unsigned int N>
+vector<vector<string>>
+subconjuntos(const vector<string>& conjunto)
 {
-    vec indice = linspace(1, tuplas.n_rows - 1, tuplas.n_rows);
-    indice = (indice - min(indice)) / (max(indice) - min(indice));
+    const int nElemResult = pow(2, conjunto.size());
+    vector<vector<string>> result;
 
-    return join_horiz(indice, tuplas);
+    if (N != conjunto.size())
+        throw runtime_error("Pone bien los parámetros cacho");
+
+    //    https://www.quora.com/How-do-I-generate-all-subsets-of-a-set-in-C++-iteratively
+    bitset<N> setDeBits{0};
+
+    for (int i = 0; i < nElemResult; ++i) {
+        vector<string> subconjunto;
+
+        for (unsigned int k = 0; k < conjunto.size(); k++) {
+            if (setDeBits.test(k)) {
+                subconjunto.push_back(conjunto.at(k));
+            }
+        }
+
+        result.push_back(subconjunto);
+        setDeBits = bitset<N>{setDeBits.to_ulong() + 1};
+    }
+
+    return result;
 }
-
-//vector<vector<string>>
-//subconjuntos(const vector<string>& conjunto)
-//{
-//    vector<vector<string>> result;
-
-//    for (unsigned int r = 1; r < conjunto.size(); ++r) {
-//        vector<string> subconjunto;
-
-//        for (unsigned int i = 0; i < conjunto.size(); ++i) {
-//            for (unsigned int j = i; j < i + r; ++j) {
-//                subconjunto.push_back(conjunto.at(j));
-//            }
-//        }
-
-//        result.push_back(subconjunto);
-//    }
-
-//    return result;
-//}

@@ -45,7 +45,8 @@ ivec asignarPatrones(const mat& patrones,
 pair<vector<rowvec>, vec>
 entrenarRadialPorLotes(const mat& patrones,
                        int nConjuntos,
-                       tipoInicializacion tipo = tipoInicializacion::conjuntosAleatorios)
+                       tipoInicializacion tipo = tipoInicializacion::conjuntosAleatorios,
+                       double sigma = 0)
 {
 	const int nPatrones = patrones.n_rows;
 
@@ -127,13 +128,16 @@ entrenarRadialPorLotes(const mat& patrones,
 		// a lo largo de las diferentes dimensiones, y luego se saca
 		// el promedio de estos desvíos.
 		if (!indicesConjunto.empty()) {
-			//			const rowvec desvios = stddev(patrones.rows(indicesConjunto));
-			//			const double sigma = mean(desvios.t());
-			//			sigmas[i] = sigma;
-
-			//            sigmas[i] = 1; // Para el Iris
-			//            sigmas[i] = 100; // Para el Merval
-            sigmas(i) = 0.7; // Para pronostico con tuplas de 3 series
+            if (sigma == 0) {
+                const rowvec desvios = stddev(patrones.rows(indicesConjunto));
+                const double desvio = mean(desvios.t());
+                sigmas[i] = desvio;
+            }
+            else {
+                //            sigmas[i] = 1; // Para el Iris
+                //            sigmas[i] = 100; // Para el Merval
+                sigmas(i) = sigma; // Para pronostico con tuplas de 3 series
+            }
 		}
 	}
 

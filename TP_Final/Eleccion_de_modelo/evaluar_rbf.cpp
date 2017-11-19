@@ -1,4 +1,5 @@
 #include "construir_tuplas.cpp"
+#include "../../guia2/radial_por_lotes.cpp"
 #include "../../guia2/mlp_salida_lineal.cpp"
 #include "../../config.hpp"
 
@@ -10,7 +11,8 @@ using namespace ic;
 // De los datos que se reciben, se descarta el último 10%
 // (se dejan para pruebas posteriores), y del 90% restante
 // se aparta el 20% para hacer la evaluación.
-double evaluarMLP(const ParametrosMulticapa& parametros,
+double evaluarRBF(const ParametrosRBF& parametros,
+                  double sigma,
                   const Particion& particion);
 
 int main()
@@ -32,15 +34,16 @@ int main()
     vector<unsigned int> retrasosAProbar(12);
     iota(retrasosAProbar.begin(), retrasosAProbar.end(), 4);
 
-    ParametrosMulticapa parametros;
+    ParametrosRBF parametros;
     parametros.nEpocas = 2000;
     parametros.tasaAprendizaje = 0.00075;
     parametros.inercia = 0.2;
     parametros.toleranciaError = 10;
-    ParametrosMulticapa mejoresParametros = parametros;
+    ParametrosRBF mejoresParametros = parametros;
     double mejorError = numeric_limits<double>::max();
     vector<string> mejorSubconjunto;
     int mejorNRetrasos = 0;
+    double mejorSigma = 0;
     bool mejorConIndice = false;
 
     for (const vector<string>& rutasEntradas : subconjuntosRutas) {
@@ -57,19 +60,23 @@ int main()
                                                          conIndice);
 
                 for (int cantidadNeuronas : neuronasPrimerCapa) {
-                    parametros.estructuraRed = {double(cantidadNeuronas), 6};
+                    for (double sigma : {0.1, 0.2, 0.3, 0.4, 0.5}) {
+                        parametros.estructuraRed = {double(cantidadNeuronas), 6};
 
-                    double promedioErrorPromedio = evaluarMLP(parametros,
-                                                              particion);
+                        double promedioErrorPromedio = evaluarRBF(parametros,
+                                                                  sigma,
+                                                                  particion);
 
-                    cout << "El promedio del error cuadrático promedio es: " << promedioErrorPromedio << endl;
+                        cout << "El promedio del error cuadrático promedio es: " << promedioErrorPromedio << endl;
 
-                    if (promedioErrorPromedio < mejorError) {
-                        mejoresParametros = parametros;
-                        mejorError = promedioErrorPromedio;
-                        mejorSubconjunto = rutasEntradas;
-                        mejorNRetrasos = retrasos;
-                        mejorConIndice = conIndice;
+                        if (promedioErrorPromedio < mejorError) {
+                            mejoresParametros = parametros;
+                            mejorError = promedioErrorPromedio;
+                            mejorSubconjunto = rutasEntradas;
+                            mejorNRetrasos = retrasos;
+                            mejorSigma = sigma;
+                            mejorConIndice = conIndice;
+                        }
                     }
                 }
             }
@@ -84,32 +91,58 @@ int main()
          << mejoresParametros.estructuraRed
          << "Mejor error: " << mejorError << endl
          << "Cantidad de retardos en la entrada: " << mejorNRetrasos << endl
+         << "Mejor sigma: " << mejorSigma << endl
          << "Con indice temporal: " << mejorConIndice << endl;
 
     return 0;
 }
 
-double evaluarMLP(const ParametrosMulticapa& parametros,
+double evaluarRBF(const ParametrosRBF& parametros,
+                  double sigma,
                   const Particion& particion)
 {
-
-    const mat datosEntrenamiento = join_horiz(particion.entrenamiento.tuplasEntrada,
-                                              particion.entrenamiento.tuplasSalida);
     vec erroresPromedio(5);
 
 #pragma omp parallel for
     for (int i = 0; i < 5; ++i) {
+        // Entrenamiento
+        vector<rowvec> centroides;
+        vec sigmas;
+        tie(centroides, sigmas)
+            = entrenarRadialPorLotes(particion.entrenamiento.tuplasEntrada,
+                                     parametros.estructuraRed(0),
+                                     tipoInicializacion::patronesAlAzar,
+                                     sigma);
+
+        mat salidasRadiales(particion.entrenamiento.tuplasEntrada.n_rows,
+                            centroides.size());
+        for (unsigned int j = 0; j < particion.entrenamiento.tuplasEntrada.n_rows; ++j)
+            salidasRadiales.row(j) = salidaRadial(particion.entrenamiento.tuplasEntrada.row(j),
+                                                  centroides,
+                                                  sigmas);
+
+        mat datosCapaFinal = join_horiz(salidasRadiales,
+                                        particion.entrenamiento.tuplasSalida);
+
         vector<mat> pesos;
-        tie(pesos, ignore, ignore) = entrenarMulticapa(parametros.estructuraRed,
-                                                       datosEntrenamiento,
+        tie(pesos, ignore, ignore) = entrenarMulticapa(vec{parametros.estructuraRed(1)},
+                                                       datosCapaFinal,
                                                        parametros.nEpocas,
                                                        parametros.tasaAprendizaje,
                                                        parametros.inercia,
                                                        parametros.toleranciaError,
                                                        true);
 
+        // Prueba
+        salidasRadiales = mat(particion.evaluacion.tuplasEntrada.n_rows,
+                              centroides.size());
+        for (unsigned int j = 0; j < particion.evaluacion.tuplasEntrada.n_rows; ++j)
+            salidasRadiales.row(j) = salidaRadial(particion.evaluacion.tuplasEntrada.row(j),
+                                                  centroides,
+                                                  sigmas);
+
         double errorTotal = errorCuadraticoMulticapa(pesos,
-                                                     particion.evaluacion.tuplasEntrada,
+                                                     salidasRadiales,
                                                      particion.evaluacion.tuplasSalida);
         double errorPromedio = errorTotal / particion.evaluacion.tuplasEntrada.n_rows;
         erroresPromedio(i) = errorPromedio;
