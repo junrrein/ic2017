@@ -1,0 +1,11 @@
+El mejor MLP tiene las siguientes características
+Mejor subconjunto:
+/home/julian/Facultad/Libros y mas/Inteligencia Computacional/practica2017/TP_Final/datos/DiferenciasRelativas.csv
+/home/julian/Facultad/Libros y mas/Inteligencia Computacional/practica2017/TP_Final/datos/Exportaciones.csv
+Mejor estructura:
+   23.0000
+    6.0000
+Mejor error: 0.0634477
+Cantidad de retardos en la entrada: 14
+Con indice temporal: 0
+
