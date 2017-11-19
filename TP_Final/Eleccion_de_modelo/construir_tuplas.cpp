@@ -7,8 +7,6 @@ using namespace std;
 mat crearTuplas(vec datos,
                 unsigned int longitudTupla)
 {
-    datos = (datos - min(datos)) / (max(datos) - min(datos));
-
     mat tuplas(datos.n_elem - longitudTupla, longitudTupla);
 
     for (unsigned int i = 0; i < tuplas.n_rows; ++i) {
@@ -17,6 +15,26 @@ mat crearTuplas(vec datos,
     }
 
     return tuplas;
+}
+
+vec normalizar(vec serieOriginal, vec serieACambiar)
+{
+    const double minimo = min(serieOriginal);
+    const double rango = max(serieOriginal) - minimo;
+
+    vec result = (serieACambiar - minimo) / rango;
+
+    return result;
+}
+
+vec desnormalizar(vec serieOriginal, vec serieNormalizada)
+{
+    const double minimo = min(serieOriginal);
+    const double rango = max(serieOriginal) - minimo;
+
+    vec result = serieNormalizada * rango + minimo;
+
+    return result;
 }
 
 mat agruparEntradas(vector<vec> seriesDatos,
@@ -54,13 +72,13 @@ struct Particion {
 mat agregarIndiceTemporal(const mat& tuplas)
 {
     vec indice = linspace(1, tuplas.n_rows - 1, tuplas.n_rows);
-    indice = (indice - min(indice)) / (max(indice) - min(indice));
+    indice = normalizar(indice, indice);
 
     return join_horiz(indice, tuplas);
 }
 
 ConjuntoDatos
-agruparEntradasConSalidas(const vector<vec>& seriesEntrada,
+agruparEntradasConSalidas(vector<vec> seriesEntrada,
                           vec serieSalida,
                           unsigned int retrasosEntrada,
                           unsigned int nSalidas,
@@ -69,6 +87,12 @@ agruparEntradasConSalidas(const vector<vec>& seriesEntrada,
     for (const vec& entrada : seriesEntrada)
         if (entrada.n_elem != serieSalida.n_elem)
             throw runtime_error("Las series de datos deben tener la misma longitud");
+
+    // Normalizar todas las series de datos
+    for (vec& v : seriesEntrada) {
+        v = normalizar(v, v);
+    }
+    serieSalida = normalizar(serieSalida, serieSalida);
 
     mat tuplasEntrada = agruparEntradas(seriesEntrada, retrasosEntrada, nSalidas);
 
