@@ -105,7 +105,7 @@ int main()
 
     Gnuplot gp;
     gp << "set terminal qt size 1200,600" << endl
-       << "set multiplot layout 2,3 title 'Predicción usando Diferencia Relativa de Patentamientos + Exportaciones' font ',12'" << endl
+       << "set multiplot layout 2,3 title 'Predicción usando Diferencias Relativas de Patentamientos - Red con RBF' font ',12'" << endl
        << "set xlabel 'Mes (final de la serie)'" << endl
        << "set ylabel 'Ventas (unidades)'" << endl
        << "set yrange [0:70000]" << endl
