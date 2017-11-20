@@ -29,7 +29,7 @@ int main()
 
     Gnuplot gp;
     gp << "set title 'Comparación del desempeño de distintos modelos de predicción' font ',12'" << endl
-       << "set xlabel 'Meses hacia adelante' font ',11'" << endl
+       << "set xlabel 'Plazo de predicción (meses hacia adelante)' font ',11'" << endl
        << "set ylabel 'EARP (%)' font ',11'" << endl
        << "set xrange [0:7]" << endl
        << "set grid ytics" << endl
