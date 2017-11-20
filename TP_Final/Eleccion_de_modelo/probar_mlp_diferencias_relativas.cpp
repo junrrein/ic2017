@@ -98,10 +98,16 @@ int main()
     vec promedioErrorPorMes(6);
     vec desvioErrorPorMes(6);
     for (int i = 0; i < 6; ++i) {
-        const vec erroresCuadraticos = pow(particion.prueba.tuplasSalida.col(i) - salidaRed.at(i), 2);
-        promedioErrorPorMes(i) = mean(erroresCuadraticos);
-        desvioErrorPorMes(i) = stddev(erroresCuadraticos);
+        const vec erroresRelativosAbsolutos = abs(particion.prueba.tuplasSalida.col(i) - salidaRed.at(i))
+                                              / particion.prueba.tuplasSalida.col(i)
+                                              * 100;
+        promedioErrorPorMes(i) = mean(erroresRelativosAbsolutos);
+        desvioErrorPorMes(i) = stddev(erroresRelativosAbsolutos);
     }
+
+    // Guardar errores a un archivo para comparar distintos modelos
+    const mat errores = join_horiz(promedioErrorPorMes, desvioErrorPorMes);
+    errores.save(rutaBase + "errorMlpSalidaDifRel.csv", arma::csv_ascii);
 
     Gnuplot gp;
     gp << "set terminal qt size 1200,600" << endl
@@ -119,10 +125,10 @@ int main()
         istringstream ist{ost.str()};
         ist >> errorStr >> desvioStr;
 
-        gp << R"(set title "Predicción - 1 mes hacia adelante\n)"
-           << R"(ECP = )" << errorStr
-           << R"(, Desvío = )" << desvioStr
-           << R"(")"
+        gp << R"(set title "1 mes hacia adelante\n)"
+           << R"(EARP = )" << errorStr
+           << R"( %, Desvío = )" << desvioStr
+           << R"( %")"
            << " font ',11'" << endl
            << "plot " << gp.file1d(particion.prueba.tuplasSalida.col(0).eval()) << " with linespoints title 'Salida original', "
            << gp.file1d(salidaRed.at(0)) << " with linespoints title 'Salida de la red' lw 2" << endl;
@@ -135,10 +141,10 @@ int main()
         istringstream ist{ost.str()};
         ist >> errorStr >> desvioStr;
 
-        gp << R"(set title "Predicción - )" << i + 1 << R"( meses hacia adelante\n)"
-           << R"(ECP = )" << errorStr
-           << R"(, Desvío = )" << desvioStr
-           << R"(")"
+        gp << R"(set title ")" << i + 1 << R"( meses hacia adelante\n)"
+           << R"(EARP = )" << errorStr
+           << R"( %, Desvío = )" << desvioStr
+           << R"( %")"
            << " font ',11'" << endl
            << "plot " << gp.file1d(particion.prueba.tuplasSalida.col(i).eval()) << " with linespoints title 'Salida original', "
            << gp.file1d(salidaRed.at(i)) << " with linespoints title 'Salida de la red' lw 2" << endl;

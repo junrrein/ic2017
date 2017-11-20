@@ -20,6 +20,7 @@ int main()
     parametros.inercia = 0.2;
     parametros.toleranciaError = 10;
 
+    // Carga de datos
     Particion particion = cargarTuplas({rutaDiferencias, rutaExportaciones},
                                        rutaVentas,
                                        14,
@@ -31,6 +32,7 @@ int main()
                                              join_horiz(particion.evaluacion.tuplasEntrada,
                                                         particion.evaluacion.tuplasSalida));
 
+    // Entrenamiento
     vector<mat> pesos;
     tie(pesos, ignore, ignore) = entrenarMulticapa(parametros.estructuraRed,
                                                    datosEntrenamiento,
@@ -40,13 +42,8 @@ int main()
                                                    parametros.toleranciaError,
                                                    true);
 
-    double errorTotal = errorCuadraticoMulticapa(pesos,
-                                                 particion.prueba.tuplasEntrada,
-                                                 particion.prueba.tuplasSalida);
-    double errorPromedio = errorTotal / particion.prueba.tuplasEntrada.n_rows;
-
-    cout << "Prueba: El error cuadrático total promedio es: " << errorPromedio << endl;
-
+    // Prueba
+    // Calcular la salida para los datos de prueba
     vector<vec> salidaRed(6, vec(particion.prueba.tuplasEntrada.n_rows));
 
     for (unsigned int n = 0; n < particion.prueba.tuplasEntrada.n_rows; ++n) {
@@ -58,6 +55,7 @@ int main()
             salidaRed.at(j)(n) = salidas(j);
     }
 
+    // Desnormalizar datos
     vec ventas;
     ventas.load(rutaVentas);
 
@@ -66,13 +64,20 @@ int main()
         particion.prueba.tuplasSalida.col(i) = desnormalizar(ventas, particion.prueba.tuplasSalida.col(i));
     }
 
+    // Calculo de error
     vec promedioErrorPorMes(6);
     vec desvioErrorPorMes(6);
     for (int i = 0; i < 6; ++i) {
-        const vec erroresCuadraticos = pow(particion.prueba.tuplasSalida.col(i) - salidaRed.at(i), 2);
-        promedioErrorPorMes(i) = mean(erroresCuadraticos);
-        desvioErrorPorMes(i) = stddev(erroresCuadraticos);
+        const vec erroresRelativosAbsolutos = abs(particion.prueba.tuplasSalida.col(i) - salidaRed.at(i))
+                                              / particion.prueba.tuplasSalida.col(i)
+                                              * 100;
+        promedioErrorPorMes(i) = mean(erroresRelativosAbsolutos);
+        desvioErrorPorMes(i) = stddev(erroresRelativosAbsolutos);
     }
+
+    // Guardar errores a un archivo para comparar distintos modelos
+    const mat errores = join_horiz(promedioErrorPorMes, desvioErrorPorMes);
+    errores.save(rutaBase + "errorMlpSalidaVentas.csv", arma::csv_ascii);
 
     Gnuplot gp;
     gp << "set terminal qt size 1200,600" << endl
@@ -90,10 +95,10 @@ int main()
         istringstream ist{ost.str()};
         ist >> errorStr >> desvioStr;
 
-        gp << R"(set title "Predicción - 1 mes hacia adelante\n)"
-           << R"(ECP = )" << errorStr
-           << R"(, Desvío = )" << desvioStr
-           << R"(")"
+        gp << R"(set title "1 mes hacia adelante\n)"
+           << R"(EARP = )" << errorStr
+           << R"( %, Desvío = )" << desvioStr
+           << R"( %")"
            << " font ',11'" << endl
            << "plot " << gp.file1d(particion.prueba.tuplasSalida.col(0).eval()) << " with linespoints title 'Salida original', "
            << gp.file1d(salidaRed.at(0)) << " with linespoints title 'Salida de la red' lw 2" << endl;
@@ -106,10 +111,10 @@ int main()
         istringstream ist{ost.str()};
         ist >> errorStr >> desvioStr;
 
-        gp << R"(set title "Predicción - )" << i + 1 << R"( meses hacia adelante\n)"
-           << R"(ECP = )" << errorStr
-           << R"(, Desvío = )" << desvioStr
-           << R"(")"
+        gp << R"(set title ")" << i + 1 << R"( meses hacia adelante\n)"
+           << R"(EARP = )" << errorStr
+           << R"( %, Desvío = )" << desvioStr
+           << R"( %")"
            << " font ',11'" << endl
            << "plot " << gp.file1d(particion.prueba.tuplasSalida.col(i).eval()) << " with linespoints title 'Salida original', "
            << gp.file1d(salidaRed.at(i)) << " with linespoints title 'Salida de la red' lw 2" << endl;
