@@ -83,6 +83,7 @@ int main()
         v = desnormalizar(ventas, v);
     });
 
+    // Pasar datos de diferencias relativas a patentamientos en unidades
     for (unsigned int i = 0; i < salidaRed.size(); ++i) {
         for (unsigned int j = 0; j < salidaRed.front().n_elem; ++j) {
             salidaRed.at(i)(j) = salidaRed.at(i)(j) / 100
@@ -113,7 +114,7 @@ int main()
     gp << "set terminal qt size 1200,600" << endl
        << "set multiplot layout 2,3 title 'Predicción usando Diferencias Relativas de Patentamientos - Red MLP' font ',12'" << endl
        << "set xlabel 'Mes (final de la serie)'" << endl
-       << "set ylabel 'Diferencias relativas (%)'" << endl
+       << "set ylabel 'Patentamientos (unidades)'" << endl
        << "set yrange [0:70000]" << endl
        << "set grid" << endl
        << "set key box opaque bottom center" << endl;
