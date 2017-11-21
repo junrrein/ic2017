@@ -24,7 +24,8 @@ int main()
     errorMlpDiferencias(0, 0) = 0.9;
     errorRbfVentas = join_horiz(indices + 0.1, errorRbfVentas);
     errorRbfVentas(0, 0) = 1;
-    errorArimaVentas = join_horiz(vec{1.1}, errorArimaVentas);
+    errorArimaVentas = join_horiz(indices + 0.2, errorArimaVentas);
+    errorArimaVentas(0, 0) = 1.1;
     errorArimaDifRel = join_horiz(vec{1.2}, errorArimaDifRel);
 
     Gnuplot gp;
