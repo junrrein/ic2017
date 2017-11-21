@@ -1,0 +1,9 @@
+Mejor subconjunto: 
+/home/matyas/Documentos/FACULTAD/MATERIAS/IC/Practica/TP_Final/datos/DiferenciasRelativas.csv
+Mejor estructura:
+   16.0000
+    6.0000
+Mejor error: 0.0155314
+Cantidad de retardos en la entrada: 14
+Mejor sigma: 0.4
+Con indice temporal: 1

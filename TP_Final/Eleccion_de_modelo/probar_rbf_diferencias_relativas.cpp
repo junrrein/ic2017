@@ -1,5 +1,6 @@
 #include "construir_tuplas.cpp"
 #include "../../guia2/mlp_salida_lineal.cpp"
+#include "../../guia2/radial_por_lotes.cpp"
 #include "../../config.hpp"
 #include <gnuplot-iostream.h>
 #include <sstream>
@@ -11,8 +12,8 @@ int main()
     const string rutaBase = config::sourceDir + "/TP_Final/datos/";
     const string rutaDiferencias = rutaBase + "DiferenciasRelativas.csv";
 
-    ParametrosMulticapa parametros;
-    parametros.estructuraRed = {23, 6};
+    ParametrosRBF parametros;
+    parametros.estructuraRed = {16, 6};
     parametros.nEpocas = 2000;
     parametros.tasaAprendizaje = 0.00075;
     parametros.inercia = 0.2;
@@ -21,38 +22,63 @@ int main()
     // Carga de datos
     Particion particion = cargarTuplas({rutaDiferencias},
                                        rutaDiferencias,
-                                       13,
+                                       14,
                                        6,
                                        true);
 
-    const mat datosEntrenamiento = join_vert(join_horiz(particion.entrenamiento.tuplasEntrada,
-                                                        particion.entrenamiento.tuplasSalida),
-                                             join_horiz(particion.evaluacion.tuplasEntrada,
-                                                        particion.evaluacion.tuplasSalida));
+    const mat datosEntrenamiento = join_vert(particion.entrenamiento.tuplasEntrada,
+                                             particion.evaluacion.tuplasEntrada);
 
     // Entrenamiento
+    vector<rowvec> centroides;
+    vec sigmas;
+    tie(centroides, sigmas)
+        = entrenarRadialPorLotes(datosEntrenamiento,
+                                 parametros.estructuraRed(0),
+                                 tipoInicializacion::patronesAlAzar,
+                                 0.4);
+
+    mat salidasRadiales(datosEntrenamiento.n_rows,
+                        centroides.size());
+    for (unsigned int j = 0; j < datosEntrenamiento.n_rows; ++j)
+        salidasRadiales.row(j) = salidaRadial(datosEntrenamiento.row(j),
+                                              centroides,
+                                              sigmas);
+
+    mat datosCapaFinal = join_horiz(salidasRadiales,
+                                    join_vert(particion.entrenamiento.tuplasSalida,
+                                              particion.evaluacion.tuplasSalida));
+
     vector<mat> pesos;
-    tie(pesos, ignore, ignore) = entrenarMulticapa(parametros.estructuraRed,
-                                                   datosEntrenamiento,
+    tie(pesos, ignore, ignore) = entrenarMulticapa(vec{parametros.estructuraRed(1)},
+                                                   datosCapaFinal,
                                                    parametros.nEpocas,
                                                    parametros.tasaAprendizaje,
                                                    parametros.inercia,
                                                    parametros.toleranciaError,
                                                    true);
 
-    // Calculando las salidas para los datos de prueba
-    vector<vec> salidaRed(6, vec(particion.prueba.tuplasEntrada.n_rows));
+    // Prueba
+    // Calcular la salida para los datos de prueba
+    salidasRadiales = mat(particion.prueba.tuplasEntrada.n_rows,
+                          centroides.size());
+    for (unsigned int j = 0; j < particion.prueba.tuplasEntrada.n_rows; ++j)
+        salidasRadiales.row(j) = salidaRadial(particion.prueba.tuplasEntrada.row(j),
+                                              centroides,
+                                              sigmas);
 
-    for (unsigned int n = 0; n < particion.prueba.tuplasEntrada.n_rows; ++n) {
+    vector<vec> salidaRed(6, vec(salidasRadiales.n_rows));
+
+    for (unsigned int n = 0; n < salidasRadiales.n_rows; ++n) {
         vec salidas = ic::salidaMulticapa(pesos,
-                                          particion.prueba.tuplasEntrada.row(n).t())
+                                          salidasRadiales.row(n).t())
                           .back();
 
         for (int j = 0; j < 6; ++j)
             salidaRed.at(j)(n) = salidas(j);
     }
 
-    // Desnormalización
+    // Desnormalizar datos
     vec diferencias;
     diferencias.load(rutaDiferencias);
 
@@ -67,7 +93,7 @@ int main()
     const string rutaVentas = rutaBase + "Ventas.csv";
     Particion particionAux = cargarTuplas({rutaVentas},
                                           rutaVentas,
-                                          13,
+                                          14,
                                           6,
                                           true);
     mat tuplasVentas = join_vert(particionAux.evaluacion.tuplasSalida.row(particionAux.evaluacion.tuplasSalida.n_rows - 1),
@@ -103,7 +129,7 @@ int main()
         }
     }
 
-    // Cálculo de errror
+    // Calculo de error
     vec promedioErrorPorMes(6);
     vec desvioErrorPorMes(6);
     for (int i = 0; i < 6; ++i) {
@@ -116,11 +142,11 @@ int main()
 
     // Guardar errores a un archivo para comparar distintos modelos
     const mat errores = join_horiz(promedioErrorPorMes, desvioErrorPorMes);
-    errores.save(rutaBase + "errorMlpSalidaDifRel.csv", arma::csv_ascii);
+    errores.save(rutaBase + "errorRbfSalidaDifRel.csv", arma::csv_ascii);
 
     Gnuplot gp;
     gp << "set terminal qt size 1200,600" << endl
-       << "set multiplot layout 2,3 title 'Predicción usando Diferencias Relativas de Patentamientos - Red MLP' font ',13'" << endl
+       << "set multiplot layout 2,3 title 'Predicción usando Diferencias Relativas de Patentamientos - Red con RBF' font ',12'" << endl
        << "set xlabel 'Mes (final de la serie)'" << endl
        << "set ylabel 'Patentamientos (unidades)'" << endl
        << "set yrange [0:70000]" << endl
