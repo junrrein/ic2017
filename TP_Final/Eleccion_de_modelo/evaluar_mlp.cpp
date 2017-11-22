@@ -27,13 +27,13 @@ int main()
                                   rutaExportaciones,
                                   rutaImportaciones};
     const vector<vector<string>> subconjuntosRutas = subconjuntos<4>(rutas);
-    vector<int> neuronasPrimerCapa(2);
+    vector<int> neuronasPrimerCapa(18);
     iota(neuronasPrimerCapa.begin(), neuronasPrimerCapa.end(), 7);
-    vector<unsigned int> retrasosAProbar(2);
-    iota(retrasosAProbar.begin(), retrasosAProbar.end(), 4);
+    vector<unsigned int> retrasosAProbar(4);
+    iota(retrasosAProbar.begin(), retrasosAProbar.end(), 6);
 
     ParametrosMulticapa parametros;
-    parametros.nEpocas = 2000;
+    parametros.nEpocas = 1500;
     parametros.tasaAprendizaje = 0.00075;
     parametros.inercia = 0.2;
     parametros.toleranciaError = 10;
@@ -41,7 +41,6 @@ int main()
     double mejorError = numeric_limits<double>::max();
     vector<string> mejorSubconjunto;
     int mejorNRetrasos = 0;
-    //    bool mejorConIndice = false;
 
     for (const vector<string>& rutasEntradas : subconjuntosRutas) {
         // La combinatoria va a tener un subconjunto vacío
@@ -49,7 +48,6 @@ int main()
             continue;
 
         for (int retrasos : retrasosAProbar) {
-            //            for (bool conIndice : {true, false}) {
             const Particion particion = cargarTuplas(rutasEntradas,
                                                      rutaDiferencias,
                                                      retrasos,
@@ -68,9 +66,7 @@ int main()
                     mejorError = promedioErrorPromedio;
                     mejorSubconjunto = rutasEntradas;
                     mejorNRetrasos = retrasos;
-                    //                        mejorConIndice = conIndice;
                 }
-                //                }
             }
         }
     }
@@ -83,7 +79,6 @@ int main()
          << mejoresParametros.estructuraRed
          << "Mejor error: " << mejorError << endl
          << "Cantidad de retardos en la entrada: " << mejorNRetrasos << endl;
-    //         << "Con indice temporal: " << mejorConIndice << endl;
 
     return 0;
 }
