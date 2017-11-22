@@ -1,8 +1,7 @@
 Mejor subconjunto: 
 /home/julian/Facultad/Libros y mas/Inteligencia Computacional/practica2017/TP_Final/datos/DiferenciasRelativas.csv
 Mejor estructura:
-   23.0000
-    6.0000
-Mejor error: 0.00816523
-Cantidad de retardos en la entrada: 13
-Con indice temporal: 1
+   24.0000
+    3.0000
+Mejor error: 0.0169796
+Cantidad de retardos en la entrada: 9
