@@ -11,8 +11,9 @@ int main()
     const string rutaBase = config::sourceDir + "/TP_Final/datos/";
     const string rutaDiferencias = rutaBase + "DiferenciasRelativas.csv";
 
+    const int nSalidas = 3;
     ParametrosMulticapa parametros;
-    parametros.estructuraRed = {23, 6};
+    parametros.estructuraRed = {24, nSalidas};
     parametros.nEpocas = 2000;
     parametros.tasaAprendizaje = 0.00075;
     parametros.inercia = 0.2;
@@ -21,9 +22,8 @@ int main()
     // Carga de datos
     Particion particion = cargarTuplas({rutaDiferencias},
                                        rutaDiferencias,
-                                       13,
-                                       6,
-                                       true);
+                                       9,
+                                       nSalidas);
 
     const mat datosEntrenamiento = join_vert(join_horiz(particion.entrenamiento.tuplasEntrada,
                                                         particion.entrenamiento.tuplasSalida),
@@ -41,14 +41,14 @@ int main()
                                                    true);
 
     // Calculando las salidas para los datos de prueba
-    vector<vec> salidaRed(6, vec(particion.prueba.tuplasEntrada.n_rows));
+    vector<vec> salidaRed(nSalidas, vec(particion.prueba.tuplasEntrada.n_rows));
 
     for (unsigned int n = 0; n < particion.prueba.tuplasEntrada.n_rows; ++n) {
         vec salidas = ic::salidaMulticapa(pesos,
                                           particion.prueba.tuplasEntrada.row(n).t())
                           .back();
 
-        for (int j = 0; j < 6; ++j)
+        for (int j = 0; j < nSalidas; ++j)
             salidaRed.at(j)(n) = salidas(j);
     }
 
@@ -67,9 +67,8 @@ int main()
     const string rutaVentas = rutaBase + "Ventas.csv";
     Particion particionAux = cargarTuplas({rutaVentas},
                                           rutaVentas,
-                                          13,
-                                          6,
-                                          true);
+                                          9,
+                                          nSalidas);
     mat tuplasVentas = join_vert(particionAux.evaluacion.tuplasSalida.row(particionAux.evaluacion.tuplasSalida.n_rows - 1),
                                  particionAux.prueba.tuplasSalida);
 
@@ -104,9 +103,9 @@ int main()
     }
 
     // Cálculo de errror
-    vec promedioErrorPorMes(6);
-    vec desvioErrorPorMes(6);
-    for (int i = 0; i < 6; ++i) {
+    vec promedioErrorPorMes(nSalidas);
+    vec desvioErrorPorMes(nSalidas);
+    for (int i = 0; i < nSalidas; ++i) {
         const vec erroresRelativosAbsolutos = abs(particion.prueba.tuplasSalida.col(i) - salidaRed.at(i))
                                               / particion.prueba.tuplasSalida.col(i)
                                               * 100;
