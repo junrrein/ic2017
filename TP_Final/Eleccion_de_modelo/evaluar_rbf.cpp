@@ -31,11 +31,11 @@ int main()
     const vector<vector<string>> subconjuntosRutas = subconjuntos<4>(rutas);
     vector<int> neuronasPrimerCapa(18);
     iota(neuronasPrimerCapa.begin(), neuronasPrimerCapa.end(), 7);
-    vector<unsigned int> retrasosAProbar(12);
-    iota(retrasosAProbar.begin(), retrasosAProbar.end(), 4);
+    vector<unsigned int> retrasosAProbar(4);
+    iota(retrasosAProbar.begin(), retrasosAProbar.end(), 6);
 
     ParametrosRBF parametros;
-    parametros.nEpocas = 2000;
+    parametros.nEpocas = 1500;
     parametros.tasaAprendizaje = 0.00075;
     parametros.inercia = 0.2;
     parametros.toleranciaError = 10;
@@ -44,7 +44,6 @@ int main()
     vector<string> mejorSubconjunto;
     int mejorNRetrasos = 0;
     double mejorSigma = 0;
-    bool mejorConIndice = false;
 
     for (const vector<string>& rutasEntradas : subconjuntosRutas) {
         // La combinatoria va a tener un subconjunto vacío
@@ -52,31 +51,27 @@ int main()
             continue;
 
         for (int retrasos : retrasosAProbar) {
-            for (bool conIndice : {true, false}) {
-                const Particion particion = cargarTuplas(rutasEntradas,
-                                                         rutaVentas,
-                                                         retrasos,
-                                                         6,
-                                                         conIndice);
+            const Particion particion = cargarTuplas(rutasEntradas,
+                                                     rutaVentas,
+                                                     retrasos,
+                                                     6);
 
-                for (int cantidadNeuronas : neuronasPrimerCapa) {
-                    for (double sigma : {0.1, 0.2, 0.3, 0.4, 0.5}) {
-                        parametros.estructuraRed = {double(cantidadNeuronas), 6};
+            for (int cantidadNeuronas : neuronasPrimerCapa) {
+                for (double sigma : {0.1, 0.2, 0.3, 0.4, 0.5}) {
+                    parametros.estructuraRed = {double(cantidadNeuronas), 6};
 
-                        double promedioErrorPromedio = evaluarRBF(parametros,
-                                                                  sigma,
-                                                                  particion);
+                    double promedioErrorPromedio = evaluarRBF(parametros,
+                                                              sigma,
+                                                              particion);
 
-                        cout << "El promedio del error cuadrático promedio es: " << promedioErrorPromedio << endl;
+                    cout << "El promedio del error cuadrático promedio es: " << promedioErrorPromedio << endl;
 
-                        if (promedioErrorPromedio < mejorError) {
-                            mejoresParametros = parametros;
-                            mejorError = promedioErrorPromedio;
-                            mejorSubconjunto = rutasEntradas;
-                            mejorNRetrasos = retrasos;
-                            mejorSigma = sigma;
-                            mejorConIndice = conIndice;
-                        }
+                    if (promedioErrorPromedio < mejorError) {
+                        mejoresParametros = parametros;
+                        mejorError = promedioErrorPromedio;
+                        mejorSubconjunto = rutasEntradas;
+                        mejorNRetrasos = retrasos;
+                        mejorSigma = sigma;
                     }
                 }
             }
@@ -91,8 +86,7 @@ int main()
          << mejoresParametros.estructuraRed
          << "Mejor error: " << mejorError << endl
          << "Cantidad de retardos en la entrada: " << mejorNRetrasos << endl
-         << "Mejor sigma: " << mejorSigma << endl
-         << "Con indice temporal: " << mejorConIndice << endl;
+         << "Mejor sigma: " << mejorSigma << endl;
 
     return 0;
 }
