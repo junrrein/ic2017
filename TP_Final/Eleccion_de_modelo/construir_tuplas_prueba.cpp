@@ -10,7 +10,7 @@ int main()
 
     Particion particion = cargarTuplas({rutaVentas, rutaExportaciones, rutaImportaciones},
                                        rutaVentas,
-                                       12,
+                                       10,
                                        6);
 
     return 0;

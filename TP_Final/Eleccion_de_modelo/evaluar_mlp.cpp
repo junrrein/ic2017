@@ -27,9 +27,9 @@ int main()
                                   rutaExportaciones,
                                   rutaImportaciones};
     const vector<vector<string>> subconjuntosRutas = subconjuntos<4>(rutas);
-    vector<int> neuronasPrimerCapa(18);
+    vector<int> neuronasPrimerCapa(2);
     iota(neuronasPrimerCapa.begin(), neuronasPrimerCapa.end(), 7);
-    vector<unsigned int> retrasosAProbar(12);
+    vector<unsigned int> retrasosAProbar(2);
     iota(retrasosAProbar.begin(), retrasosAProbar.end(), 4);
 
     ParametrosMulticapa parametros;
@@ -41,7 +41,7 @@ int main()
     double mejorError = numeric_limits<double>::max();
     vector<string> mejorSubconjunto;
     int mejorNRetrasos = 0;
-    bool mejorConIndice = false;
+    //    bool mejorConIndice = false;
 
     for (const vector<string>& rutasEntradas : subconjuntosRutas) {
         // La combinatoria va a tener un subconjunto vacío
@@ -49,29 +49,28 @@ int main()
             continue;
 
         for (int retrasos : retrasosAProbar) {
-            for (bool conIndice : {true, false}) {
-                const Particion particion = cargarTuplas(rutasEntradas,
-                                                         rutaDiferencias,
-                                                         retrasos,
-                                                         6,
-                                                         conIndice);
+            //            for (bool conIndice : {true, false}) {
+            const Particion particion = cargarTuplas(rutasEntradas,
+                                                     rutaDiferencias,
+                                                     retrasos,
+                                                     6);
 
-                for (int cantidadNeuronas : neuronasPrimerCapa) {
-                    parametros.estructuraRed = {double(cantidadNeuronas), 6};
+            for (int cantidadNeuronas : neuronasPrimerCapa) {
+                parametros.estructuraRed = {double(cantidadNeuronas), 6};
 
-                    double promedioErrorPromedio = evaluarMLP(parametros,
-                                                              particion);
+                double promedioErrorPromedio = evaluarMLP(parametros,
+                                                          particion);
 
-                    cout << "El promedio del error cuadrático promedio es: " << promedioErrorPromedio << endl;
+                cout << "El promedio del error cuadrático promedio es: " << promedioErrorPromedio << endl;
 
-                    if (promedioErrorPromedio < mejorError) {
-                        mejoresParametros = parametros;
-                        mejorError = promedioErrorPromedio;
-                        mejorSubconjunto = rutasEntradas;
-                        mejorNRetrasos = retrasos;
-                        mejorConIndice = conIndice;
-                    }
+                if (promedioErrorPromedio < mejorError) {
+                    mejoresParametros = parametros;
+                    mejorError = promedioErrorPromedio;
+                    mejorSubconjunto = rutasEntradas;
+                    mejorNRetrasos = retrasos;
+                    //                        mejorConIndice = conIndice;
                 }
+                //                }
             }
         }
     }
@@ -83,8 +82,8 @@ int main()
     cout << "Mejor estructura:\n"
          << mejoresParametros.estructuraRed
          << "Mejor error: " << mejorError << endl
-         << "Cantidad de retardos en la entrada: " << mejorNRetrasos << endl
-         << "Con indice temporal: " << mejorConIndice << endl;
+         << "Cantidad de retardos en la entrada: " << mejorNRetrasos << endl;
+    //         << "Con indice temporal: " << mejorConIndice << endl;
 
     return 0;
 }
