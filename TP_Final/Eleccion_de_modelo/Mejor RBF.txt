@@ -2,10 +2,9 @@ El mejor RBF tiene las siguientes características
 Mejor subconjunto: 
 /home/matyas/Documentos/FACULTAD/MATERIAS/IC/Practica/TP_Final/datos/DiferenciasRelativas.csv
 Mejor estructura:
-   21.0000
-    6.0000
-Mejor error: 0.0956958
-Cantidad de retardos en la entrada: 11
+	19
+	3
+Mejor error: N/A
+Cantidad de retardos en la entrada: 9
 Mejor sigma: 0.1
-Con indice temporal: 0
 
