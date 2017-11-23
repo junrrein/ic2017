@@ -12,8 +12,10 @@ int main()
     const string rutaBase = config::sourceDir + "/TP_Final/datos/";
     const string rutaDiferencias = rutaBase + "DiferenciasRelativas.csv";
 
+    const int nRetardos = 9;
+    const int nSalidas = 3;
     ParametrosRBF parametros;
-    parametros.estructuraRed = {16, 6};
+    parametros.estructuraRed = {22, nSalidas};
     parametros.nEpocas = 2000;
     parametros.tasaAprendizaje = 0.00075;
     parametros.inercia = 0.2;
@@ -22,9 +24,8 @@ int main()
     // Carga de datos
     Particion particion = cargarTuplas({rutaDiferencias},
                                        rutaDiferencias,
-                                       14,
-                                       6,
-                                       true);
+                                       nRetardos,
+                                       nSalidas);
 
     const mat datosEntrenamiento = join_vert(particion.entrenamiento.tuplasEntrada,
                                              particion.evaluacion.tuplasEntrada);
@@ -36,7 +37,7 @@ int main()
         = entrenarRadialPorLotes(datosEntrenamiento,
                                  parametros.estructuraRed(0),
                                  tipoInicializacion::patronesAlAzar,
-                                 0.4);
+                                 0.2);
 
     mat salidasRadiales(datosEntrenamiento.n_rows,
                         centroides.size());
@@ -67,14 +68,14 @@ int main()
                                               centroides,
                                               sigmas);
 
-    vector<vec> salidaRed(6, vec(salidasRadiales.n_rows));
+    vector<vec> salidaRed(nSalidas, vec(salidasRadiales.n_rows));
 
     for (unsigned int n = 0; n < salidasRadiales.n_rows; ++n) {
         vec salidas = ic::salidaMulticapa(pesos,
                                           salidasRadiales.row(n).t())
                           .back();
 
-        for (int j = 0; j < 6; ++j)
+        for (unsigned int j = 0; j < salidaRed.size(); ++j)
             salidaRed.at(j)(n) = salidas(j);
     }
 
@@ -88,34 +89,19 @@ int main()
     }
 
     // Pasar diferencias relativas a patentamientos en unidades
-
     // Carga de datos de patentamientos en unidades
     const string rutaVentas = rutaBase + "Ventas.csv";
-    Particion particionAux = cargarTuplas({rutaVentas},
-                                          rutaVentas,
-                                          14,
-                                          6,
-                                          true);
-    mat tuplasVentas = join_vert(particionAux.evaluacion.tuplasSalida.row(particionAux.evaluacion.tuplasSalida.n_rows - 1),
-                                 particionAux.prueba.tuplasSalida);
-
-    if (tuplasVentas.n_rows != salidaRed.front().n_elem + 1)
-        throw runtime_error("Acá están mal la cantidad de tuplas");
-
-    // Desnormalización de los patentamientos
     vec ventas;
     ventas.load(rutaVentas);
-    tuplasVentas.each_col([&](vec& v) {
-        v = desnormalizar(ventas, v);
-    });
+    const vec ventasPrueba = ventas.tail(16);
 
     // Pasar datos de diferencias relativas a patentamientos en unidades
     for (unsigned int i = 0; i < salidaRed.size(); ++i) {
         for (unsigned int j = 0; j < salidaRed.front().n_elem; ++j) {
             if (i == 0) {
                 salidaRed.at(i)(j) = salidaRed.at(i)(j) / 100
-                                         * tuplasVentas(j, i)
-                                     + tuplasVentas(j, i);
+                                         * ventasPrueba(nRetardos + i + j - 1)
+                                     + ventasPrueba(nRetardos + i + j - 1);
             }
             else {
                 salidaRed.at(i)(j) = salidaRed.at(i)(j) / 100
@@ -124,15 +110,15 @@ int main()
             }
 
             particion.prueba.tuplasSalida(j, i) = particion.prueba.tuplasSalida(j, i) / 100
-                                                      * tuplasVentas(j, i)
-                                                  + tuplasVentas(j, i);
+                                                      * ventasPrueba(nRetardos + i + j - 1)
+                                                  + ventasPrueba(nRetardos + i + j - 1);
         }
     }
 
     // Calculo de error
-    vec promedioErrorPorMes(6);
-    vec desvioErrorPorMes(6);
-    for (int i = 0; i < 6; ++i) {
+    vec promedioErrorPorMes(nSalidas);
+    vec desvioErrorPorMes(nSalidas);
+    for (int i = 0; i < nSalidas; ++i) {
         const vec erroresRelativosAbsolutos = abs(particion.prueba.tuplasSalida.col(i) - salidaRed.at(i))
                                               / particion.prueba.tuplasSalida.col(i)
                                               * 100;
@@ -145,11 +131,11 @@ int main()
     errores.save(rutaBase + "errorRbfSalidaDifRel.csv", arma::csv_ascii);
 
     Gnuplot gp;
-    gp << "set terminal qt size 1200,600" << endl
-       << "set multiplot layout 2,3 title 'Predicción usando Diferencias Relativas de Patentamientos - Red con RBF' font ',12'" << endl
+    gp << "set terminal qt size 600,700" << endl
+       << "set multiplot layout 3,1 title 'Predicción usando Diferencias Relativas de Patentamientos - Red con RBF' font ',12'" << endl
        << "set xlabel 'Mes (final de la serie)'" << endl
        << "set ylabel 'Patentamientos (unidades)'" << endl
-       << "set yrange [0:70000]" << endl
+       << "set yrange [0:200000]" << endl
        << "set grid" << endl
        << "set key box opaque bottom center" << endl;
 
