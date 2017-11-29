@@ -292,4 +292,57 @@
     * Maestro-esclavos
     * Colonias
     * Celdas
-* Parámetros que controlan la evolución.
+* Parámetros que controlan la evolución (son 5).
+* Estrategias de evolución
+    * Representación fenotípica. Variables objetivo y de control
+    * Función de aptitud
+    * Operadores: Mutación, cruza y selección.
+    * Reproducción (dos mecanismos)
+* Representación de los individuos
+    * Genético
+        * Muchos genes con pocos alelos
+        * Epistasis
+        * Representación lejana al dominio del problema
+        * Gran cantidad de soluciones inválidas en la población
+    * Evolutivo
+        * Pocos genes con muchos alelos
+        * Convergencia muy dependiente de los operadores
+        * Necesidad de redefinición de los operadores
+    * Otras representaciones
+* Programación genética
+    * Elementos básicos de un programa
+    * Representación en árbol de un programa
+    * Cruzas: En base al intercambio de ramas
+    * Mutaciones: En base al reemplazo con un árbol generado al azar
+* Restricciones del problema
+    * Redefinición de la representación de forma de que siempre se generen fenotipos válidos
+    * Rechazo o eliminación de individuos inválidos. ¿Cuándo sirve?
+    * Reparación del material genético
+    * Modificación de los operadores de variación
+    * Esquemas de penalización en la función de aptitud
+
+# Inteligencia colectiva
+
+* Autómatas de estados finitos
+    * Definición: Entradas, salidas, estados y reglas de transición
+    * Forma de determinar la salida: Función de salida y otras
+    * Representación gráfica de estados y reglas de transición
+    * Reglas de transición determinísticas y aleatorias
+* Autómatas celulares
+    * Definición: Autómatas, topología y conectividad
+    * Topología: tipos
+    * Conectividad
+        * Tipos y tamaños de vecindad
+        * Tipos de conexiones
+    * Identificar todos estos elementos en un ejemplo
+* Agentes
+    * Agente
+        * Definición
+        * Sensores y efectores
+        * Autonomía (capacidad de aprender de su experiencia y de modificar su comportamiento)
+    * Agente inteligente: Debe ser proactivo, reactivo, y poseer habilidad social
+    * Agente racional: Realiza acciones correctas
+        * Agente racional ideal: Capaz de percibir, conocer, decidir y actuar
+    * Sistemas multi-agente
+        
+        * 

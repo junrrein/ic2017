@@ -43,4 +43,11 @@
 
 * Función de aptitud: ¿Cuándo es deseable regular la suavidad de la función? Ejemplos
 * Parámetros de evolución. ¿De qué manera modifico el algoritmos para evolucionar estos parámetros?
+* La selección de padres ¿es un operador?
+* Estrategias de evolución - Mecanismos de selección: ¿Cuándo se usa uno u otro?
 
+# Inteligencia colectiva
+
+* Autómatas celulares con conexiones anisotrópicas. ¿Ejemplo?
+* Las hormigas de una colonia ¿son autómatas celulares? (en la naturaleza y en el algoritmos de colonia de hormigas)
+* 
