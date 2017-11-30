@@ -23,7 +23,7 @@ int main()
     const string rutaExportaciones = rutaBase + "Exportaciones.csv";
     const string rutaImportaciones = rutaBase + "Importaciones.csv";
     const vector<string> rutas = {rutaVentas,
-                                  rutaDiferencias,
+                                  rutaVentas,
                                   rutaExportaciones,
                                   rutaImportaciones};
     const vector<vector<string>> subconjuntosRutas = subconjuntos<4>(rutas);
@@ -31,6 +31,7 @@ int main()
     iota(neuronasPrimerCapa.begin(), neuronasPrimerCapa.end(), 7);
     vector<unsigned int> retrasosAProbar(4);
     iota(retrasosAProbar.begin(), retrasosAProbar.end(), 6);
+    const int nSalidas = 3;
 
     ParametrosMulticapa parametros;
     parametros.nEpocas = 1500;
@@ -49,12 +50,12 @@ int main()
 
         for (int retrasos : retrasosAProbar) {
             const Particion particion = cargarTuplas(rutasEntradas,
-                                                     rutaDiferencias,
+                                                     rutaVentas,
                                                      retrasos,
-                                                     6);
+                                                     nSalidas);
 
             for (int cantidadNeuronas : neuronasPrimerCapa) {
-                parametros.estructuraRed = {double(cantidadNeuronas), 6};
+                parametros.estructuraRed = {double(cantidadNeuronas), nSalidas};
 
                 double promedioErrorPromedio = evaluarMLP(parametros,
                                                           particion);

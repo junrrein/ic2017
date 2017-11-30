@@ -105,11 +105,12 @@ int main()
     errores.save(rutaBase + "errorRbfSalidaVentas.csv", arma::csv_ascii);
 
     Gnuplot gp;
-    gp << "set terminal qt size 600,700" << endl
-       << "set multiplot layout 3,1 title 'Predicción usando Diferencias Relativas de Patentamientos - Red con RBF' font ',12'" << endl
+    gp << "set terminal qt size 500,700" << endl
+       << "set multiplot layout 3,1 title 'Predicciones del Modelo RBF 1' font ',12'" << endl
        << "set xlabel 'Mes (final de la serie)'" << endl
        << "set ylabel 'Patentamientos (unidades)'" << endl
        << "set yrange [0:70000]" << endl
+       << "set xtics 0,1" << endl
        << "set grid" << endl
        << "set key box opaque bottom center" << endl;
 
@@ -120,13 +121,13 @@ int main()
         istringstream ist{ost.str()};
         ist >> errorStr >> desvioStr;
 
-        gp << R"(set title "1 mes hacia adelante\n)"
-           << R"(EARP = )" << errorStr
-           << R"( %, Desvío = )" << desvioStr
-           << R"( %")"
+        gp << R"(set title "1 mes hacia adelante)"
+           //           << R"(EARP = )" << errorStr
+           //           << R"( %, Desvío = )" << desvioStr
+           << R"(")"
            << " font ',11'" << endl
            << "plot " << gp.file1d(particion.prueba.tuplasSalida.col(0).eval()) << " with linespoints title 'Salida original', "
-           << gp.file1d(salidaRed.at(0)) << " with linespoints title 'Salida de la red' lw 2" << endl;
+           << gp.file1d(salidaRed.at(0)) << " with linespoints title 'Salida del modelo' lw 2" << endl;
     }
 
     for (unsigned int i = 1; i < salidaRed.size(); ++i) {
@@ -136,13 +137,13 @@ int main()
         istringstream ist{ost.str()};
         ist >> errorStr >> desvioStr;
 
-        gp << R"(set title ")" << i + 1 << R"( meses hacia adelante\n)"
-           << R"(EARP = )" << errorStr
-           << R"( %, Desvío = )" << desvioStr
-           << R"( %")"
+        gp << R"(set title ")" << i + 1 << R"( meses hacia adelante)"
+           //           << R"(EARP = )" << errorStr
+           //           << R"( %, Desvío = )" << desvioStr
+           << R"(")"
            << " font ',11'" << endl
            << "plot " << gp.file1d(particion.prueba.tuplasSalida.col(i).eval()) << " with linespoints title 'Salida original', "
-           << gp.file1d(salidaRed.at(i)) << " with linespoints title 'Salida de la red' lw 2" << endl;
+           << gp.file1d(salidaRed.at(i)) << " with linespoints title 'Salida del modelo' lw 2" << endl;
     }
 
     getchar();
