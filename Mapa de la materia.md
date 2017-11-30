@@ -344,5 +344,50 @@
     * Agente racional: Realiza acciones correctas
         * Agente racional ideal: Capaz de percibir, conocer, decidir y actuar
     * Sistemas multi-agente
-        
-        * 
+        * Son cooperativos por varios mecanismos (son 3)
+        * ¿Cuándo un agente posee racionalidad social? Utilidad esperada
+* Inteligencia colectiva
+    * Características generales
+        * Auto-organización
+        * Estigmergía
+        * Comportamiento emergente: inteligencia distribuida, robustez
+        * Fuerte interacción local
+        * Organización social altamente estructurada
+        * Colaboración versus competencia
+        * Componentes estocásticas
+        * Bio-inspiración
+    * Ejemplos en la naturaleza
+    * Elementos individuales: Boids, autómatas, agentes. Neuronas también pueden verse acá.
+    * Ejemplos de algoritmos en inteligencia evolutiva
+    * Aplicaciones: Optimización, entrenamiento, identificación, búsqueda, agrupamiento, clasificación
+
+# Colonias de hormigas
+
+* La inspiración biológica
+    * ¿Cómo encuentran las hormigas una fuente de comida? Papel de las feromonas
+    * Comunicación indirecta, estigmergía
+    * Ilustrar lo anterior con el experimento del puente binario
+* Algoritmos
+    * Definiciones: $ G = (V, E) $;  $ \sigma_{ij} $;  $ k = 1, 2, \dots, N $;  $ \mathcal{N}_i $;  $ \mathbb{p}^k(t) $
+    * Algoritmo: Colonia de hormigas simple (sACO)
+    * Algoritmo: Sistema de hormigas (AS)
+    * Diferencias entre los dos anteriores
+        * Cálculo de la probabilidad de selección del próximo nodo
+        * Forma de tratar bucles en el camino
+        * Cantidad de feromonas a depositar
+
+# Enjambre de partículas
+
+* La inspiración biológica
+    * Ejemplo en la naturaleza de la bandada de pájaros
+* Definiciones
+    * Posición
+    * Velocidad
+    * Regla básica
+    * Mejor posición personal
+    * Función de error o aptitud
+    * Mejor global: Topología, mejor posición global
+    * Mejor local: Topología, selección del entorno, mejor posición en el entorno local
+* Algoritmo: Enjambre del mejor global (gEP)
+* Algoritmo: Enjambre del mejor local (lEP)
+
