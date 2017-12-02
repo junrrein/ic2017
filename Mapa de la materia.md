@@ -16,8 +16,9 @@
         * Espacio de solucones e hiperplano de decisión
         * Ejemplo del OR - Necesidad del sesgo
             * Cálculo directo de los pesos
-        * Entrenamiento por corrección de error. Fórmula de actualización de pesos
-        * Entrenamiento por método del gradiente. Fórmula de actualización de pesos para casos de activación lineal y activación sigmoidea.
+        * Entrenamiento por corrección de error. Fórmula de actualización de pesos.
+        * Entrenamiento por método del gradiente. Fórmula de actualización de pesos para casos de activación lineal y activación sigmoidea
+        * Principio de mínima perturbación
 * Arquitecturas neuronales
     * Redes feed-forward
     * Redes recurrentes
@@ -32,7 +33,8 @@
 
 # Perceptrón multicapa
 
-* Problema XOR con 3 neuronas. Primera capa. Segunda capa. Tablas de verdad para cada neurona. 
+* ¿Qué significa que un problema sea linealmente separable?
+* Problema XOR con 3 neuronas. Primera capa. Segunda capa. Tablas de verdad para cada neurona
 * Regiones de decisión
 * Arquitectura. Capas, pesos y salidas de cada capa
 * Cálculo de las salidas de cada capa
@@ -44,6 +46,9 @@
     * $ \delta $ de la capa de salida. Actualización de pesos
     * $ \delta $ de las capas ocultas. Actualización de pesos. Fórmula general para la capa $ p $
     * Resumen del algoritmo
+    * Término del momento. Efecto en direcciones largas de descenso y en mínimos locales (en la función de error)
+* ¿Para qué problemas hacen falta más capas?
+* ¿Cómo entrenar un MLP por lotes?
 
 # Capacidad de generalización
 
@@ -51,14 +56,16 @@
     * Qué son: La forma de la función de error para una red neuronal cuando dicha función es evaluada para distintos valores de los parámetros de la red (pesos sinápticos). $ \varepsilon = f(w_1, w_2, \dots, w_n) $
     * Ejemplos
 * Sobre-entrenamiento. ¿Por qué surge? ¿Cómo lo evitamos?
-* Validación cruzada. Particionamiento. Variantes.
+* Validación cruzada. Particionamiento. Variantes
     * ¿Por qué la validación cruzada nos permite evaluar la capacidad de generalización de una red? ¿Por qué el hacer varias particiones ayuda?
+    * Método de detención temprana de entrenamiento
+    * Leave k-out y Leave one-out: Diferencias en el promedio y el desvío del error medido
 * Medidas desempeño
     * Matriz de confusión
-    * Sensibilidad. Si entra un positivo, ¿lo reconoce como tal? Ejemplo: Si tengo un sistema para detectar casos de cáncer, si hay alguien que tiene, me interesa mucho que me lo detecte
-    * Especificidad. Si entra un negativo, ¿lo reconoce como tal? Ejemplo: Un sistema anti-spam.
-    * Precisión. Qué tasa de los identificados como positivos de verdad son positivos. En el ejemplo del detector de cáncer, ¿cuántos de los que digo que tienen cáncer de verdad lo tienen?
-    * Exactitud. Tasa global de aciertos
+    * Sensibilidad: Si entra un positivo, ¿lo reconoce como tal? Ejemplo: Si tengo un sistema para detectar casos de cáncer, si hay alguien que tiene, me interesa mucho que me lo detecte
+    * Especificidad: Si entra un negativo, ¿lo reconoce como tal? Ejemplo: Un sistema anti-spam.
+    * Precisión: Qué tasa de los identificados como positivos de verdad son positivos. En el ejemplo del detector de cáncer, ¿cuántos de los que digo que tienen cáncer de verdad lo tienen?
+    * Exactitud: Tasa global de aciertos
 * Error relativo y medidas de desempeño al comparar dos clasificadores
 * Errores de predicción en series. Distintas medidas de error
 
@@ -97,7 +104,7 @@
     * Algoritmo de entrenamiento
         * Consideraciones prácticas sobre forma de vencidad, tamaño de la misma y velocidad de aprendizaje
         * Etapas del entrenamiento
-            * Ordenamiento topológico: El resultado de esta etapa es que neuronas cercanas en el mapa bidimensional de neuronas mapean a conjuntos de patrones cercanos en el espaco n-dimensional de entrada.
+            * Ordenamiento topológico: El resultado de esta etapa es que neuronas cercanas en el mapa bidimensional de neuronas mapean a conjuntos de patrones cercanos en el espacio n-dimensional de entrada.
 * Como utilizar un SOM para clasificar patrones
     * Entrenamiento no supervisado
     * Etitquetado de neuronas
@@ -269,7 +276,6 @@
                 * Rueda de ruleta. Problemas que tiene (y posibles soluciones). 
                 * Ventanas
                 * Competencia
-        
         * Variación. Mutación y cruza. ¿Qué funciones cumplen en la búsqueda de solución?
         * Reemplazo durante la reproducción
             * Total
@@ -383,11 +389,12 @@
 * Definiciones
     * Posición
     * Velocidad
-    * Regla básica
+    * Regla básica de actualización de posición
     * Mejor posición personal
     * Función de error o aptitud
     * Mejor global: Topología, mejor posición global
     * Mejor local: Topología, selección del entorno, mejor posición en el entorno local
+    * Función de la componente cognitiva y la componente social en la exploración del espacio de soluciones. Rol del $ \mathbb{r} $. Relación con cruzas y mutaciones de algoritmos genéticos
 * Algoritmo: Enjambre del mejor global (gEP)
 * Algoritmo: Enjambre del mejor local (lEP)
 

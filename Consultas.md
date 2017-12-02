@@ -1,5 +1,8 @@
 # Introducción
 
+* Sinapsis y botón sináptico, ¿son sinónimos?
+* Tolerancia a fallos y robustez: ejemplo de red parcialmente dañadas pero que más o menos funciona igual, y ejemplo de cómo se le pasa una entrada incompleta (información faltante) a una red
+* Diferencia entre capacidad de aprendizaje y adaptabilidad
 * Diapositiva 5: "¿cómo lo modelamos?" ¿A qué se refiere cada item?
 * Diapositiva 26: Redes recurrentes. ¿Por qué incluye a los SOM?
 
@@ -8,6 +11,11 @@
 * Diapositiva 16: ¿Por qué mucha bilbiografía le llama "capa de entrada" solo a las entradas, y después a todas las capas que no son de salida las llama "ocultas"? ¿Por qué se usa el término "capa oculta"? ¿Porque de afuera no se ve lo que hace o porque el significado de lo que hace está oculto?
 * Definición de superficie de error
 * ¿Cuáles son parámetros y cuáles son hiperparámetros?
+* ¿Cómo se entrena un MLP por lotes?
+
+# Capacidad de generalización
+
+* Validación cruzada: ¿Es sólo particionar? ¿O es el particionar varias veces?
 
 # Redes con RBFs
 
@@ -45,9 +53,21 @@
 * Parámetros de evolución. ¿De qué manera modifico el algoritmos para evolucionar estos parámetros?
 * La selección de padres ¿es un operador?
 * Estrategias de evolución - Mecanismos de selección: ¿Cuándo se usa uno u otro?
+* Relación entre epistasis biológica y la epistasis en algoritmos genéticos
 
 # Inteligencia colectiva
 
-* Autómatas celulares con conexiones anisotrópicas. ¿Ejemplo?
-* Las hormigas de una colonia ¿son autómatas celulares? (en la naturaleza y en el algoritmos de colonia de hormigas)
-* 
+* Conectividad
+    * Algunos de los algoritmos que vimos, ¿tiene conexiones unidireccionales?
+    * Autómatas celulares con conexiones anisotrópicas. ¿Ejemplo?
+* Las hormigas de una colonia
+    * Autómatas de estados finitos: ¿cuáles serían la salida y los estados?
+    * ¿son autómatas celulares? (en la naturaleza y en el algoritmos de colonia de hormigas)
+* Los pájaros de una bandada:
+    * Entradas: ¿La función de aptitud? ¿La posición actual?
+    * Salidas: ¿La posición actual? ¿La mejor posición local? ¿La posición siguiente?
+    * Estados: Posición y velocidad
+
+# Enjambre de partículas
+
+* Nombre del $ \mathbb{r} $
