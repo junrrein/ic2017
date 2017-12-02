@@ -1,9 +1,15 @@
 # Introducción
 
 * Sinapsis y botón sináptico, ¿son sinónimos?
+
+    Respuesta: más o menos. El botón sináptico es el lugar en el que ocurre la sinapsis.
+
 * Tolerancia a fallos y robustez: ejemplo de red parcialmente dañadas pero que más o menos funciona igual, y ejemplo de cómo se le pasa una entrada incompleta (información faltante) a una red
 * Diferencia entre capacidad de aprendizaje y adaptabilidad
-* Diapositiva 5: "¿cómo lo modelamos?" ¿A qué se refiere cada item?
+* Diapositiva 5: "¿cómo lo modelamos?" ¿A qué se refiere cada item? ¿Los modelos con énfasis en lo simbólico es para modelos del contenido, y lo otro respectivamente?
+
+    Respuesta: Casi seguro que es así.
+
 * Diapositiva 26: Redes recurrentes. ¿Por qué incluye a los SOM?
 
 # Perceptrón multicapa
@@ -12,6 +18,8 @@
 * Definición de superficie de error
 * ¿Cuáles son parámetros y cuáles son hiperparámetros?
 * ¿Cómo se entrena un MLP por lotes?
+
+    Respuesta: Similar al entrenamiento online. Para cada patrón, se calculan las correcciones a hacer en los pesos, pero en lugar de aplicarlos inmediatamente, se acumulan estos $\Delta$s en una matriz auxiliar. Luego de procesar todos los patrones, se aplican los $\Delta$s acumulados.
 
 # Capacidad de generalización
 
@@ -33,14 +41,22 @@
 # Redes dinámicas
 
 * Retropropagación a través del tiempo: Las redes que se entrenan ¿terminan siendo total o parcialmente recurrentes?
+* TDNN: Las salidas finales de la red, ¿son todas predicciones de instantes futuros? ¿O son una predicción futura mas predicciones pasadas?
+* Redes de Elman: El siguiente gráfico ¿es correcto?
+
+![](Elman_srnn.png)
 
 # Lógica
 
 * Conjunto de conflicto. Cuando para una regla de la memoria de producciones se activa su premisa con distintos hechos de la memoria de trabajo, ¿se considera que son reglas diferentes para meterlas en el conjunto de conflicto?
 
     Respuesta: No, es una sola regla.
-    
+
 * Fase de cotejo: Entender bien qué lista se genera en la unificación
+
+# Lógica borrosa
+
+* ¿Ejemplo de paralelo entre la representación 2D y gráfica de funciones de membresía?
 
 # Búsqueda
 
