@@ -38,6 +38,10 @@
 * Entrenamiento - Método 2: ¿En qué consiste? ¿En hacer primero el método 1 y luego adaptar las RBFs con el método del gradiente descendente?
 * Método 1 - Segunda parte del entrenamiento - Parte supervisada. Métodos de entrenamiento. ¿Por qué no se usa usualmente el entrenamiento por pseudo-inversa?
 
+# LVQ
+
+* Ejemplo de sistema de compresión y descompresión usando LVQ
+
 # Redes dinámicas
 
 * Retropropagación a través del tiempo: Las redes que se entrenan ¿terminan siendo total o parcialmente recurrentes?
@@ -58,18 +62,26 @@
 
 * ¿Ejemplo de paralelo entre la representación 2D y gráfica de funciones de membresía?
 
+# Sistemas borrosos
+
+* Cuando se componen todas las reglas de una FAM en una matriz M para luego usarla por correlación mínimo, eso ¿también integra la etapa de composición?
+
 # Búsqueda
 
+* ¿Qué es el máximo factor de ramificación de un árbol de búsqueda?
+* Búsqueda por profundidad: Este método falla en espacios infinitos. ¿Ejemplo de espacio de estados infinito?
 * Métodos informados. Diferencia entre estrategia de búsqueda primero el mejor y búsqueda avara. Porque en clase lo dimos como si uno es un tipo del otro, pero en internet usan los términos como sinónimos.
 * "¿Bajo qué condiciones se puede demostrar que la estrategia A* es óptima y completa?" Ver si tenemos un ejemplo en el que la heurística no sea "medir distancia en el mapa"
 
 # Algoritmos genéticos
 
-* Función de aptitud: ¿Cuándo es deseable regular la suavidad de la función? Ejemplos
+* Gen ¿es cada uno de los bits de un cromosoma? Alelos ¿son los valores posibles que puede tomar un gen?
+* Función de aptitud: ¿Cuándo es deseable regular la suavidad de la función? Ejemplos. ¿Puede esto ser un mecanismo para resolver el problema del mar de mediocres?
 * Parámetros de evolución. ¿De qué manera modifico el algoritmos para evolucionar estos parámetros?
 * La selección de padres ¿es un operador?
 * Estrategias de evolución - Mecanismos de selección: ¿Cuándo se usa uno u otro?
 * Relación entre epistasis biológica y la epistasis en algoritmos genéticos
+* Selección de ruleta: Una solución al problema de los mares es potenciar los valores de fitness de los individuos por un $\alpha$. ¿Qué otra solución hay?
 
 # Inteligencia colectiva
 
@@ -83,6 +95,7 @@
     * Entradas: ¿La función de aptitud? ¿La posición actual?
     * Salidas: ¿La posición actual? ¿La mejor posición local? ¿La posición siguiente?
     * Estados: Posición y velocidad
+* Enjambres de partículas: ¿por qué usaría uno el enjambre del mejor local?
 
 # Enjambre de partículas
 
