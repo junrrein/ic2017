@@ -1,6 +1,7 @@
 # Introducción
 
-* ¿Qué diferencia un ser humano de una máquina a la hora de resolver problemas?
+* ¿Qué problemas resultan fáciles de resolver por una persona? ¿Cuáles por una computadora?
+* ¿Qué capacidades de las personas nos gustaría replicar de forma computacional?
 * Historia de la inteligencia artificial:
     * ¿Qué modelamos?
     * ¿Cómo lo modelamos?
@@ -8,16 +9,32 @@
 * Perceptrón simple
     * Inspiración biológica
         * Características de las redes neuronales naturales
-        * La neurona biológica
-        * Modelo simplificado de neurona
+            * No linealidad
+            * Paralelismo
+            * Aprendizaje, adaptabilidad
+            * Generalización
+            * Robustez
+        * La neurona biológica: Soma, dendritas, axón
+        * Fisiología de la neurona
+            * Sinapsis
+            * Despolarización, comportamiento todo/nada
+            * Propagación del impulso
+            * Refuerzo de las sinapsis / aprendizaje
+        * Modelo simplificado de neurona: Enlaces conectores, sumador, función de activación, umbral
+            * Trazar el paralelo de cada componente a lo biológico
     * Perceptrón simple
-        * Modelo matemático
+        * Modelo matemático: Suposiciones, fórmula
         * Funciones de activación (signo, lineal, sigmoidea, otras)
-        * Espacio de solucones e hiperplano de decisión
+        * Ejemplo 2D de cómo un perceptrón divide el espacio de entradas e hiperplano de decisión
         * Ejemplo del OR - Necesidad del sesgo
             * Cálculo directo de los pesos
-        * Entrenamiento por corrección de error. Fórmula de actualización de pesos.
-        * Entrenamiento por método del gradiente. Fórmula de actualización de pesos para casos de activación lineal y activación sigmoidea
+        * Entrenamiento por corrección de error
+            * Fórmula de actualización de pesos
+            * Principio de mínima perturbación
+            * Tasa de aprendizaje
+        * Entrenamiento por método del gradiente
+            * Fórmula para activación lineal
+            * Fórmula para activación sigmoidea
         * Principio de mínima perturbación
 * Arquitecturas neuronales
     * Redes feed-forward
