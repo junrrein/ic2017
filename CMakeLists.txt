@@ -76,8 +76,9 @@ configure_file(config.hpp.cmake ${CMAKE_SOURCE_DIR}/config.hpp)
 add_subdirectory (ejemplos)
 
 # Ejercicios
-add_subdirectory (guia1)
+#add_subdirectory (guia1)
 #add_subdirectory (guia2)
-add_subdirectory (guia3)
-add_subdirectory (guia4)
-add_subdirectory (TP_Final)
+#add_subdirectory (guia3)
+#add_subdirectory (guia4)
+#add_subdirectory (TP_Final)
+add_subdirectory (examen)
