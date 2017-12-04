@@ -17,7 +17,8 @@ endif ()
 ExternalProject_Add (openblas
     EXCLUDE_FROM_ALL 1
 
-    URL http://github.com/xianyi/OpenBLAS/archive/v0.2.19.tar.gz
+    GIT_REPOSITORY https://github.com/xianyi/OpenBLAS.git
+    GIT_TAG v0.2.20
 
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
@@ -41,7 +42,7 @@ set (openblas_LIBS
 ExternalProject_Add (armadillo
     EXCLUDE_FROM_ALL 1
 
-    URL http://sourceforge.net/projects/arma/files/armadillo-8.100.1.tar.xz
+    URL http://sourceforge.net/projects/arma/files/armadillo-8.300.1.tar.xz
 
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/armadillo"
     UPDATE_COMMAND ""
@@ -67,7 +68,7 @@ add_subdirectory (boost-cmake)
 ExternalProject_Add (gnuplot-iostream
     EXCLUDE_FROM_ALL 1
 
-    URL https://github.com/dstahlke/gnuplot-iostream/archive/master.zip
+    GIT_REPOSITORY https://github.com/dstahlke/gnuplot-iostream.git
 
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/gnuplot-iostream"
     UPDATE_COMMAND ""
