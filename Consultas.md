@@ -21,6 +21,8 @@
 
     Respuesta: Similar al entrenamiento online. Para cada patrón, se calculan las correcciones a hacer en los pesos, pero en lugar de aplicarlos inmediatamente, se acumulan estos $\Delta$s en una matriz auxiliar. Luego de procesar todos los patrones, se aplican los $\Delta$s acumulados.
 
+* ¿Cuándo es útil entrenar un MLP por lotes? ¿Cómo se compara con el entrenamiento online?
+
 # Capacidad de generalización
 
 * Validación cruzada: ¿Es sólo particionar? ¿O es el particionar varias veces?

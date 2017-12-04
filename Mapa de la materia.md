@@ -1,4 +1,4 @@
-# Introducción
+# Introducción y Perceptrón Simple
 
 * ¿Qué problemas resultan fáciles de resolver por una persona? ¿Cuáles por una computadora?
 * ¿Qué capacidades de las personas nos gustaría replicar de forma computacional?
@@ -35,18 +35,35 @@
         * Entrenamiento por método del gradiente
             * Fórmula para activación lineal
             * Fórmula para activación sigmoidea
-        * Principio de mínima perturbación
-* Arquitecturas neuronales
+* Ejemplos de arquitecturas neuronales
     * Redes feed-forward
     * Redes recurrentes
     * Modelos híbridos
 * Procesos de aprendizaje (estudiar del resumen)
     * Tipos
     * Reglas
-* Otros conceptos
-    * Espacio de soluciones
-    * Superficie de error
-    * Minimos locales vs. minimos globales
+
+# Capacidad de generalización
+
+* Superficies de error
+    * Qué son: La forma de la función de error para una red neuronal cuando dicha función es evaluada para distintos valores de los parámetros de la red (pesos sinápticos). $ \varepsilon = f(w_1, w_2, \dots, w_n) $
+    * Ejemplos
+    * ¿Cómo nos movemos en la superficie de error?
+    * ¿Es siempre fácil encontrar el mínimo global usando un perceptrón? ¿Es deseable encontrarlo? (Relación con la capacidad de generalización)
+* Sobre-entrenamiento. ¿Por qué surge? ¿Cómo lo evitamos? Criterio de detención temprana y particionamiento entrenamiento - monitoreo - prueba. ¿Por qué no nos quedamos solo con entrenamiento - prueba?
+* Validación cruzada. Particionamiento. Variantes
+    * Aleatorizar el orden de los patrones. ¿Para qué se hace esto?
+    * ¿Por qué la validación cruzada nos permite evaluar la capacidad de generalización de una red? ¿Por qué el hacer varias particiones ayuda?
+    * Método de detención temprana de entrenamiento
+    * Leave k-out y Leave one-out: Diferencias en el promedio y el desvío del error medido
+* Medidas desempeño
+    * Matriz de confusión
+    * Sensibilidad: Si entra un positivo, ¿lo reconoce como tal? Ejemplo: Si tengo un sistema para detectar casos de cáncer, si hay alguien que tiene, me interesa mucho que me lo detecte
+    * Especificidad: Si entra un negativo, ¿lo reconoce como tal? Ejemplo: Un sistema anti-spam.
+    * Precisión: Qué tasa de los identificados como positivos de verdad son positivos. En el ejemplo del detector de cáncer, ¿cuántos de los que digo que tienen cáncer de verdad lo tienen?
+    * Exactitud: Tasa global de aciertos
+* Error relativo y medidas de desempeño al comparar dos clasificadores
+* Errores de predicción en series. Distintas medidas de error
 
 # Perceptrón multicapa
 
@@ -63,28 +80,9 @@
     * $ \delta $ de la capa de salida. Actualización de pesos
     * $ \delta $ de las capas ocultas. Actualización de pesos. Fórmula general para la capa $ p $
     * Resumen del algoritmo
-    * Término del momento. Efecto en direcciones largas de descenso y en mínimos locales (en la función de error)
+    * Término de momento. Efecto en direcciones largas de descenso y en mínimos locales (en la función de error)
 * ¿Para qué problemas hacen falta más capas?
 * ¿Cómo entrenar un MLP por lotes?
-
-# Capacidad de generalización
-
-* Superficies de error
-    * Qué son: La forma de la función de error para una red neuronal cuando dicha función es evaluada para distintos valores de los parámetros de la red (pesos sinápticos). $ \varepsilon = f(w_1, w_2, \dots, w_n) $
-    * Ejemplos
-* Sobre-entrenamiento. ¿Por qué surge? ¿Cómo lo evitamos?
-* Validación cruzada. Particionamiento. Variantes
-    * ¿Por qué la validación cruzada nos permite evaluar la capacidad de generalización de una red? ¿Por qué el hacer varias particiones ayuda?
-    * Método de detención temprana de entrenamiento
-    * Leave k-out y Leave one-out: Diferencias en el promedio y el desvío del error medido
-* Medidas desempeño
-    * Matriz de confusión
-    * Sensibilidad: Si entra un positivo, ¿lo reconoce como tal? Ejemplo: Si tengo un sistema para detectar casos de cáncer, si hay alguien que tiene, me interesa mucho que me lo detecte
-    * Especificidad: Si entra un negativo, ¿lo reconoce como tal? Ejemplo: Un sistema anti-spam.
-    * Precisión: Qué tasa de los identificados como positivos de verdad son positivos. En el ejemplo del detector de cáncer, ¿cuántos de los que digo que tienen cáncer de verdad lo tienen?
-    * Exactitud: Tasa global de aciertos
-* Error relativo y medidas de desempeño al comparar dos clasificadores
-* Errores de predicción en series. Distintas medidas de error
 
 # Redes con RBFs
 
