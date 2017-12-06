@@ -10,12 +10,11 @@
 
     Respuesta: Casi seguro que es así.
 
-* Diapositiva 26: Redes recurrentes. ¿Por qué incluye a los SOM?
+* Clasificación de redes recurrentes. ¿Por qué incluye a los SOM?
 
 # Perceptrón multicapa
 
 * Diapositiva 16: ¿Por qué mucha bilbiografía le llama "capa de entrada" solo a las entradas, y después a todas las capas que no son de salida las llama "ocultas"? ¿Por qué se usa el término "capa oculta"? ¿Porque de afuera no se ve lo que hace o porque el significado de lo que hace está oculto?
-* Definición de superficie de error
 * ¿Cuáles son parámetros y cuáles son hiperparámetros?
 * ¿Cómo se entrena un MLP por lotes?
 
@@ -26,17 +25,11 @@
 # Capacidad de generalización
 
 * Validación cruzada: ¿Es sólo particionar? ¿O es el particionar varias veces?
-
-# Redes con RBFs
-
-* ¿Cómo se entrenaría con el método del gradiente una red con RBFs?
-
-# Capacidad de generalización
-
 * Error de predicción en series. ¿Para qué casos se prefiere cada medida de error?
 
 # Redes con RBFs
 
+* ¿Cómo se entrenaría con el método del gradiente una red con RBFs?
 * Entrenamiento - Método 2: ¿En qué consiste? ¿En hacer primero el método 1 y luego adaptar las RBFs con el método del gradiente descendente?
 * Método 1 - Segunda parte del entrenamiento - Parte supervisada. Métodos de entrenamiento. ¿Por qué no se usa usualmente el entrenamiento por pseudo-inversa?
 
@@ -63,10 +56,12 @@
 # Lógica borrosa
 
 * ¿Ejemplo de paralelo entre la representación 2D y gráfica de funciones de membresía?
+* ¿Está bien decir que un conjunto binario es también borroso?
 
 # Sistemas borrosos
 
 * Cuando se componen todas las reglas de una FAM en una matriz M para luego usarla por correlación mínimo, eso ¿también integra la etapa de composición?
+* Relacionado con lo anterior: Las matrices que codifican reglas ¿sirven sólo para sacarnos de encima el evaluar las reglas como if-then?
 
 # Búsqueda
 
@@ -83,6 +78,7 @@
 * La selección de padres ¿es un operador?
 * Estrategias de evolución - Mecanismos de selección: ¿Cuándo se usa uno u otro?
 * Relación entre epistasis biológica y la epistasis en algoritmos genéticos
+* Ejemplo de epistasis: codificación de un dígito decimal. ¿Qué hacer para evitar que se genere un genotipo inválido? Si esto no se puede hacer, ¿hay una manera de reparar este material genético?
 * Selección de ruleta: Una solución al problema de los mares es potenciar los valores de fitness de los individuos por un $\alpha$. ¿Qué otra solución hay?
 
 # Inteligencia colectiva
@@ -98,6 +94,7 @@
     * Salidas: ¿La posición actual? ¿La mejor posición local? ¿La posición siguiente?
     * Estados: Posición y velocidad
 * Enjambres de partículas: ¿por qué usaría uno el enjambre del mejor local?
+* Los individuos de una población en un algoritmo genético ¿son agentes? ¿Son autómatas?
 
 # Enjambre de partículas
 

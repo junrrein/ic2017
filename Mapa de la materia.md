@@ -167,6 +167,11 @@
     * Arquitectura
     * Clasificación espacio-temporal
 * Redes de Elman y Jordan. Arquitectura
+    * Motivación de redes de Elman:
+
+        La mayoría de las arquitecturas propuestas por Elman eran recurrentes y diseñadas para aprender patrones secuenciales o variantes en el tiempo. El principal interés de Elman en esta arquitectura fue para algoritmos de procesamiento del lenguaje, pero se dió cuenta que podía servir para cualquier caso que involucre secuencias.
+
+        Para que la red aprenda una secuencia, Elman definió un contexto compuesto por estados internos anteriores, y entonces añadió una capa de "unidades de contexto" a una red feed-forward estándar. Estas unidades de contexto proveen a la capa oculta de una historia de sus activaciones previas, y le permite a la red aprender tareas que se extienden en el tiempo.
 
 # Lógica
 
